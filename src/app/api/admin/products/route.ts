@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       costPrice, compareAtPrice, wholesalePrice, corporatePrice, bundlePrice,
       currency, productType, specifications, trackInventory, stockCount,
       lowStockThreshold, warrantyMonths, warrantyInfo, weight, dimensions,
-      isFeatured, isDeal, isGaming, seoTitle, seoDescription, metaKeywords,
+      isFeatured, isDeal, isGaming, dealLabel, seoTitle, seoDescription, metaKeywords,
       compatibleModels, sku, partNumber, upc, categoryIds,
     } = body
 
@@ -117,6 +117,7 @@ export async function POST(req: NextRequest) {
         isFeatured: isFeatured || false,
         isDeal: isDeal || false,
         isGaming: isGaming || false,
+        dealLabel: dealLabel || null,
         seoTitle: seoTitle || null,
         seoDescription: seoDescription || null,
         metaKeywords: metaKeywords || null,
@@ -152,5 +153,84 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 })
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { ids, status: newStatus, reason } = body
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ error: 'ids array is required' }, { status: 400 })
+    }
+
+    if (!newStatus) {
+      return NextResponse.json({ error: 'status is required' }, { status: 400 })
+    }
+
+    const VALID_TARGETS = ['DRAFT', 'UNDER_REVIEW', 'APPROVED', 'PUBLISHED', 'UNPUBLISHED', 'ARCHIVED']
+    if (!VALID_TARGETS.includes(newStatus)) {
+      return NextResponse.json({ error: `Invalid status. Must be one of: ${VALID_TARGETS.join(', ')}` }, { status: 400 })
+    }
+
+    const products = await db.product.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, status: true },
+    })
+
+    const validTransitions: Record<string, string[]> = {
+      IMPORTED: ['DRAFT'],
+      DRAFT: ['UNDER_REVIEW'],
+      UNDER_REVIEW: ['APPROVED', 'DRAFT'],
+      APPROVED: ['PUBLISHED', 'DRAFT'],
+      PUBLISHED: ['UNPUBLISHED'],
+      UNPUBLISHED: ['PUBLISHED', 'ARCHIVED', 'DRAFT'],
+      ARCHIVED: ['DRAFT'],
+    }
+
+    const results: { id: string; success: boolean; error?: string }[] = []
+    const validIds: string[] = []
+
+    for (const p of products) {
+      const allowed = validTransitions[p.status]
+      if (allowed && allowed.includes(newStatus)) {
+        validIds.push(p.id)
+        results.push({ id: p.id, success: true })
+      } else {
+        results.push({
+          id: p.id,
+          success: false,
+          error: `Invalid transition: ${p.status} → ${newStatus}`,
+        })
+      }
+    }
+
+    if (validIds.length > 0) {
+      await db.product.updateMany({
+        where: { id: { in: validIds } },
+        data: {
+          status: newStatus,
+          ...(newStatus === 'PUBLISHED' ? { publishedAt: new Date() } : {}),
+        },
+      })
+    }
+
+    // Report any IDs not found
+    const foundIds = new Set(products.map((p) => p.id))
+    for (const id of ids) {
+      if (!foundIds.has(id)) {
+        results.push({ id, success: false, error: 'Product not found' })
+      }
+    }
+
+    return NextResponse.json({
+      results,
+      updated: validIds.length,
+      total: ids.length,
+    })
+  } catch (e) {
+    console.error(e)
+    return NextResponse.json({ error: 'Failed to batch update products' }, { status: 500 })
   }
 }

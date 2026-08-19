@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Heart, ShoppingCart, GitCompareArrows, ShieldCheck, MessageCircle } from 'lucide-react'
+import Image from 'next/image'
+import { Heart, ShoppingCart, GitCompareArrows, ShieldCheck, MessageCircle, ImageIcon } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,14 @@ export default function ProductCard({ product }: Props) {
   const effectivePrice = product.salePrice || product.basePrice
   const isGaming = product.isGaming
   const isRefurb = product.condition === 'REFURBISHED'
+
+  // Find primary approved image
+  const primaryImage = product.productImages?.find(
+    (img) => img.isPrimary && img.status === 'APPROVED'
+  ) || product.productImages?.find(
+    (img) => img.status === 'APPROVED'
+  )
+  const hasImage = !!primaryImage?.url
 
   const handleAddToCart = () => {
     addToCart({
@@ -45,18 +54,31 @@ export default function ProductCard({ product }: Props) {
     )}>
       {/* ── Image Area ── */}
       <Link href={`/product/${product.slug}`} className="block relative aspect-[4/3] bg-secondary/40 overflow-hidden">
-        {/* Placeholder */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className={cn(
-            'w-16 h-16 rounded-2xl flex items-center justify-center',
-            isGaming ? 'bg-gaming/10' : 'bg-secondary'
-          )}>
-            <span className={cn(
-              'text-2xl font-bold',
-              isGaming ? 'text-gaming/30' : 'text-muted-foreground/25'
-            )}>{product.brand?.name?.[0] || 'B'}</span>
+        {hasImage ? (
+          <Image
+            src={primaryImage!.url}
+            alt={primaryImage!.altText || product.name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className={cn(
+              'w-16 h-16 rounded-2xl flex items-center justify-center',
+              isGaming ? 'bg-gaming/10' : 'bg-secondary'
+            )}>
+              {isGaming ? (
+                <ImageIcon className="w-8 h-8 text-gaming/30" />
+              ) : (
+                <span className={cn(
+                  'text-2xl font-bold',
+                  'text-muted-foreground/25'
+                )}>{product.brand?.name?.[0] || 'B'}</span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Badges — top-left */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">

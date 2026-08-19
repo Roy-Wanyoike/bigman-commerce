@@ -11,7 +11,24 @@ async function getData() {
     }),
     db.product.findMany({
       where: { status: 'ACTIVE' },
-      include: { brand: true, categories: { include: { category: true } } },
+      include: {
+        brand: true,
+        categories: { include: { category: true } },
+        productImages: {
+          where: { status: 'APPROVED' },
+          orderBy: { sortOrder: 'asc' },
+          select: {
+            id: true,
+            url: true,
+            altText: true,
+            isPrimary: true,
+            imageType: true,
+            status: true,
+            width: true,
+            height: true,
+          },
+        },
+      },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
     }),
     db.brand.findMany({

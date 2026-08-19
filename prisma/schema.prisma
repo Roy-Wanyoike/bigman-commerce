@@ -164,6 +164,7 @@ model Product {
   isFeatured      Boolean  @default(false)
   isDeal          Boolean  @default(false)
   isGaming        Boolean  @default(false)
+  dealLabel       String?  // e.g. "Flash Sale", "Clearance", "Holiday Deal"
 
   // SEO
   seoTitle        String?

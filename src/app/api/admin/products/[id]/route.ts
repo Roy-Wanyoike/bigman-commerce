@@ -76,7 +76,7 @@ export async function PUT(
       costPrice, compareAtPrice, wholesalePrice, corporatePrice, bundlePrice,
       currency, productType, specifications, trackInventory, stockCount,
       lowStockThreshold, warrantyMonths, warrantyInfo, weight, dimensions,
-      isFeatured, isDeal, isGaming, seoTitle, seoDescription, metaKeywords,
+      isFeatured, isDeal, isGaming, dealLabel, seoTitle, seoDescription, metaKeywords,
       compatibleModels, sku, partNumber, upc, categoryIds,
     } = body
 
@@ -143,6 +143,7 @@ export async function PUT(
         ...(isFeatured !== undefined && { isFeatured }),
         ...(isDeal !== undefined && { isDeal }),
         ...(isGaming !== undefined && { isGaming }),
+        ...(dealLabel !== undefined && { dealLabel }),
         ...(seoTitle !== undefined && { seoTitle }),
         ...(seoDescription !== undefined && { seoDescription }),
         ...(metaKeywords !== undefined && { metaKeywords }),

@@ -4,16 +4,15 @@ import Link from 'next/link'
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Truck, Shield, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { useStore } from '@/lib/store'
 import { formatPrice } from '@/lib/prices'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
+import OrderSummary from '@/components/bigman/OrderSummary'
 
 export default function CartClient() {
-  const { cart, removeFromCart, updateQuantity, clearCart, setMobileMenuOpen, searchOpen, setSearchOpen, mobileMenuOpen } = useStore()
+  const { cart, removeFromCart, updateQuantity, clearCart } = useStore()
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
@@ -79,35 +78,20 @@ export default function CartClient() {
             </div>
 
             {/* Order summary */}
-            <div>
-              <Card className="border-border/60 sticky top-24">
-                <CardContent className="p-5 space-y-4">
-                  <h2 className="font-semibold">Order Summary</h2>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Subtotal</span>
-                      <span className="font-medium price-display">{formatPrice(subtotal)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Delivery</span>
-                      <span className="text-sm text-muted-foreground">Calculated at checkout</span>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between font-bold">
-                    <span>Total</span>
-                    <span className="price-display text-lg">{formatPrice(subtotal)}</span>
-                  </div>
-                  <Button className="w-full font-semibold h-11" size="lg">
-                    Proceed to Checkout <ArrowRight className="h-4 w-4 ml-1.5" />
-                  </Button>
-                  <div className="space-y-2 text-[11px] text-muted-foreground">
-                    <div className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5" /> Secure payment</div>
-                    <div className="flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" /> M-Pesa accepted</div>
-                    <div className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5" /> Delivery available</div>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="space-y-3">
+              <div className="sticky top-24">
+                <OrderSummary />
+              </div>
+              <Link href="/checkout" className="block">
+                <Button className="w-full font-semibold h-11" size="lg">
+                  Proceed to Checkout <ArrowRight className="h-4 w-4 ml-1.5" />
+                </Button>
+              </Link>
+              <div className="space-y-2 text-[11px] text-muted-foreground px-1">
+                <div className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5" /> Secure payment</div>
+                <div className="flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" /> M-Pesa accepted</div>
+                <div className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5" /> Delivery available</div>
+              </div>
             </div>
           </div>
         )}

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -51,6 +52,7 @@ import {
   Globe,
   Ban,
   Archive,
+  PackageCheck,
 } from 'lucide-react'
 import { formatPrice } from '@/lib/prices'
 
@@ -87,6 +89,11 @@ interface Product {
   name: string
   slug: string
   basePrice: number
+  salePrice: number | null
+  compareAtPrice: number | null
+  stockCount: number
+  lowStockThreshold: number
+  trackInventory: boolean
   status: string
   condition: string
   createdAt: string
@@ -124,6 +131,23 @@ const statusActions: Record<string, { action: string; label: string; icon: React
   ARCHIVED: [],
 }
 
+function getDiscount(base: number, sale: number | null, compareAt: number | null): number | null {
+  if (sale && sale > 0 && sale < base) {
+    return Math.round(((base - sale) / base) * 100)
+  }
+  if (compareAt && compareAt > base) {
+    return Math.round(((compareAt - base) / compareAt) * 100)
+  }
+  return null
+}
+
+function getStockBadge(count: number, threshold: number, tracking: boolean) {
+  if (!tracking) return { label: 'N/A', color: 'text-muted-foreground', bg: 'bg-gray-50' }
+  if (count <= 0) return { label: '0', color: 'text-red-700', bg: 'bg-red-50' }
+  if (count <= threshold) return { label: String(count), color: 'text-amber-700', bg: 'bg-amber-50' }
+  return { label: String(count), color: 'text-emerald-700', bg: 'bg-emerald-50' }
+}
+
 function AdminProductsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -134,6 +158,10 @@ function AdminProductsContent() {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
+
+  // Bulk selection
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkLoading, setBulkLoading] = useState(false)
 
   const page = parseInt(searchParams.get('page') || '1')
   const status = searchParams.get('status') || ''
@@ -155,9 +183,18 @@ function AdminProductsContent() {
     [router, searchParams]
   )
 
+  const refreshProducts = useCallback(async () => {
+    const params = new URLSearchParams(searchParams.toString())
+    const refresh = await fetch(`/api/admin/products?${params.toString()}`)
+    const data = await refresh.json()
+    setProducts(data.products || [])
+    setTotal(data.total || 0)
+  }, [searchParams])
+
   useEffect(() => {
     async function load() {
       setLoading(true)
+      setSelectedIds(new Set())
       try {
         const params = new URLSearchParams()
         params.set('page', String(page))
@@ -194,12 +231,7 @@ function AdminProductsContent() {
         alert(err.error || 'Failed to update status')
         return
       }
-      // Refresh list
-      const params = new URLSearchParams(searchParams.toString())
-      const refresh = await fetch(`/api/admin/products?${params.toString()}`)
-      const data = await refresh.json()
-      setProducts(data.products || [])
-      setTotal(data.total || 0)
+      await refreshProducts()
     } catch (e) {
       console.error(e)
     } finally {
@@ -221,16 +253,65 @@ function AdminProductsContent() {
       }
       setDeleteDialogOpen(false)
       setDeleteTarget(null)
-      // Refresh
-      const params = new URLSearchParams(searchParams.toString())
-      const refresh = await fetch(`/api/admin/products?${params.toString()}`)
-      const data = await refresh.json()
-      setProducts(data.products || [])
-      setTotal(data.total || 0)
+      await refreshProducts()
     } catch (e) {
       console.error(e)
     } finally {
       setActionLoading(null)
+    }
+  }
+
+  // Bulk actions
+  const allOnPageSelected = products.length > 0 && products.every((p) => selectedIds.has(p.id))
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleSelectAll() {
+    if (allOnPageSelected) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(products.map((p) => p.id)))
+    }
+  }
+
+  async function handleBulkAction(action: 'publish' | 'archive') {
+    if (selectedIds.size === 0) return
+    setBulkLoading(true)
+    try {
+      const targetStatus = action === 'publish' ? 'PUBLISHED' : 'ARCHIVED'
+      const res = await fetch('/api/admin/products', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ids: Array.from(selectedIds),
+          status: targetStatus,
+          reason: `Bulk ${action}`,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        alert(err.error || 'Failed to bulk update')
+        return
+      }
+      const data = await res.json()
+      setSelectedIds(new Set())
+      await refreshProducts()
+
+      const failed = data.results?.filter((r: { success: boolean }) => !r.success).length || 0
+      if (failed > 0) {
+        alert(`${data.updated} products updated. ${failed} failed due to invalid status transitions.`)
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setBulkLoading(false)
     }
   }
 
@@ -248,7 +329,7 @@ function AdminProductsContent() {
         </Link>
       </div>
 
-      {/* Filters */}
+      {/* Filters + Bulk Actions */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -289,15 +370,42 @@ function AdminProductsContent() {
         </Select>
       </div>
 
+      {/* Bulk Actions Bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border bg-muted/50 p-3">
+          <span className="text-sm font-medium">{selectedIds.size} selected</span>
+          <Button size="sm" variant="outline" onClick={() => handleBulkAction('publish')} disabled={bulkLoading}>
+            {bulkLoading ? <Loader2 className="size-4 animate-spin" /> : <PackageCheck className="size-4" />}
+            Publish Selected
+          </Button>
+          <Button size="sm" variant="outline" className="text-amber-700 border-amber-300 hover:bg-amber-50" onClick={() => handleBulkAction('archive')} disabled={bulkLoading}>
+            {bulkLoading ? <Loader2 className="size-4 animate-spin" /> : <Archive className="size-4" />}
+            Archive Selected
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}>
+            Clear
+          </Button>
+        </div>
+      )}
+
       {/* Table */}
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[40px]">
+                <Checkbox
+                  checked={allOnPageSelected}
+                  onCheckedChange={toggleSelectAll}
+                  aria-label="Select all"
+                />
+              </TableHead>
               <TableHead>Name</TableHead>
               <TableHead className="hidden sm:table-cell">Brand</TableHead>
               <TableHead className="hidden md:table-cell">Category</TableHead>
               <TableHead>Price</TableHead>
+              <TableHead className="hidden lg:table-cell">Discount</TableHead>
+              <TableHead className="hidden md:table-cell">Stock</TableHead>
               <TableHead className="hidden lg:table-cell">Condition</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-[50px]">Actions</TableHead>
@@ -306,101 +414,138 @@ function AdminProductsContent() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-12">
+                <TableCell colSpan={10} className="text-center py-12">
                   <Loader2 className="size-5 animate-spin mx-auto text-muted-foreground" />
                 </TableCell>
               </TableRow>
             ) : products.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
                   No products found.
                 </TableCell>
               </TableRow>
             ) : (
-              products.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>
-                    <Link
-                      href={`/admin/products/${p.id}`}
-                      className="font-medium text-sm hover:underline"
-                    >
-                      {p.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
-                    {p.brand?.name || '—'}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                    {p.categories.length > 0
-                      ? p.categories.map((c) => c.category.name).join(', ')
-                      : '—'}
-                  </TableCell>
-                  <TableCell className="text-sm font-medium">{formatPrice(p.basePrice)}</TableCell>
-                  <TableCell className="hidden lg:table-cell">
-                    <Badge variant="outline" className="text-xs">
-                      {conditionLabels[p.condition] || p.condition}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={statusColor[p.status] || ''}>
-                      {statusLabel[p.status] || p.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-8">
-                          <MoreHorizontal className="size-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/admin/products/${p.id}`}>
-                            <Eye className="size-4" /> View
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/admin/products/${p.id}`}>
-                            <Pencil className="size-4" /> Edit
-                          </Link>
-                        </DropdownMenuItem>
-                        {(statusActions[p.status] || []).length > 0 && (
-                          <>
-                            <DropdownMenuSeparator />
-                            {(statusActions[p.status] || []).map((sa) => {
-                              const Icon = sa.icon
-                              return (
-                                <DropdownMenuItem
-                                  key={sa.action}
-                                  onClick={() => handleStatusAction(p, sa.action)}
-                                  disabled={actionLoading === p.id}
-                                  variant={sa.variant}
-                                >
-                                  <Icon className="size-4" /> {sa.label}
-                                </DropdownMenuItem>
-                              )
-                            })}
-                          </>
+              products.map((p) => {
+                const discount = getDiscount(p.basePrice, p.salePrice, p.compareAtPrice)
+                const stockBadge = getStockBadge(p.stockCount, p.lowStockThreshold, p.trackInventory)
+                return (
+                  <TableRow key={p.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.has(p.id)}
+                        onCheckedChange={() => toggleSelect(p.id)}
+                        aria-label={`Select ${p.name}`}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Link
+                        href={`/admin/products/${p.id}`}
+                        className="font-medium text-sm hover:underline"
+                      >
+                        {p.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                      {p.brand?.name || '—'}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                      {p.categories.length > 0
+                        ? p.categories.map((c) => c.category.name).join(', ')
+                        : '—'}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{formatPrice(p.basePrice)}</span>
+                        {p.salePrice && p.salePrice !== p.basePrice && (
+                          <span className="text-xs text-emerald-600 font-medium">
+                            Sale: {formatPrice(p.salePrice)}
+                          </span>
                         )}
-                        {p.status !== 'ARCHIVED' && (
-                          <>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              variant="destructive"
-                              onClick={() => {
-                                setDeleteTarget(p)
-                                setDeleteDialogOpen(true)
-                              }}
-                            >
-                              <Trash2 className="size-4" /> Archive
-                            </DropdownMenuItem>
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {discount !== null ? (
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                          -{discount}%
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${stockBadge.bg} ${stockBadge.color} border-transparent`}
+                      >
+                        {stockBadge.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      <Badge variant="outline" className="text-xs">
+                        {conditionLabels[p.condition] || p.condition}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={statusColor[p.status] || ''}>
+                        {statusLabel[p.status] || p.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="size-8">
+                            <MoreHorizontal className="size-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/products/${p.id}`}>
+                              <Eye className="size-4" /> View
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/products/${p.id}`}>
+                              <Pencil className="size-4" /> Edit
+                            </Link>
+                          </DropdownMenuItem>
+                          {(statusActions[p.status] || []).length > 0 && (
+                            <>
+                              <DropdownMenuSeparator />
+                              {(statusActions[p.status] || []).map((sa) => {
+                                const Icon = sa.icon
+                                return (
+                                  <DropdownMenuItem
+                                    key={sa.action}
+                                    onClick={() => handleStatusAction(p, sa.action)}
+                                    disabled={actionLoading === p.id}
+                                    variant={sa.variant}
+                                  >
+                                    <Icon className="size-4" /> {sa.label}
+                                  </DropdownMenuItem>
+                                )
+                              })}
+                            </>
+                          )}
+                          {p.status !== 'ARCHIVED' && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => {
+                                  setDeleteTarget(p)
+                                  setDeleteDialogOpen(true)
+                                }}
+                              >
+                                <Trash2 className="size-4" /> Archive
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
             )}
           </TableBody>
         </Table>

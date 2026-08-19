@@ -1,0 +1,799 @@
+   160→  costPrice: number | null
+   161→  compareAtPrice: number | null
+   162→  wholesalePrice: number | null
+   163→  corporatePrice: number | null
+   164→  bundlePrice: number | null
+   165→  currency: string
+   166→  productType: string
+   167→  specifications: string | null
+   168→  thumbnail: string | null
+   169→  videoUrl: string | null
+   170→  trackInventory: boolean
+   171→  stockCount: number
+   172→  lowStockThreshold: number
+   173→  warrantyMonths: number | null
+   174→  warrantyInfo: string | null
+   175→  status: string
+   176→  isFeatured: boolean
+   177→  isDeal: boolean
+   178→  isGaming: boolean
+   179→  compatibleModels: string | null
+   180→  sku: string | null
+   181→  partNumber: string | null
+   182→  upc: string | null
+   183→  lastVerifiedAt: string | null
+   184→  verifiedBy: string | null
+   185→  verifiedPrice: number | null
+   186→  seoTitle: string | null
+   187→  seoDescription: string | null
+   188→  metaKeywords: string | null
+   189→  brand: Brand | null
+   190→  categories: { categoryId: string; category: Category }[]
+   191→  productImages: ProductImage[]
+   192→  priceHistory: PriceHistoryEntry[]
+   193→}
+   194→
+   195→// Flat list of all categories for multi-select
+   196→interface FlatCategory {
+   197→  id: string
+   198→  name: string
+   199→  slug: string
+   200→  parentId: string | null
+   201→  level: number
+   202→  children?: FlatCategory[]
+   203→}
+   204→
+   205→function flattenCategories(nodes: FlatCategory[], prefix = ''): { id: string; name: string }[] {
+   206→  const result: { id: string; name: string }[] = []
+   207→  for (const node of nodes) {
+   208→    const label = prefix ? `${prefix} > ${node.name}` : node.name
+   209→    result.push({ id: node.id, name: label })
+   210→    if (node.children?.length) {
+   211→      result.push(...flattenCategories(node.children, label))
+   212→    }
+   213→  }
+   214→  return result
+   215→}
+   216→
+   217→export default function AdminProductDetailPage() {
+   218→  const params = useParams()
+   219→  const router = useRouter()
+   220→  const id = params.id as string
+   221→
+   222→  const [product, setProduct] = useState<ProductData | null>(null)
+   223→  const [loading, setLoading] = useState(true)
+   224→  const [saving, setSaving] = useState(false)
+   225→  const [statusLoading, setStatusLoading] = useState(false)
+   226→
+   227→  // All categories for selector
+   228→  const [allCategories, setAllCategories] = useState<FlatCategory[]>([])
+   229→  const [allBrands, setAllBrands] = useState<Brand[]>([])
+   230→
+   231→  // Form state
+   232→  const [form, setForm] = useState<Record<string, unknown>>({})
+   233→  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+   234→  const [specs, setSpecs] = useState<{ key: string; value: string }[]>([])
+   235→
+   236→  // Image dialog
+   237→  const [imageDialogOpen, setImageDialogOpen] = useState(false)
+   238→  const [newImageUrl, setNewImageUrl] = useState('')
+   239→  const [newImageAlt, setNewImageAlt] = useState('')
+   240→  const [newImageType, setNewImageType] = useState('OTHER')
+   241→
+   242→  useEffect(() => {
+   243→    async function load() {
+   244→      try {
+   245→        const [prodRes, catsRes, brandsRes] = await Promise.all([
+   246→          fetch(`/api/admin/products/${id}`).then((r) => r.json()),
+   247→          fetch('/api/admin/categories').then((r) => r.json()),
+   248→          fetch('/api/admin/products?pageSize=1').then((r) => r.json()),
+   249→        ])
+   250→
+   251→        const p = prodRes.product
+   252→        if (!p) {
+   253→          setLoading(false)
+   254→          return
+   255→        }
+   256→        setProduct(p)
+   257→
+   258→        // Initialize form
+   259→        setForm({
+   260→          name: p.name,
+   261→          slug: p.slug,
+   262→          shortDescription: p.shortDescription || '',
+   263→          description: p.description || '',
+   264→          brandId: p.brandId || '',
+   265→          condition: p.condition,
+   266→          conditionGrade: p.conditionGrade || '',
+   267→          conditionNote: p.conditionNote || '',
+   268→          basePrice: p.basePrice,
+   269→          salePrice: p.salePrice || '',
+   270→          costPrice: p.costPrice || '',
+   271→          compareAtPrice: p.compareAtPrice || '',
+   272→          wholesalePrice: p.wholesalePrice || '',
+   273→          corporatePrice: p.corporatePrice || '',
+   274→          bundlePrice: p.bundlePrice || '',
+   275→          trackInventory: p.trackInventory,
+   276→          stockCount: p.stockCount,
+   277→          lowStockThreshold: p.lowStockThreshold,
+   278→          warrantyMonths: p.warrantyMonths || '',
+   279→          warrantyInfo: p.warrantyInfo || '',
+   280→          isFeatured: p.isFeatured,
+   281→          isDeal: p.isDeal,
+   282→          isGaming: p.isGaming,
+   283→          sku: p.sku || '',
+   284→          partNumber: p.partNumber || '',
+   285→          compatibleModels: p.compatibleModels || '',
+   286→          seoTitle: p.seoTitle || '',
+   287→          seoDescription: p.seoDescription || '',
+   288→          metaKeywords: p.metaKeywords || '',
+   289→        })
+   290→
+   291→        setSelectedCategories(p.categories.map((c: { categoryId: string }) => c.categoryId))
+   292→
+   293→        // Parse specs
+   294→        try {
+   295→          const parsed = p.specifications ? JSON.parse(p.specifications) : {}
+   296→          setSpecs(Object.entries(parsed).map(([key, value]) => ({ key, value: String(value) })))
+   297→        } catch {
+   298→          setSpecs([])
+   299→        }
+   300→
+   301→        // Set categories & brands
+   302→        setAllCategories(catsRes.categories || [])
+   303→
+   304→        // Extract unique brands from the products list or use the product's brand
+   305→        const brandsData = brandsRes.products || []
+   306→        const brandSet = new Map<string, Brand>()
+   307→        if (p.brand) brandSet.set(p.brand.id, p.brand)
+   308→        brandsData.forEach((bp: { brand?: Brand | null }) => {
+   309→          if (bp.brand) brandSet.set(bp.brand.id, bp.brand)
+   310→        })
+   311→        setAllBrands(Array.from(brandSet.values()).sort((a, b) => a.name.localeCompare(b.name)))
+   312→      } catch (e) {
+   313→        console.error(e)
+   314→      } finally {
+   315→        setLoading(false)
+   316→      }
+   317→    }
+   318→    load()
+   319→  }, [id])
+   320→
+   321→  const updateField = useCallback((field: string, value: unknown) => {
+   322→    setForm((prev) => ({ ...prev, [field]: value }))
+   323→  }, [])
+   324→
+   325→  async function handleSave() {
+   326→    if (!product) return
+   327→    setSaving(true)
+   328→    try {
+   329→      const specsObj: Record<string, string> = {}
+   330→      specs.forEach((s) => {
+   331→        if (s.key.trim()) specsObj[s.key.trim()] = s.value
+   332→      })
+   333→
+   334→      const body = {
+   335→        ...form,
+   336→        basePrice: form.basePrice,
+   337→        salePrice: form.salePrice || null,
+   338→        costPrice: form.costPrice || null,
+   339→        compareAtPrice: form.compareAtPrice || null,
+   340→        wholesalePrice: form.wholesalePrice || null,
+   341→        corporatePrice: form.corporatePrice || null,
+   342→        bundlePrice: form.bundlePrice || null,
+   343→        warrantyMonths: form.warrantyMonths || null,
+   344→        categoryIds: selectedCategories,
+   345→        specifications: Object.keys(specsObj).length > 0 ? specsObj : null,
+   346→      }
+   347→
+   348→      const res = await fetch(`/api/admin/products/${id}`, {
+   349→        method: 'PUT',
+   350→        headers: { 'Content-Type': 'application/json' },
+   351→        body: JSON.stringify(body),
+   352→      })
+   353→
+   354→      if (!res.ok) {
+   355→        const err = await res.json()
+   356→        alert(err.error || 'Failed to save product')
+   357→        return
+   358→      }
+   359→
+   360→      const data = await res.json()
+   361→      setProduct(data.product)
+   362→    } catch (e) {
+   363→      console.error(e)
+   364→    } finally {
+   365→      setSaving(false)
+   366→    }
+   367→  }
+   368→
+   369→  async function handleStatusAction(action: string) {
+   370→    setStatusLoading(true)
+   371→    try {
+   372→      const res = await fetch(`/api/admin/products/${id}`, {
+   373→        method: 'PATCH',
+   374→        headers: { 'Content-Type': 'application/json' },
+   375→        body: JSON.stringify({ action }),
+   376→      })
+   377→      if (!res.ok) {
+   378→        const err = await res.json()
+   379→        alert(err.error || 'Failed to update status')
+   380→        return
+   381→      }
+   382→      const data = await res.json()
+   383→      setProduct((prev) => prev ? { ...prev, status: data.product.status } : prev)
+   384→    } catch (e) {
+   385→      console.error(e)
+   386→    } finally {
+   387→      setStatusLoading(false)
+   388→    }
+   389→  }
+   390→
+   391→  async function handleAddImage() {
+   392→    if (!newImageUrl.trim()) return
+   393→    try {
+   394→      const res = await fetch(`/api/admin/products/${id}/images`, {
+   395→        method: 'POST',
+   396→        headers: { 'Content-Type': 'application/json' },
+   397→        body: JSON.stringify({
+   398→          url: newImageUrl.trim(),
+   399→          altText: newImageAlt.trim() || null,
+   400→          imageType: newImageType || 'OTHER',
+   401→        }),
+   402→      })
+   403→      if (!res.ok) {
+   404→        const err = await res.json()
+   405→        alert(err.error || 'Failed to add image')
+   406→        return
+   407→      }
+   408→      // Reload product
+   409→      const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
+   410→      if (prodRes.product) setProduct(prodRes.product)
+   411→      setNewImageUrl('')
+   412→      setNewImageAlt('')
+   413→      setImageDialogOpen(false)
+   414→    } catch (e) {
+   415→      console.error(e)
+   416→    }
+   417→  }
+   418→
+   419→  async function handleImageAction(imageId: string, action: 'approve' | 'reject') {
+   420→    try {
+   421→      const res = await fetch(`/api/admin/products/${id}/images/${imageId}`, {
+   422→        method: 'PATCH',
+   423→        headers: { 'Content-Type': 'application/json' },
+   424→        body: JSON.stringify({ action }),
+   425→      })
+   426→      if (!res.ok) {
+   427→        const err = await res.json()
+   428→        alert(err.error || 'Failed to update image')
+   429→        return
+   430→      }
+   431→      const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
+   432→      if (prodRes.product) setProduct(prodRes.product)
+   433→    } catch (e) {
+   434→      console.error(e)
+   435→    }
+   436→  }
+   437→
+   438→  if (loading) {
+   439→    return (
+   440→      <div className="flex items-center justify-center py-20">
+   441→        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+   442→      </div>
+   443→    )
+   444→  }
+   445→
+   446→  if (!product) {
+   447→    return (
+   448→      <div className="text-center py-20">
+   449→        <p className="text-muted-foreground">Product not found.</p>
+   450→        <Button variant="outline" className="mt-4" onClick={() => router.push('/admin/products')}>
+   451→          <ArrowLeft className="size-4 mr-1" /> Back to Products
+   452→        </Button>
+   453→      </div>
+   454→    )
+   455→  }
+   456→
+   457→  const flatCategories = flattenCategories(allCategories)
+   458→  const actions = statusActions[product.status] || []
+   459→
+   460→  return (
+   461→    <div className="space-y-6">
+   462→      {/* Header */}
+   463→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+   464→        <div className="flex items-center gap-3">
+   465→          <Button variant="ghost" size="icon" onClick={() => router.push('/admin/products')}>
+   466→            <ArrowLeft className="size-4" />
+   467→          </Button>
+   468→          <div>
+   469→            <div className="flex items-center gap-2">
+   470→              <h1 className="text-2xl font-bold tracking-tight">{product.name}</h1>
+   471→              <Badge variant="outline" className={statusColor[product.status] || ''}>
+   472→                {statusLabel[product.status] || product.status}
+   473→              </Badge>
+   474→            </div>
+   475→            <p className="text-sm text-muted-foreground">/{product.slug}</p>
+   476→          </div>
+   477→        </div>
+   478→        <div className="flex items-center gap-2 flex-wrap">
+   479→          {actions.map((sa) => {
+   480→            const Icon = sa.icon
+   481→            return (
+   482→              <Button
+   483→                key={sa.action}
+   484→                variant={sa.variant}
+   485→                size="sm"
+   486→                onClick={() => handleStatusAction(sa.action)}
+   487→                disabled={statusLoading}
+   488→              >
+   489→                {statusLoading ? <Loader2 className="size-4 animate-spin" /> : <Icon className="size-4" />}
+   490→                {sa.label}
+   491→              </Button>
+   492→            )
+   493→          })}
+   494→          <Button size="sm" onClick={handleSave} disabled={saving}>
+   495→            {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+   496→            Save Changes
+   497→          </Button>
+   498→        </div>
+   499→      </div>
+   500→
+   501→      <div className="grid gap-6 lg:grid-cols-3">
+   502→        {/* Main form - 2 cols */}
+   503→        <div className="lg:col-span-2 space-y-6">
+   504→          {/* Basic Info */}
+   505→          <Card>
+   506→            <CardHeader><CardTitle className="text-base">Basic Information</CardTitle></CardHeader>
+   507→            <CardContent className="space-y-4">
+   508→              <div className="grid gap-4 sm:grid-cols-2">
+   509→                <div className="space-y-2">
+   510→                  <Label htmlFor="name">Product Name</Label>
+   511→                  <Input id="name" value={(form.name as string) || ''} onChange={(e) => updateField('name', e.target.value)} />
+   512→                </div>
+   513→                <div className="space-y-2">
+   514→                  <Label htmlFor="slug">Slug</Label>
+   515→                  <Input id="slug" value={(form.slug as string) || ''} onChange={(e) => updateField('slug', e.target.value)} />
+   516→                </div>
+   517→              </div>
+   518→              <div className="grid gap-4 sm:grid-cols-3">
+   519→                <div className="space-y-2">
+   520→                  <Label>Brand</Label>
+   521→                  <Select value={(form.brandId as string) || '_none'} onValueChange={(v) => updateField('brandId', v === '_none' ? '' : v)}>
+   522→                    <SelectTrigger className="w-full"><SelectValue placeholder="Select brand" /></SelectTrigger>
+   523→                    <SelectContent>
+   524→                      <SelectItem value="_none">No Brand</SelectItem>
+   525→                      {allBrands.map((b) => (
+   526→                        <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+   527→                      ))}
+   528→                    </SelectContent>
+   529→                  </Select>
+   530→                </div>
+   531→                <div className="space-y-2">
+   532→                  <Label>Condition</Label>
+   533→                  <Select value={(form.condition as string) || 'NEW'} onValueChange={(v) => updateField('condition', v)}>
+   534→                    <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+   535→                    <SelectContent>
+   536→                      {Object.entries(conditionLabels).map(([k, v]) => (
+   537→                        <SelectItem key={k} value={k}>{v}</SelectItem>
+   538→                      ))}
+   539→                    </SelectContent>
+   540→                  </Select>
+   541→                </div>
+   542→                <div className="space-y-2">
+   543→                  <Label>Condition Grade</Label>
+   544→                  <Select value={(form.conditionGrade as string) || '_none'} onValueChange={(v) => updateField('conditionGrade', v === '_none' ? '' : v)}>
+   545→                    <SelectTrigger className="w-full"><SelectValue placeholder="None" /></SelectTrigger>
+   546→                    <SelectContent>
+   547→                      <SelectItem value="_none">None</SelectItem>
+   548→                      {Object.entries(gradeLabels).map(([k, v]) => (
+   549→                        <SelectItem key={k} value={k}>{v}</SelectItem>
+   550→                      ))}
+   551→                    </SelectContent>
+   552→                  </Select>
+   553→                </div>
+   554→              </div>
+   555→              <div className="space-y-2">
+   556→                <Label>Condition Note</Label>
+   557→                <Input value={(form.conditionNote as string) || ''} onChange={(e) => updateField('conditionNote', e.target.value)} placeholder="e.g. Minor scratches on lid" />
+   558→              </div>
+   559→              <div className="space-y-2">
+   560→                <Label>Short Description</Label>
+   561→                <Textarea value={(form.shortDescription as string) || ''} onChange={(e) => updateField('shortDescription', e.target.value)} rows={2} />
+   562→              </div>
+   563→              <div className="space-y-2">
+   564→                <Label>Full Description</Label>
+   565→                <Textarea value={(form.description as string) || ''} onChange={(e) => updateField('description', e.target.value)} rows={5} />
+   566→              </div>
+   567→              <div className="grid gap-4 sm:grid-cols-3">
+   568→                <div className="space-y-2">
+   569→                  <Label>SKU</Label>
+   570→                  <Input value={(form.sku as string) || ''} onChange={(e) => updateField('sku', e.target.value)} />
+   571→                </div>
+   572→                <div className="space-y-2">
+   573→                  <Label>Part Number</Label>
+   574→                  <Input value={(form.partNumber as string) || ''} onChange={(e) => updateField('partNumber', e.target.value)} />
+   575→                </div>
+   576→                <div className="space-y-2">
+   577→                  <Label>Compatible Models</Label>
+   578→                  <Input value={(form.compatibleModels as string) || ''} onChange={(e) => updateField('compatibleModels', e.target.value)} placeholder="Comma-separated slugs" />
+   579→                </div>
+   580→              </div>
+   581→            </CardContent>
+   582→          </Card>
+   583→
+   584→          {/* Pricing */}
+   585→          <Card>
+   586→            <CardHeader><CardTitle className="text-base">Pricing (KSh)</CardTitle></CardHeader>
+   587→            <CardContent className="space-y-4">
+   588→              <div className="grid gap-4 sm:grid-cols-3">
+   589→                <div className="space-y-2">
+   590→                  <Label>Base Price *</Label>
+   591→                  <Input type="number" step="0.01" value={form.basePrice as number || ''} onChange={(e) => updateField('basePrice', parseFloat(e.target.value) || 0)} />
+   592→                </div>
+   593→                <div className="space-y-2">
+   594→                  <Label>Sale Price</Label>
+   595→                  <Input type="number" step="0.01" value={form.salePrice as string || ''} onChange={(e) => updateField('salePrice', e.target.value)} placeholder="Optional" />
+   596→                </div>
+   597→                <div className="space-y-2">
+   598→                  <Label>Cost Price</Label>
+   599→                  <Input type="number" step="0.01" value={form.costPrice as string || ''} onChange={(e) => updateField('costPrice', e.target.value)} placeholder="Hidden from customers" />
+   600→                </div>
+   601→              </div>
+   602→              <div className="grid gap-4 sm:grid-cols-3">
+   603→                <div className="space-y-2">
+   604→                  <Label>Compare At Price</Label>
+   605→                  <Input type="number" step="0.01" value={form.compareAtPrice as string || ''} onChange={(e) => updateField('compareAtPrice', e.target.value)} placeholder={'"Was" price'} />
+   606→                </div>
+   607→                <div className="space-y-2">
+   608→                  <Label>Wholesale Price</Label>
+   609→                  <Input type="number" step="0.01" value={form.wholesalePrice as string || ''} onChange={(e) => updateField('wholesalePrice', e.target.value)} />
+   610→                </div>
+   611→                <div className="space-y-2">
+   612→                  <Label>Corporate Price</Label>
+   613→                  <Input type="number" step="0.01" value={form.corporatePrice as string || ''} onChange={(e) => updateField('corporatePrice', e.target.value)} />
+   614→                </div>
+   615→              </div>
+   616→              {/* Verification info */}
+   617→              {product.lastVerifiedAt && (
+   618→                <div className="rounded-lg border bg-muted/30 p-3">
+   619→                  <p className="text-xs font-medium text-muted-foreground mb-1">Price Verification</p>
+   620→                  <p className="text-sm">Verified: {new Date(product.lastVerifiedAt).toLocaleString()}</p>
+   621→                  {product.verifiedBy && <p className="text-sm text-muted-foreground">By: {product.verifiedBy}</p>}
+   622→                  {product.verifiedPrice && <p className="text-sm">Confirmed Price: {formatPrice(product.verifiedPrice)}</p>}
+   623→                </div>
+   624→              )}
+   625→            </CardContent>
+   626→          </Card>
+   627→
+   628→          {/* Categories */}
+   629→          <Card>
+   630→            <CardHeader><CardTitle className="text-base">Categories</CardTitle></CardHeader>
+   631→            <CardContent className="space-y-3">
+   632→              <div className="flex flex-wrap gap-2">
+   633→                {selectedCategories.map((catId) => {
+   634→                  const cat = flatCategories.find((c) => c.id === catId)
+   635→                  if (!cat) return null
+   636→                  return (
+   637→                    <Badge key={catId} variant="secondary" className="gap-1">
+   638→                      {cat.name}
+   639→                      <button
+   640→                        type="button"
+   641→                        onClick={() => setSelectedCategories((prev) => prev.filter((c) => c !== catId))}
+   642→                        className="ml-1 rounded-full hover:bg-muted-foreground/20 p-0.5"
+   643→                      >
+   644→                        <X className="size-3" />
+   645→                      </button>
+   646→                    </Badge>
+   647→                  )
+   648→                })}
+   649→              </div>
+   650→              <Select onValueChange={(v) => {
+   651→                if (v && !selectedCategories.includes(v)) {
+   652→                  setSelectedCategories((prev) => [...prev, v])
+   653→                }
+   654→              }}>
+   655→                <SelectTrigger className="w-full sm:w-[300px]">
+   656→                  <SelectValue placeholder="Add category..." />
+   657→                </SelectTrigger>
+   658→                <SelectContent>
+   659→                  {flatCategories.map((cat) => (
+   660→                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+   661→                  ))}
+   662→                </SelectContent>
+   663→              </Select>
+   664→            </CardContent>
+   665→          </Card>
+   666→
+   667→          {/* Specifications */}
+   668→          <Card>
+   669→            <CardHeader>
+   670→              <div className="flex items-center justify-between">
+   671→                <CardTitle className="text-base">Specifications</CardTitle>
+   672→                <Button
+   673→                  type="button"
+   674→                  variant="outline"
+   675→                  size="sm"
+   676→                  onClick={() => setSpecs((prev) => [...prev, { key: '', value: '' }])}
+   677→                >
+   678→                  <Plus className="size-3 mr-1" /> Add Spec
+   679→                </Button>
+   680→              </div>
+   681→            </CardHeader>
+   682→            <CardContent className="space-y-3">
+   683→              {specs.length === 0 && (
+   684→                <p className="text-sm text-muted-foreground">No specifications added yet.</p>
+   685→              )}
+   686→              {specs.map((spec, idx) => (
+   687→                <div key={idx} className="flex items-center gap-2">
+   688→                  <Input
+   689→                    placeholder="Key (e.g. Processor)"
+   690→                    value={spec.key}
+   691→                    onChange={(e) => setSpecs((prev) => prev.map((s, i) => i === idx ? { ...s, key: e.target.value } : s))}
+   692→                    className="flex-1"
+   693→                  />
+   694→                  <Input
+   695→                    placeholder="Value"
+   696→                    value={spec.value}
+   697→                    onChange={(e) => setSpecs((prev) => prev.map((s, i) => i === idx ? { ...s, value: e.target.value } : s))}
+   698→                    className="flex-1"
+   699→                  />
+   700→                  <Button
+   701→                    type="button"
+   702→                    variant="ghost"
+   703→                    size="icon"
+   704→                    className="size-8 shrink-0"
+   705→                    onClick={() => setSpecs((prev) => prev.filter((_, i) => i !== idx))}
+   706→                  >
+   707→                    <Trash2 className="size-4 text-destructive" />
+   708→                  </Button>
+   709→                </div>
+   710→              ))}
+   711→            </CardContent>
+   712→          </Card>
+   713→
+   714→          {/* Images */}
+   715→          <Card>
+   716→            <CardHeader>
+   717→              <div className="flex items-center justify-between">
+   718→                <CardTitle className="text-base">Images ({product.productImages.length})</CardTitle>
+   719→                <Button type="button" variant="outline" size="sm" onClick={() => setImageDialogOpen(true)}>
+   720→                  <Plus className="size-3 mr-1" /> Add Image
+   721→                </Button>
+   722→              </div>
+   723→            </CardHeader>
+   724→            <CardContent>
+   725→              {product.productImages.length === 0 ? (
+   726→                <p className="text-sm text-muted-foreground">No images uploaded yet.</p>
+   727→              ) : (
+   728→                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+   729→                  {product.productImages.map((img) => (
+   730→                    <div key={img.id} className="relative rounded-lg border overflow-hidden group">
+   731→                      <div className="aspect-square bg-muted flex items-center justify-center">
+   732→                        {img.thumbnailUrl || img.url ? (
+   733→                          <img
+   734→                            src={img.thumbnailUrl || img.url}
+   735→                            alt={img.altText || ''}
+   736→                            className="size-full object-cover"
+   737→                          />
+   738→                        ) : (
+   739→                          <ImageIcon className="size-8 text-muted-foreground" />
+   740→                        )}
+   741→                      </div>
+   742→                      <div className="p-2 space-y-1">
+   743→                        <div className="flex items-center justify-between">
+   744→                          <p className="text-xs font-medium truncate">{img.imageType || 'Other'}</p>
+   745→                          <Badge
+   746→                            variant="outline"
+   747→                            className={
+   748→                              img.status === 'APPROVED'
+   749→                                ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+   750→                                : img.status === 'REJECTED'
+   751→                                  ? 'bg-red-100 text-red-700 border-red-200'
+   752→                                  : 'bg-yellow-100 text-yellow-700 border-yellow-200'
+   753→                            }
+   754→                          >
+   755→                            {img.status}
+   756→                          </Badge>
+   757→                        </div>
+   758→                        {img.isPrimary && <Badge variant="secondary" className="text-xs">Primary</Badge>}
+   759→                        {img.status === 'PENDING' && (
+   760→                          <div className="flex gap-1 pt-1">
+   761→                            <Button
+   762→                              size="sm"
+   763→                              variant="outline"
+   764→                              className="h-7 text-xs flex-1"
+   765→                              onClick={() => handleImageAction(img.id, 'approve')}
+   766→                            >
+   767→                              <Check className="size-3 mr-1" /> Approve
+   768→                            </Button>
+   769→                            <Button
+   770→                              size="sm"
+   771→                              variant="outline"
+   772→                              className="h-7 text-xs flex-1 text-destructive hover:text-destructive"
+   773→                              onClick={() => handleImageAction(img.id, 'reject')}
+   774→                            >
+   775→                              <X className="size-3 mr-1" /> Reject
+   776→                            </Button>
+   777→                          </div>
+   778→                        )}
+   779→                        {img.rejectionReason && (
+   780→                          <p className="text-xs text-destructive">Rejected: {img.rejectionReason}</p>
+   781→                        )}
+   782→                      </div>
+   783→                    </div>
+   784→                  ))}
+   785→                </div>
+   786→              )}
+   787→            </CardContent>
+   788→          </Card>
+   789→
+   790→          {/* Price History */}
+   791→          <Card>
+   792→            <CardHeader><CardTitle className="text-base">Price History</CardTitle></CardHeader>
+   793→            <CardContent className="p-0">
+   794→              <Table>
+   795→                <TableHeader>
+   796→                  <TableRow>
+   797→                    <TableHead>Field</TableHead>
+   798→                    <TableHead>Previous</TableHead>
+   799→                    <TableHead>New</TableHead>
+   800→                    <TableHead>Reason</TableHead>
+   801→                    <TableHead className="hidden sm:table-cell">Date</TableHead>
+   802→                  </TableRow>
+   803→                </TableHeader>
+   804→                <TableBody>
+   805→                  {product.priceHistory.length === 0 ? (
+   806→                    <TableRow>
+   807→                      <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">No price changes recorded.</TableCell>
+   808→                    </TableRow>
+   809→                  ) : (
+   810→                    product.priceHistory.map((h) => (
+   811→                      <TableRow key={h.id}>
+   812→                        <TableCell className="font-medium text-sm">{h.priceField}</TableCell>
+   813→                        <TableCell className="text-sm">{h.previousPrice != null ? formatPrice(h.previousPrice) : '—'}</TableCell>
+   814→                        <TableCell className="text-sm">{formatPrice(h.newPrice)}</TableCell>
+   815→                        <TableCell className="text-sm text-muted-foreground">{h.reason || '—'}</TableCell>
+   816→                        <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">{new Date(h.createdAt).toLocaleDateString()}</TableCell>
+   817→                      </TableRow>
+   818→                    ))
+   819→                  )}
+   820→                </TableBody>
+   821→              </Table>
+   822→            </CardContent>
+   823→          </Card>
+   824→        </div>
+   825→
+   826→        {/* Sidebar - 1 col */}
+   827→        <div className="space-y-6">
+   828→          {/* Status & Flags */}
+   829→          <Card>
+   830→            <CardHeader><CardTitle className="text-base">Status & Flags</CardTitle></CardHeader>
+   831→            <CardContent className="space-y-4">
+   832→              <div className="space-y-2">
+   833→                <Label>Current Status</Label>
+   834→                <Badge variant="outline" className={statusColor[product.status] || ''}>
+   835→                  {statusLabel[product.status] || product.status}
+   836→                </Badge>
+   837→              </div>
+   838→              <Separator />
+   839→              <div className="flex items-center justify-between">
+   840→                <Label htmlFor="isFeatured">Featured</Label>
+   841→                <Switch id="isFeatured" checked={form.isFeatured as boolean} onCheckedChange={(v) => updateField('isFeatured', v)} />
+   842→              </div>
+   843→              <div className="flex items-center justify-between">
+   844→                <Label htmlFor="isDeal">Deal</Label>
+   845→                <Switch id="isDeal" checked={form.isDeal as boolean} onCheckedChange={(v) => updateField('isDeal', v)} />
+   846→              </div>
+   847→              <div className="flex items-center justify-between">
+   848→                <Label htmlFor="isGaming">Gaming</Label>
+   849→                <Switch id="isGaming" checked={form.isGaming as boolean} onCheckedChange={(v) => updateField('isGaming', v)} />
+   850→              </div>
+   851→            </CardContent>
+   852→          </Card>
+   853→
+   854→          {/* Inventory */}
+   855→          <Card>
+   856→            <CardHeader><CardTitle className="text-base">Inventory</CardTitle></CardHeader>
+   857→            <CardContent className="space-y-4">
+   858→              <div className="flex items-center justify-between">
+   859→                <Label htmlFor="trackInventory">Track Inventory</Label>
+   860→                <Switch id="trackInventory" checked={form.trackInventory as boolean} onCheckedChange={(v) => updateField('trackInventory', v)} />
+   861→              </div>
+   862→              {form.trackInventory && (
+   863→                <>
+   864→                  <div className="space-y-2">
+   865→                    <Label>Stock Count</Label>
+   866→                    <Input type="number" value={form.stockCount as number} onChange={(e) => updateField('stockCount', parseInt(e.target.value) || 0)} />
+   867→                  </div>
+   868→                  <div className="space-y-2">
+   869→                    <Label>Low Stock Threshold</Label>
+   870→                    <Input type="number" value={form.lowStockThreshold as number} onChange={(e) => updateField('lowStockThreshold', parseInt(e.target.value) || 5)} />
+   871→                  </div>
+   872→                </>
+   873→              )}
+   874→              <div className="grid gap-4 grid-cols-2">
+   875→                <div className="space-y-2">
+   876→                  <Label>Warranty (months)</Label>
+   877→                  <Input type="number" value={form.warrantyMonths as string || ''} onChange={(e) => updateField('warrantyMonths', e.target.value)} placeholder="e.g. 12" />
+   878→                </div>
+   879→                <div className="space-y-2">
+   880→                  <Label>Warranty Info</Label>
+   881→                  <Input value={form.warrantyInfo as string || ''} onChange={(e) => updateField('warrantyInfo', e.target.value)} />
+   882→                </div>
+   883→              </div>
+   884→            </CardContent>
+   885→          </Card>
+   886→
+   887→          {/* SEO */}
+   888→          <Card>
+   889→            <CardHeader><CardTitle className="text-base">SEO</CardTitle></CardHeader>
+   890→            <CardContent className="space-y-4">
+   891→              <div className="space-y-2">
+   892→                <Label>SEO Title</Label>
+   893→                <Input value={(form.seoTitle as string) || ''} onChange={(e) => updateField('seoTitle', e.target.value)} />
+   894→              </div>
+   895→              <div className="space-y-2">
+   896→                <Label>SEO Description</Label>
+   897→                <Textarea value={(form.seoDescription as string) || ''} onChange={(e) => updateField('seoDescription', e.target.value)} rows={3} />
+   898→              </div>
+   899→              <div className="space-y-2">
+   900→                <Label>Meta Keywords</Label>
+   901→                <Input value={(form.metaKeywords as string) || ''} onChange={(e) => updateField('metaKeywords', e.target.value)} />
+   902→              </div>
+   903→            </CardContent>
+   904→          </Card>
+   905→
+   906→          {/* Metadata */}
+   907→          <Card>
+   908→            <CardHeader><CardTitle className="text-base">Metadata</CardTitle></CardHeader>
+   909→            <CardContent className="space-y-2 text-sm text-muted-foreground">
+   910→              <p><span className="font-medium text-foreground">ID:</span> {product.id}</p>
+   911→              <p><span className="font-medium text-foreground">Created:</span> {new Date(product.createdAt).toLocaleString()}</p>
+   912→              <p><span className="font-medium text-foreground">Updated:</span> {new Date(product.updatedAt).toLocaleString()}</p>
+   913→              {product.publishedAt && <p><span className="font-medium text-foreground">Published:</span> {new Date(product.publishedAt).toLocaleString()}</p>}
+   914→              <p><span className="font-medium text-foreground">Currency:</span> {product.currency}</p>
+   915→              <p><span className="font-medium text-foreground">Type:</span> {product.productType}</p>
+   916→            </CardContent>
+   917→          </Card>
+   918→        </div>
+   919→      </div>
+   920→
+   921→      {/* Add Image Dialog */}
+   922→      <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
+   923→        <DialogContent>
+   924→          <DialogHeader>
+   925→            <DialogTitle>Add Image</DialogTitle>
+   926→            <DialogDescription>Enter the image URL and metadata. The image will be added with PENDING status.</DialogDescription>
+   927→          </DialogHeader>
+   928→          <div className="space-y-4">
+   929→            <div className="space-y-2">
+   930→              <Label>Image URL *</Label>
+   931→              <Input value={newImageUrl} onChange={(e) => setNewImageUrl(e.target.value)} placeholder="https://..." />
+   932→            </div>
+   933→            <div className="space-y-2">
+   934→              <Label>Alt Text</Label>
+   935→              <Input value={newImageAlt} onChange={(e) => setNewImageAlt(e.target.value)} placeholder="Description for accessibility" />
+   936→            </div>
+   937→            <div className="space-y-2">
+   938→              <Label>Image Type</Label>
+   939→              <Select value={newImageType} onValueChange={setNewImageType}>
+   940→                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+   941→                <SelectContent>
+   942→                  {['FRONT', 'BACK', 'SIDE', 'PORTS', 'PACKAGING', 'ACCESSORIES', 'CLOSEUP', 'LIFESTYLE', 'KEYBOARD', 'DISPLAY', 'BOTTOM', 'CHARGER', 'SCREEN', 'OTHER'].map((t) => (
+   943→                    <SelectItem key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</SelectItem>
+   944→                  ))}
+   945→                </SelectContent>
+   946→              </Select>
+   947→            </div>
+   948→          </div>
+   949→          <DialogFooter>
+   950→            <Button variant="outline" onClick={() => setImageDialogOpen(false)}>Cancel</Button>
+   951→            <Button onClick={handleAddImage} disabled={!newImageUrl.trim()}>Add Image</Button>
+   952→          </DialogFooter>
+   953→        </DialogContent>
+   954→      </Dialog>
+   955→    </div>
+   956→  )
+   957→}
+   958→

@@ -60,6 +60,16 @@ export interface Product {
   partNumber: string | null
   brand: Brand | null
   categories: { category: { id: string; name: string; slug: string } }[]
+  productImages?: {
+    id: string
+    url: string
+    altText?: string
+    isPrimary: boolean
+    imageType?: string
+    status: string
+    width?: number
+    height?: number
+  }[]
 }
 
 export interface ServiceItem {
