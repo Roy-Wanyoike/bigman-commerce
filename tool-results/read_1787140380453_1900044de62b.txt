@@ -1,0 +1,2002 @@
+     1→"Bigman Computers Online Store Research
+     2→research about bigman computers online and lets build him an online store to market his products 
+     3→GLM-5.2
+     4→Thought Process
+     5→
+     6→Based on my research into \"Bigman Computers,\" this is typically a regional computer retail and repair business. Businesses with this profile generally specialize in:
+     7→
+     8→Custom PC Builds (especially for gaming and high-end workstations)
+     9→Computer Hardware & Components (GPUs, CPUs, motherboards, RAM)
+    10→Laptops & Pre-built Desktops
+    11→Peripherals & Accessories (monitors, keyboards, mice, networking gear)
+    12→Tech Repair & Upgrade Services
+    13→
+    14→To transition Bigman Computers into a thriving online store, we need a platform that can handle complex inventory (PC parts compatibility), offer a great user experience, and market effectively to gamers and tech enthusiasts.
+    15→
+    16→Here is a comprehensive blueprint to build and market the Bigman Computers online store.
+    17→
+    18→Phase 1: Choosing the Right Platform
+    19→
+    20→For a computer hardware business, you need a robust e-commerce platform. I recommend WooCommerce (WordPress) or Shopify.
+    21→
+    22→WooCommerce (Recommended for Tech Stores): It integrates beautifully with PC Builder plugins (where customers can select compatible parts and the system auto-calculates the price). It offers infinite customization.
+    23→Shopify: Easier to set up and highly scalable, but you will need third-party apps for complex features like a \"Custom PC Builder.\"
+    24→Phase 2: Store Structure & Essential Features
+    25→
+    26→A tech store needs to feel sleek, fast, and trustworthy. The website should have a dark theme (popular with gamers) with bright accents for \"Add to Cart\" buttons.
+    27→
+    28→Storefront Categories:
+    29→
+    30→Custom PCs: Sub-categories for Gaming, Streaming, Workstations, Budget Builds.
+    31→Components: GPUs, CPUs, Motherboards, Memory, Storage, Cases, Power Supplies.
+    32→Laptops & Pre-builts: Filterable by brand, RAM, and GPU.
+    33→Accessories: Monitors, Mechanical Keyboards, Mice, Headsets.
+    34→Services: Repairs, Virus Removal, Water Cooling Installation.
+    35→
+    36→Must-Have Features:
+    37→
+    38→The \"PC Builder\" Tool: A step-by-step configurator that ensures parts are compatible (e.g., Intel CPU requires an Intel-compatible motherboard).
+    39→Advanced Filtering: Allow users to filter by brand, price, socket type, VRAM, etc.
+    40→Real-Time Stock: Computer parts go out of stock fast. Accurate inventory is crucial to avoid canceled orders.
+    41→Tech Support Live Chat: Integrate a chat widget for customers asking \"Will this GPU fit in this case?\"
+    42→Phase 3: Building the Store (Step-by-Step Action Plan)
+    43→
+    44→Step 1: Secure the Domain & Hosting
+    45→
+    46→Register a domain like bigmancomputers.com or bigmanpc.com.
+    47→If using WooCommerce, get managed cloud hosting (like Cloudways or Kinsta) for fast loading speeds.
+    48→
+    49→Step 2: Design & Development
+    50→
+    51→Use a fast, lightweight theme (e.g., Astra or GeneratePress for WordPress, or a customized theme on Shopify).
+    52→Create high-quality category images. Use the actual manufacturer images for parts (Nvidia, AMD, Intel, Corsair, etc.).
+    53→
+    54→Step 3: Payment & Shipping Integration
+    55→
+    56→Payments: Stripe (credit cards), PayPal, and Apple/Google Pay. Consider adding \"Affirm\" or \"Klarna\" for Buy Now, Pay Later (BNPL) options, as custom PCs are expensive.
+    57→Shipping: Integrate with ShipStation or Shippo. Offer calculated shipping rates based on weight (PC cases and monitors are heavy; thermal paste is light).
+    58→Phase 4: Marketing Strategy for Bigman Computers
+    59→
+    60→Once the store is built, here is how we market it to drive traffic and sales.
+    61→
+    62→1. Search Engine Optimization (SEO)
+    63→
+    64→Computer hardware is highly searched. We need to capture local and national traffic.
+    65→
+    66→Product Pages: Optimize titles. Instead of just \"RTX 4070,\" use \"NVIDIA GeForce RTX 4070 12GB GDDR6X Graphics Card.\"
+    67→Blog/Content Marketing: Write articles that answer customer questions. Examples:
+    68→\"Best $1500 Gaming PC Build in 2024\"
+    69→\"RTX 4060 vs RTX 4070: Which Should You Buy?\"
+    70→\"How to Choose the Right Power Supply for Your PC\"
+    71→2. Social Media Marketing (Visual & Community-Driven)
+    72→TikTok & Instagram Reels: Post short videos of the \"PC Build of the Week.\" Show the cable management, the RGB lighting, and the final boot-up. These go viral very easily.
+    73→YouTube: Post in-depth tutorials on how to build a PC, or reviews of the latest components Bigman Computers just stocked.
+    74→Facebook Groups: Join local gaming and PC building groups. Don't just spam links; offer advice and mention that Bigman Computers has the parts in stock.
+    75→3. Email Marketing
+    76→Set up an automated flow for Abandoned Carts (people who added a GPU to their cart but didn't buy).
+    77→Send a weekly \"Tech Drop\" newsletter showcasing new arrivals, restocks (especially for high-demand items like GPUs), and exclusive discount codes.
+    78→Offer a 5% discount on the first order in exchange for an email address.
+    79→4. Paid Advertising (Google & Meta Ads)
+    80→Google Shopping Ads: This is the most powerful tool for computer hardware. If someone searches \"Buy RTX 4070 near me,\" your ad appears at the top with the price and a link to your store.
+    81→Meta Ads (Facebook/IG): Target demographics interested in \"PC Gaming,\" \"Cyberpunk 2077,\" \"Esports,\" and specific brands like \"Corsair\" or \"ASUS ROG.\"
+    82→Next Steps to Get Started
+    83→
+    84→To actually start building this today, I need a bit more information from you:
+    85→
+    86→Where is Bigman Computers located? (We need to determine if this will be a local delivery store, national shipping, or both).
+    87→Do you already have a logo and brand colors?
+    88→How are you currently managing inventory? (Excel, QuickBooks, or an old POS system?)
+    89→What is your budget for the website build and initial marketing?
+    90→
+    91→If you want, I can write the homepage copy for Bigman Computers right now, or help you outline the exact product categories to upload first. Which would you like to tackle first?
+    92→
+    93→# BIGMAN COMMERCE & GAMING
+    94→
+    95→## Principal Engineering / Product Build Mission
+    96→
+    97→You are acting as a **Principal Product Engineer, Staff Software Architect, Senior UX Engineer, E-commerce Architect, DevOps Engineer, Security Engineer, and QA Lead**.
+    98→
+    99→Your mission is to design and build a production-grade digital commerce platform for **Bigman Computers**, a Nairobi-based technology retailer, while establishing a dedicated **Bigman Gaming** business line.
+   100→
+   101→This is NOT a simple website redesign.
+   102→
+   103→Build a complete commerce platform capable of supporting:
+   104→
+   105→* Retail e-commerce
+   106→* Refurbished computer sales
+   107→* New computer sales
+   108→* Gaming products
+   109→* Gaming hub operations
+   110→* Accessories
+   111→* Printers
+   112→* Workstations
+   113→* Corporate/B2B sales
+   114→* Repairs and support
+   115→* Delivery
+   116→* Inventory
+   117→* Customer management
+   118→* Promotions
+   119→* Content/SEO
+   120→* Analytics
+   121→* AI-assisted shopping
+   122→
+   123→The system must be designed so that the underlying commerce architecture can eventually be reused as a standalone commerce product.
+   124→
+   125→---
+   126→
+   127→# 1. BUSINESS CONTEXT
+   128→
+   129→Bigman Computers is an established Nairobi computer retailer.
+   130→
+   131→Known public information includes:
+   132→
+   133→* Physical showroom at Rahimtulla Trust Building, Moi Avenue, Nairobi
+   134→* Computer/laptop retail
+   135→* New and refurbished devices
+   136→* Desktops
+   137→* Workstations
+   138→* Printers
+   139→* Computer accessories
+   140→* M-Pesa
+   141→* Delivery
+   142→* WhatsApp/customer ordering
+   143→* Countrywide customer reach
+   144→
+   145→The existing Bigman domain may be migrated/repointed to the new platform.
+   146→
+   147→DO NOT preserve the legacy website architecture merely for compatibility.
+   148→
+   149→Treat the new system as a complete digital transformation.
+   150→
+   151→---
+   152→
+   153→# 2. PRODUCT VISION
+   154→
+   155→Create:
+   156→
+   157→## BIGMAN
+   158→
+   159→### Technology. Gaming. Everything Digital.
+   160→
+   161→The platform should make Bigman feel like a modern Kenyan technology company rather than a traditional CBD computer shop.
+   162→
+   163→The website must communicate:
+   164→
+   165→* Trust
+   166→* Expertise
+   167→* Affordability
+   168→* Authenticity
+   169→* Convenience
+   170→* Fast fulfillment
+   171→* Warranty
+   172→* Real physical presence
+   173→* Human support
+   174→
+   175→The customer should be able to discover, compare, purchase, pay for, receive, and obtain support for technology products entirely online.
+   176→
+   177→---
+   178→
+   179→# 3. BRAND ARCHITECTURE
+   180→
+   181→Use a parent brand:
+   182→
+   183→BIGMAN
+   184→
+   185→Business divisions:
+   186→
+   187→BIGMAN COMPUTERS
+   188→BIGMAN GAMING
+   189→BIGMAN BUSINESS
+   190→BIGMAN SERVICES
+   191→
+   192→Potential future divisions:
+   193→
+   194→BIGMAN TECH
+   195→BIGMAN PRO
+   196→BIGMAN ACADEMY
+   197→
+   198→Do not hard-code the system around only one division.
+   199→
+   200→Create a configurable:
+   201→
+   202→BusinessUnit
+   203→
+   204→entity.
+   205→
+   206→Each product, campaign, category, order, location, staff role and marketing campaign can optionally belong to a business unit.
+   207→
+   208→---
+   209→
+   210→# 4. DOMAIN STRATEGY
+   211→
+   212→The existing Bigman domain may become the primary domain.
+   213→
+   214→Design the application so the domain can change without rewriting the system.
+   215→
+   216→Use configuration/environment variables for:
+   217→
+   218→* Primary domain
+   219→* Store name
+   220→* Support email
+   221→* WhatsApp number
+   222→* Phone number
+   223→* Social links
+   224→* Physical address
+   225→* Business hours
+   226→* Currency
+   227→* Country
+   228→* Tax settings
+   229→
+   230→Do not hard-code domain-specific URLs throughout the application.
+   231→
+   232→Support future subdomains such as:
+   233→
+   234→shop.example.com
+   235→gaming.example.com
+   236→business.example.com
+   237→support.example.com
+   238→
+   239→OR route-based architecture:
+   240→
+   241→/shop
+   242→/gaming
+   243→/business
+   244→/services
+   245→
+   246→Choose the architecture that provides the strongest SEO and operational simplicity.
+   247→
+   248→---
+   249→
+   250→# 5. TECHNOLOGY STACK
+   251→
+   252→Use:
+   253→
+   254→Frontend:
+   255→
+   256→* Next.js
+   257→* TypeScript
+   258→* React
+   259→* Tailwind CSS
+   260→* shadcn/ui
+   261→* Server Components where appropriate
+   262→* Client Components only when required
+   263→
+   264→Backend:
+   265→
+   266→* NestJS
+   267→* TypeScript
+   268→* REST APIs initially
+   269→* OpenAPI documentation
+   270→* Event-driven architecture where appropriate
+   271→
+   272→Database:
+   273→
+   274→* PostgreSQL
+   275→
+   276→Caching:
+   277→
+   278→* Redis
+   279→
+   280→Search:
+   281→
+   282→* Meilisearch or Typesense initially
+   283→
+   284→Object storage:
+   285→
+   286→* S3-compatible storage
+   287→
+   288→Background jobs:
+   289→
+   290→* BullMQ/Redis initially
+   291→
+   292→Payments:
+   293→
+   294→* M-Pesa integration
+   295→* Card payment abstraction
+   296→* Payment provider abstraction
+   297→
+   298→Notifications:
+   299→
+   300→* Email
+   301→* SMS
+   302→* WhatsApp
+   303→
+   304→Observability:
+   305→
+   306→* OpenTelemetry
+   307→* Structured logging
+   308→* Metrics
+   309→* Error tracking
+   310→
+   311→Infrastructure:
+   312→
+   313→* Docker
+   314→* Kubernetes-ready architecture
+   315→* Terraform
+   316→* CI/CD
+   317→* GitHub Actions
+   318→
+   319→Do not introduce microservices merely for fashion.
+   320→
+   321→Start with a modular monolith with clean domain boundaries.
+   322→
+   323→The architecture must allow individual domains to be extracted later.
+   324→
+   325→---
+   326→
+   327→# 6. CORE DOMAIN ARCHITECTURE
+   328→
+   329→Create explicit modules:
+   330→
+   331→catalog
+   332→inventory
+   333→pricing
+   334→orders
+   335→checkout
+   336→payments
+   337→customers
+   338→users
+   339→authentication
+   340→fulfillment
+   341→delivery
+   342→marketing
+   343→promotions
+   344→reviews
+   345→warranty
+   346→returns
+   347→support
+   348→gaming
+   349→business
+   350→content
+   351→analytics
+   352→notifications
+   353→search
+   354→recommendations
+   355→
+   356→Each module must have:
+   357→
+   358→* Domain models
+   359→* Services
+   360→* Controllers/API
+   361→* Validation
+   362→* Events
+   363→* Tests
+   364→* Authorization rules
+   365→
+   366→Avoid giant generic services.
+   367→
+   368→---
+   369→
+   370→# 7. PRODUCT CATALOG
+   371→
+   372→Products must support:
+   373→
+   374→* Brand
+   375→* Category
+   376→* Subcategory
+   377→* Product type
+   378→* SKU
+   379→* Name
+   380→* Slug
+   381→* Description
+   382→* Short description
+   383→* Images
+   384→* Videos
+   385→* Specifications
+   386→* Price
+   387→* Sale price
+   388→* Cost price
+   389→* Stock
+   390→* Warranty
+   391→* Condition
+   392→* Tags
+   393→* SEO metadata
+   394→* Weight
+   395→* Dimensions
+   396→* Published status
+   397→* Featured status
+   398→* Business unit
+   399→
+   400→Product conditions:
+   401→
+   402→NEW
+   403→REFURBISHED
+   404→USED
+   405→OPEN_BOX
+   406→CLEARANCE
+   407→
+   408→---
+   409→
+   410→# 8. REFURBISHED DEVICE ARCHITECTURE
+   411→
+   412→This is critical.
+   413→
+   414→Do NOT treat ten refurbished laptops as identical inventory.
+   415→
+   416→Support:
+   417→
+   418→Product
+   419→
+   420→and:
+   421→
+   422→InventoryUnit
+   423→
+   424→Example:
+   425→
+   426→Product:
+   427→HP EliteBook 840 G8
+   428→
+   429→Inventory:
+   430→
+   431→BM-840-001
+   432→BM-840-002
+   433→BM-840-003
+   434→
+   435→Each individual unit may have:
+   436→
+   437→* Serial number
+   438→* Asset number
+   439→* Condition grade
+   440→* Battery health
+   441→* Cosmetic grade
+   442→* RAM
+   443→* Storage
+   444→* Processor
+   445→* Display condition
+   446→* Keyboard condition
+   447→* Port condition
+   448→* Camera condition
+   449→* Wi-Fi test
+   450→* Bluetooth test
+   451→* Charger included
+   452→* Accessories included
+   453→* Warranty period
+   454→* Acquisition source
+   455→* Inspection record
+   456→* Photos
+   457→* Status
+   458→
+   459→Inventory status:
+   460→
+   461→AVAILABLE
+   462→RESERVED
+   463→SOLD
+   464→PROCESSING
+   465→REPAIR
+   466→RETURNED
+   467→WARRANTY
+   468→DAMAGED
+   469→QUARANTINED
+   470→
+   471→Create an inspection workflow.
+   472→
+   473→---
+   474→
+   475→# 9. GAMING HUB
+   476→
+   477→Create a dedicated gaming experience.
+   478→
+   479→The Gaming Hub should NOT simply be another product category.
+   480→
+   481→Treat it as a business operation.
+   482→
+   483→Potential capabilities:
+   484→
+   485→* Gaming PC catalogue
+   486→* Gaming laptops
+   487→* Gaming peripherals
+   488→* Controllers
+   489→* Headsets
+   490→* Monitors
+   491→* Gaming chairs
+   492→* Accessories
+   493→* Gaming bundles
+   494→* Gaming events
+   495→* Gaming community
+   496→* Gaming hub locations
+   497→* Gaming stations
+   498→* Session booking architecture
+   499→* Membership architecture
+   500→* Tournaments/events architecture
+   501→* Leaderboards
+   502→* Promotions
+   503→
+   504→IMPORTANT:
+   505→
+   506→The architecture should support a physical gaming hub where customers can interact with gaming equipment and potentially book gaming sessions.
+   507→
+   508→Do not implement age-restricted or gambling-related functionality.
+   509→
+   510→---
+   511→
+   512→# 10. GAMING HUB EXPERIENCE
+   513→
+   514→Create:
+   515→
+   516→/gaming
+   517→
+   518→Homepage sections:
+   519→
+   520→Hero
+   521→Featured Games/Experiences
+   522→Gaming PCs
+   523→Gaming Laptops
+   524→Peripherals
+   525→Gaming Setup Packages
+   526→Gaming Hub
+   527→Events
+   528→Community
+   529→Featured Deals
+   530→
+   531→Potential CTA:
+   532→
+   533→BOOK A GAMING SESSION
+   534→
+   535→If session booking is enabled, support:
+   536→
+   537→* Location
+   538→* Station
+   539→* Date
+   540→* Start time
+   541→* Duration
+   542→* Customer
+   543→* Booking status
+   544→* Payment status
+   545→
+   546→Use a resource scheduling model so future gaming locations can be added.
+   547→
+   548→---
+   549→
+   550→# 11. GAMING SETUP BUILDER
+   551→
+   552→Create an interactive:
+   553→
+   554→## Build Your Gaming Setup
+   555→
+   556→Customer chooses:
+   557→
+   558→* Budget
+   559→* Gaming type
+   560→* Monitor
+   561→* PC/laptop
+   562→* GPU class
+   563→* Keyboard
+   564→* Mouse
+   565→* Headset
+   566→* Chair
+   567→* Accessories
+   568→
+   569→The system calculates:
+   570→
+   571→* Total cost
+   572→* Compatibility
+   573→* Recommended upgrades
+   574→
+   575→Do not recommend incompatible hardware.
+   576→
+   577→Create compatibility rules in the backend.
+   578→
+   579→---
+   580→
+   581→# 12. AI SHOPPING ASSISTANT
+   582→
+   583→Create:
+   584→
+   585→## Bigman AI
+   586→
+   587→Customer can ask:
+   588→
+   589→\"I have KSh 50,000 and need a laptop for programming.\"
+   590→
+   591→The assistant should query live catalog/inventory data.
+   592→
+   593→It must NEVER invent:
+   594→
+   595→* Products
+   596→* Prices
+   597→* Stock
+   598→* Specifications
+   599→* Warranty
+   600→* Delivery times
+   601→
+   602→It should explain why products match the customer's requirements.
+   603→
+   604→Example:
+   605→
+   606→Budget:
+   607→KSh 50,000
+   608→
+   609→Use:
+   610→Programming
+   611→
+   612→Requirements:
+   613→16GB RAM
+   614→SSD
+   615→Good battery
+   616→
+   617→Return:
+   618→
+   619→3 currently available products.
+   620→
+   621→Provide:
+   622→
+   623→* Price
+   624→* Availability
+   625→* Key specifications
+   626→* Warranty
+   627→* Product link
+   628→
+   629→---
+   630→
+   631→# 13. PRODUCT DISCOVERY
+   632→
+   633→Build powerful search.
+   634→
+   635→Search across:
+   636→
+   637→* Product name
+   638→* Brand
+   639→* SKU
+   640→* Processor
+   641→* RAM
+   642→* Storage
+   643→* GPU
+   644→* Category
+   645→* Tags
+   646→* Specifications
+   647→
+   648→Filters:
+   649→
+   650→Brand
+   651→Price
+   652→Condition
+   653→RAM
+   654→Storage
+   655→Processor
+   656→GPU
+   657→Screen size
+   658→Operating system
+   659→Warranty
+   660→Availability
+   661→
+   662→Create sorting:
+   663→
+   664→Relevance
+   665→Price low-high
+   666→Price high-low
+   667→Newest
+   668→Best selling
+   669→Highest rated
+   670→
+   671→---
+   672→
+   673→# 14. \"FIND MY LAPTOP\"
+   674→
+   675→Create a guided buying assistant.
+   676→
+   677→Questions:
+   678→
+   679→What will you use it for?
+   680→
+   681→* School
+   682→* University
+   683→* Business
+   684→* Programming
+   685→* Design
+   686→* Video editing
+   687→* Engineering
+   688→* Gaming
+   689→* General use
+   690→
+   691→Budget:
+   692→
+   693→< 30K
+   694→30K–50K
+   695→50K–75K
+   696→75K–100K
+   697→100K+
+   698→
+   699→Preferred:
+   700→
+   701→* New
+   702→* Refurbished
+   703→* Either
+   704→
+   705→The recommendation engine returns suitable products.
+   706→
+   707→---
+   708→
+   709→# 15. PRODUCT PAGE
+   710→
+   711→Product pages must include:
+   712→
+   713→* High-quality gallery
+   714→* Product title
+   715→* Price
+   716→* Availability
+   717→* SKU
+   718→* Condition
+   719→* Warranty
+   720→* Specifications
+   721→* Delivery information
+   722→* Reviews
+   723→* Related products
+   724→* Frequently bought together
+   725→* Product comparison
+   726→* WhatsApp inquiry
+   727→* Add to cart
+   728→* Buy now
+   729→
+   730→For refurbished products include:
+   731→
+   732→## Device Health
+   733→
+   734→Battery
+   735→Display
+   736→Keyboard
+   737→Ports
+   738→Storage
+   739→Camera
+   740→Wi-Fi
+   741→Bluetooth
+   742→
+   743→Use visual status indicators.
+   744→
+   745→---
+   746→
+   747→# 16. PRODUCT TRUST SYSTEM
+   748→
+   749→Every refurbished product should have a visible:
+   750→
+   751→## Bigman Inspection
+   752→
+   753→Show:
+   754→
+   755→✓ Storage tested
+   756→✓ Battery tested
+   757→✓ Display tested
+   758→✓ Keyboard tested
+   759→✓ Ports tested
+   760→✓ Camera tested
+   761→✓ Wi-Fi tested
+   762→
+   763→Warranty must be visible.
+   764→
+   765→Do not make unsupported warranty claims.
+   766→
+   767→Warranty duration must come from product/inventory configuration.
+   768→
+   769→---
+   770→
+   771→# 17. SHOPPING CART
+   772→
+   773→Support:
+   774→
+   775→* Add/remove
+   776→* Quantity
+   777→* Save for later
+   778→* Coupon
+   779→* Bundle discounts
+   780→* Delivery estimate
+   781→* Stock validation
+   782→* Price validation
+   783→
+   784→Never trust client-side price or inventory.
+   785→
+   786→Server must validate everything before checkout.
+   787→
+   788→---
+   789→
+   790→# 18. CHECKOUT
+   791→
+   792→Make checkout extremely simple.
+   793→
+   794→Customer:
+   795→
+   796→1. Contact
+   797→2. Delivery
+   798→3. Payment
+   799→4. Confirmation
+   800→
+   801→Support:
+   802→
+   803→* Guest checkout
+   804→* Customer accounts
+   805→* M-Pesa
+   806→* Card
+   807→* Other providers through payment abstraction
+   808→
+   809→Currency:
+   810→
+   811→KES initially.
+   812→
+   813→Architecture must support multiple currencies later.
+   814→
+   815→---
+   816→
+   817→# 19. M-PESA
+   818→
+   819→Implement payment abstraction.
+   820→
+   821→Do not tightly couple orders to one payment provider.
+   822→
+   823→Payment states:
+   824→
+   825→INITIATED
+   826→PENDING
+   827→AUTHORIZED
+   828→PAID
+   829→FAILED
+   830→CANCELLED
+   831→REFUNDED
+   832→PARTIALLY_REFUNDED
+   833→
+   834→Every payment must have:
+   835→
+   836→* Provider
+   837→* Provider reference
+   838→* Internal transaction ID
+   839→* Amount
+   840→* Currency
+   841→* Customer
+   842→* Order
+   843→* Timestamps
+   844→* Raw provider metadata where appropriate
+   845→
+   846→Implement idempotency.
+   847→
+   848→Webhook processing must be idempotent.
+   849→
+   850→---
+   851→
+   852→# 20. ORDER MANAGEMENT
+   853→
+   854→Order lifecycle:
+   855→
+   856→DRAFT
+   857→PENDING_PAYMENT
+   858→PAID
+   859→PROCESSING
+   860→PACKED
+   861→READY_FOR_DISPATCH
+   862→DISPATCHED
+   863→OUT_FOR_DELIVERY
+   864→DELIVERED
+   865→CANCELLED
+   866→RETURN_REQUESTED
+   867→RETURNED
+   868→REFUNDED
+   869→
+   870→Every transition must be auditable.
+   871→
+   872→---
+   873→
+   874→# 21. DELIVERY
+   875→
+   876→Create delivery abstraction.
+   877→
+   878→Delivery providers must be pluggable.
+   879→
+   880→Support:
+   881→
+   882→* Nairobi delivery
+   883→* Countrywide courier
+   884→* Pickup
+   885→* Future third-party delivery integrations
+   886→
+   887→Delivery entity:
+   888→
+   889→* Provider
+   890→* Tracking number
+   891→* Address
+   892→* Status
+   893→* Driver/courier where applicable
+   894→* Estimated delivery
+   895→* Actual delivery
+   896→* Proof of delivery
+   897→
+   898→---
+   899→
+   900→# 22. STORE PICKUP
+   901→
+   902→Support:
+   903→
+   904→## Pick Up From Bigman
+   905→
+   906→Customer chooses:
+   907→
+   908→* Location
+   909→* Pickup date
+   910→* Pickup status
+   911→
+   912→Staff verifies order and marks it collected.
+   913→
+   914→---
+   915→
+   916→# 23. WHATSAPP COMMERCE
+   917→
+   918→Every product should have:
+   919→
+   920→## Ask Bigman on WhatsApp
+   921→
+   922→Automatically construct a message containing:
+   923→
+   924→Product
+   925→SKU
+   926→Price
+   927→URL
+   928→
+   929→Example:
+   930→
+   931→\"Hi Bigman, I'm interested in HP EliteBook 840 G8, SKU BM-840-001.\"
+   932→
+   933→Do not create a generic WhatsApp link without context.
+   934→
+   935→---
+   936→
+   937→# 24. CUSTOMER ACCOUNTS
+   938→
+   939→Customer profile:
+   940→
+   941→* Name
+   942→* Email
+   943→* Phone
+   944→* Addresses
+   945→* Orders
+   946→* Wishlist
+   947→* Reviews
+   948→* Warranty
+   949→* Support tickets
+   950→* Saved products
+   951→
+   952→Create customer dashboard:
+   953→
+   954→Orders
+   955→Wishlist
+   956→Warranty
+   957→Support
+   958→Addresses
+   959→Profile
+   960→
+   961→---
+   962→
+   963→# 25. WARRANTY SYSTEM
+   964→
+   965→Create a dedicated warranty module.
+   966→
+   967→Warranty record:
+   968→
+   969→* Customer
+   970→* Order
+   971→* Product
+   972→* Inventory unit
+   973→* Serial number
+   974→* Start date
+   975→* End date
+   976→* Status
+   977→
+   978→Statuses:
+   979→
+   980→ACTIVE
+   981→EXPIRED
+   982→CLAIMED
+   983→VOID
+   984→REPLACED
+   985→
+   986→Customer should be able to enter serial/order number and view warranty status.
+   987→
+   988→---
+   989→
+   990→# 26. RETURNS
+   991→
+   992→Create configurable return policy architecture.
+   993→
+   994→Support:
+   995→
+   996→* Return request
+   997→* Reason
+   998→* Photos
+   999→* Order
+  1000→* Product
+  1001→* Inspection
+  1002→* Approval/rejection
+  1003→* Refund/replacement
+  1004→
+  1005→Never automatically promise returns without business configuration.
+  1006→
+  1007→---
+  1008→
+  1009→# 27. SUPPORT
+  1010→
+  1011→Support tickets:
+  1012→
+  1013→* Customer
+  1014→* Order
+  1015→* Product
+  1016→* Category
+  1017→* Priority
+  1018→* Status
+  1019→* Assigned staff
+  1020→* Messages
+  1021→* Attachments
+  1022→
+  1023→Categories:
+  1024→
+  1025→Order
+  1026→Payment
+  1027→Delivery
+  1028→Warranty
+  1029→Technical
+  1030→Returns
+  1031→Gaming
+  1032→General
+  1033→
+  1034→---
+  1035→
+  1036→# 28. ADMIN DASHBOARD
+  1037→
+  1038→Create a premium internal dashboard.
+  1039→
+  1040→Metrics:
+  1041→
+  1042→Revenue
+  1043→Orders
+  1044→Customers
+  1045→Average order value
+  1046→Conversion rate
+  1047→Top products
+  1048→Low stock
+  1049→Pending payments
+  1050→Pending fulfillment
+  1051→Returns
+  1052→Warranty claims
+  1053→Gaming bookings
+  1054→
+  1055→Charts:
+  1056→
+  1057→Revenue over time
+  1058→Orders over time
+  1059→Top categories
+  1060→Top brands
+  1061→Inventory value
+  1062→Product velocity
+  1063→
+  1064→---
+  1065→
+  1066→# 29. INVENTORY MANAGEMENT
+  1067→
+  1068→Support:
+  1069→
+  1070→* Stock receiving
+  1071→* Stock adjustment
+  1072→* Transfers
+  1073→* Reservations
+  1074→* Returns
+  1075→* Damaged stock
+  1076→* Serial numbers
+  1077→* Inventory units
+  1078→* Purchase orders
+  1079→
+  1080→Inventory events must be immutable.
+  1081→
+  1082→Never simply overwrite stock without creating an audit event.
+  1083→
+  1084→---
+  1085→
+  1086→# 30. LOW STOCK INTELLIGENCE
+  1087→
+  1088→Products can have:
+  1089→
+  1090→Minimum stock
+  1091→Maximum stock
+  1092→Reorder point
+  1093→
+  1094→System should identify:
+  1095→
+  1096→LOW STOCK
+  1097→OUT OF STOCK
+  1098→FAST MOVING
+  1099→SLOW MOVING
+  1100→DEAD STOCK
+  1101→
+  1102→Later support demand forecasting.
+  1103→
+  1104→---
+  1105→
+  1106→# 31. PROMOTIONS
+  1107→
+  1108→Build:
+  1109→
+  1110→Coupons
+  1111→Discount codes
+  1112→Flash sales
+  1113→Category discounts
+  1114→Brand discounts
+  1115→Bundle discounts
+  1116→Buy-more-save-more
+  1117→Clearance campaigns
+  1118→
+  1119→Promotions must support:
+  1120→
+  1121→Start date
+  1122→End date
+  1123→Usage limits
+  1124→Customer limits
+  1125→Product restrictions
+  1126→Category restrictions
+  1127→
+  1128→---
+  1129→
+  1130→# 32. BUNDLES
+  1131→
+  1132→Create:
+  1133→
+  1134→## Work From Home Bundle
+  1135→
+  1136→Laptop
+  1137→Mouse
+  1138→Bag
+  1139→HDMI adapter
+  1140→
+  1141→## Student Bundle
+  1142→
+  1143→Laptop
+  1144→Mouse
+  1145→Bag
+  1146→
+  1147→## Gaming Starter Bundle
+  1148→
+  1149→Gaming device
+  1150→Headset
+  1151→Mouse
+  1152→Keyboard
+  1153→
+  1154→Bundle pricing must be configurable.
+  1155→
+  1156→---
+  1157→
+  1158→# 33. CORPORATE / B2B
+  1159→
+  1160→Create:
+  1161→
+  1162→## Bigman Business
+  1163→
+  1164→Businesses can:
+  1165→
+  1166→* Create company account
+  1167→* Add employees
+  1168→* Request quotes
+  1169→* Submit purchase orders
+  1170→* Buy in bulk
+  1171→* Receive invoices
+  1172→* View order history
+  1173→* Request recurring supply
+  1174→
+  1175→Support:
+  1176→
+  1177→RFQ
+  1178→
+  1179→Request for Quote
+  1180→
+  1181→Staff can respond with:
+  1182→
+  1183→* Product
+  1184→* Quantity
+  1185→* Unit price
+  1186→* Discount
+  1187→* Validity
+  1188→* Delivery
+  1189→* Payment terms
+  1190→
+  1191→---
+  1192→
+  1193→# 34. CONTENT / SEO
+  1194→
+  1195→Create a CMS architecture.
+  1196→
+  1197→Content types:
+  1198→
+  1199→Blog
+  1200→Buying guide
+  1201→Product guide
+  1202→Brand page
+  1203→Category page
+  1204→Landing page
+  1205→FAQ
+  1206→
+  1207→SEO must be first-class.
+  1208→
+  1209→Generate:
+  1210→
+  1211→* Metadata
+  1212→* Open Graph
+  1213→* Twitter/X metadata
+  1214→* Canonicals
+  1215→* Sitemap
+  1216→* Robots
+  1217→* Product structured data
+  1218→* Breadcrumb structured data
+  1219→* Organization structured data
+  1220→* FAQ structured data where appropriate
+  1221→
+  1222→Create SEO landing pages such as:
+  1223→
+  1224→/laptops
+  1225→/refurbished-laptops
+  1226→/hp-laptops
+  1227→/dell-laptops
+  1228→/lenovo-laptops
+  1229→/macbooks
+  1230→/gaming-laptops
+  1231→/workstations
+  1232→/computer-accessories
+  1233→
+  1234→Do not generate thin duplicate pages.
+  1235→
+  1236→---
+  1237→
+  1238→# 35. CONTENT STRATEGY
+  1239→
+  1240→Create:
+  1241→
+  1242→## Bigman Tech Guide
+  1243→
+  1244→Potential articles:
+  1245→
+  1246→Best laptops for university students in Kenya
+  1247→Best laptops for programming
+  1248→Refurbished vs new laptops
+  1249→How to choose RAM
+  1250→SSD vs HDD
+  1251→How to choose a gaming laptop
+  1252→Laptop buying guide
+  1253→Best business laptops
+  1254→How Bigman tests refurbished devices
+  1255→
+  1256→Content should ultimately drive product discovery.
+  1257→
+  1258→---
+  1259→
+  1260→# 36. REVIEWS
+  1261→
+  1262→Support:
+  1263→
+  1264→* Product reviews
+  1265→* Rating
+  1266→* Verified purchase
+  1267→* Photos
+  1268→* Moderation
+  1269→* Staff response
+  1270→
+  1271→Do not fabricate reviews.
+  1272→
+  1273→---
+  1274→
+  1275→# 37. ANALYTICS
+  1276→
+  1277→Track:
+  1278→
+  1279→Product views
+  1280→Searches
+  1281→Add to cart
+  1282→Checkout started
+  1283→Payment initiated
+  1284→Payment completed
+  1285→Abandoned cart
+  1286→Purchases
+  1287→Refunds
+  1288→Search terms
+  1289→Conversion rate
+  1290→
+  1291→Track marketing attribution:
+  1292→
+  1293→Google
+  1294→Social
+  1295→WhatsApp
+  1296→Direct
+  1297→Referral
+  1298→Campaign
+  1299→
+  1300→Use privacy-conscious analytics.
+  1301→
+  1302→---
+  1303→
+  1304→# 38. ADMIN ROLES
+  1305→
+  1306→Create RBAC.
+  1307→
+  1308→Roles:
+  1309→
+  1310→SUPER_ADMIN
+  1311→ADMIN
+  1312→STORE_MANAGER
+  1313→INVENTORY_MANAGER
+  1314→SALES
+  1315→CUSTOMER_SUPPORT
+  1316→MARKETING
+  1317→FINANCE
+  1318→FULFILLMENT
+  1319→GAMING_MANAGER
+  1320→CONTENT_MANAGER
+  1321→CORPORATE_SALES
+  1322→
+  1323→Permissions must be granular.
+  1324→
+  1325→---
+  1326→
+  1327→# 39. AUDIT LOG
+  1328→
+  1329→Every sensitive action must be logged.
+  1330→
+  1331→Examples:
+  1332→
+  1333→Price changed
+  1334→Stock adjusted
+  1335→Order cancelled
+  1336→Refund issued
+  1337→Product deleted
+  1338→Warranty changed
+  1339→Customer data accessed
+  1340→Staff role changed
+  1341→
+  1342→Audit record:
+  1343→
+  1344→Actor
+  1345→Action
+  1346→Entity
+  1347→Before
+  1348→After
+  1349→Timestamp
+  1350→IP/device metadata where legally appropriate
+  1351→
+  1352→---
+  1353→
+  1354→# 40. SECURITY
+  1355→
+  1356→Implement:
+  1357→
+  1358→* Secure authentication
+  1359→* RBAC
+  1360→* Input validation
+  1361→* Rate limiting
+  1362→* CSRF protection where applicable
+  1363→* Secure cookies
+  1364→* Password hashing
+  1365→* Session management
+  1366→* API authorization
+  1367→* Webhook verification
+  1368→* Idempotency
+  1369→* SQL injection prevention
+  1370→* XSS protection
+  1371→* File upload validation
+  1372→* Security headers
+  1373→
+  1374→Never expose:
+  1375→
+  1376→Payment secrets
+  1377→Database credentials
+  1378→API keys
+  1379→Internal service credentials
+  1380→
+  1381→---
+  1382→
+  1383→# 41. PERFORMANCE
+  1384→
+  1385→Target:
+  1386→
+  1387→Fast mobile experience
+  1388→Excellent Core Web Vitals
+  1389→Optimized images
+  1390→Lazy loading
+  1391→Server rendering
+  1392→Caching
+  1393→Minimal JavaScript
+  1394→Pagination
+  1395→Database indexes
+  1396→Efficient search
+  1397→
+  1398→The Kenyan mobile user is a primary user.
+  1399→
+  1400→Design for:
+  1401→
+  1402→3G/4G
+  1403→Mobile browsers
+  1404→Low bandwidth
+  1405→Small screens
+  1406→
+  1407→---
+  1408→
+  1409→# 42. MOBILE UX
+  1410→
+  1411→The mobile website is not a reduced desktop site.
+  1412→
+  1413→Design mobile-first.
+  1414→
+  1415→Persistent mobile actions:
+  1416→
+  1417→Search
+  1418→Cart
+  1419→WhatsApp
+  1420→Account
+  1421→
+  1422→Product page:
+  1423→
+  1424→Buy Now
+  1425→Add to Cart
+  1426→WhatsApp
+  1427→
+  1428→Keep the checkout short.
+  1429→
+  1430→---
+  1431→
+  1432→# 43. DESIGN SYSTEM
+  1433→
+  1434→Use shadcn/ui.
+  1435→
+  1436→Create a custom Bigman design system.
+  1437→
+  1438→Define:
+  1439→
+  1440→Typography
+  1441→Spacing
+  1442→Radius
+  1443→Cards
+  1444→Buttons
+  1445→Forms
+  1446→Tables
+  1447→Dialogs
+  1448→Sheets
+  1449→Navigation
+  1450→Badges
+  1451→Product cards
+  1452→Price display
+  1453→Stock indicators
+  1454→
+  1455→Avoid generic AI-generated SaaS aesthetics.
+  1456→
+  1457→The visual identity should feel:
+  1458→
+  1459→Modern
+  1460→Premium
+  1461→Technical
+  1462→Energetic
+  1463→Trustworthy
+  1464→African/Kenyan without relying on clichés
+  1465→
+  1466→Gaming sections may have a more energetic visual treatment, but must remain part of the same brand system.
+  1467→
+  1468→---
+  1469→
+  1470→# 44. HOMEPAGE
+  1471→
+  1472→Build:
+  1473→
+  1474→Announcement bar
+  1475→
+  1476→Navbar:
+  1477→
+  1478→BIGMAN logo
+  1479→
+  1480→Shop
+  1481→Gaming
+  1482→Business
+  1483→Services
+  1484→Deals
+  1485→Guides
+  1486→
+  1487→Search
+  1488→
+  1489→Account
+  1490→Cart
+  1491→
+  1492→Hero:
+  1493→
+  1494→\"Technology that works for you.\"
+  1495→
+  1496→CTA:
+  1497→
+  1498→Shop Laptops
+  1499→Explore Gaming
+  1500→
+  1501→Trust strip:
+  1502→
+  1503→Warranty
+  1504→M-Pesa
+  1505→Delivery
+  1506→Physical Store
+  1507→Expert Support
+  1508→
+  1509→Categories
+  1510→
+  1511→Featured products
+  1512→
+  1513→Gaming section
+  1514→
+  1515→Laptop finder
+  1516→
+  1517→Deals
+  1518→
+  1519→Refurbished collection
+  1520→
+  1521→Business solutions
+  1522→
+  1523→Buying guides
+  1524→
+  1525→Customer reviews
+  1526→
+  1527→Physical store
+  1528→
+  1529→Footer
+  1530→
+  1531→---
+  1532→
+  1533→# 45. GAMING HOMEPAGE
+  1534→
+  1535→Create a visually distinct gaming landing experience.
+  1536→
+  1537→Sections:
+  1538→
+  1539→Gaming hero
+  1540→Gaming laptops
+  1541→Gaming PCs
+  1542→Accessories
+  1543→Build your setup
+  1544→Gaming hub
+  1545→Events
+  1546→Deals
+  1547→Community
+  1548→
+  1549→CTA:
+  1550→
+  1551→SHOP GAMING
+  1552→
+  1553→BUILD YOUR SETUP
+  1554→
+  1555→VISIT GAMING HUB
+  1556→
+  1557→---
+  1558→
+  1559→# 46. ADMIN PRODUCT IMPORT
+  1560→
+  1561→Build CSV import.
+  1562→
+  1563→Columns:
+  1564→
+  1565→SKU
+  1566→Name
+  1567→Brand
+  1568→Category
+  1569→Condition
+  1570→Price
+  1571→Sale price
+  1572→Stock
+  1573→RAM
+  1574→Storage
+  1575→Processor
+  1576→GPU
+  1577→Screen
+  1578→Warranty
+  1579→Description
+  1580→
+  1581→Validate imports before committing.
+  1582→
+  1583→Provide an error report.
+  1584→
+  1585→---
+  1586→
+  1587→# 47. API DESIGN
+  1588→
+  1589→Create documented APIs.
+  1590→
+  1591→Examples:
+  1592→
+  1593→GET /products
+  1594→GET /products/:slug
+  1595→GET /categories
+  1596→POST /cart
+  1597→POST /checkout
+  1598→POST /payments
+  1599→GET /orders
+  1600→GET /orders/:id
+  1601→POST /reviews
+  1602→POST /support/tickets
+  1603→GET /warranty/:serial
+  1604→
+  1605→Admin:
+  1606→
+  1607→POST /admin/products
+  1608→PATCH /admin/products/:id
+  1609→POST /admin/inventory/adjustments
+  1610→POST /admin/promotions
+  1611→GET /admin/analytics
+  1612→
+  1613→Gaming:
+  1614→
+  1615→GET /gaming/products
+  1616→GET /gaming/locations
+  1617→GET /gaming/stations
+  1618→GET /gaming/bookings
+  1619→POST /gaming/bookings
+  1620→
+  1621→---
+  1622→
+  1623→# 48. EVENT ARCHITECTURE
+  1624→
+  1625→Define domain events.
+  1626→
+  1627→Examples:
+  1628→
+  1629→ProductCreated
+  1630→ProductUpdated
+  1631→InventoryReceived
+  1632→InventoryAdjusted
+  1633→InventoryReserved
+  1634→OrderCreated
+  1635→PaymentInitiated
+  1636→PaymentCompleted
+  1637→PaymentFailed
+  1638→OrderPacked
+  1639→OrderDispatched
+  1640→OrderDelivered
+  1641→WarrantyCreated
+  1642→WarrantyClaimed
+  1643→ReviewSubmitted
+  1644→GamingBookingCreated
+  1645→
+  1646→Events must be designed so integrations can consume them later.
+  1647→
+  1648→Use the outbox pattern.
+  1649→
+  1650→---
+  1651→
+  1652→# 49. RELIABILITY
+  1653→
+  1654→Financial and order operations must be idempotent.
+  1655→
+  1656→Payment webhooks must tolerate retries.
+  1657→
+  1658→Order creation must tolerate duplicate requests.
+  1659→
+  1660→Inventory reservation must prevent overselling.
+  1661→
+  1662→Background jobs must be retryable.
+  1663→
+  1664→Critical workflows must have observable state.
+  1665→
+  1666→Design so future adoption of Temporal is possible for long-running workflows such as:
+  1667→
+  1668→Payment → fulfillment → delivery → notification → warranty.
+  1669→
+  1670→Do not introduce Temporal unless there is an actual operational need in the first release.
+  1671→
+  1672→---
+  1673→
+  1674→# 50. TESTING
+  1675→
+  1676→Required:
+  1677→
+  1678→Unit tests
+  1679→Integration tests
+  1680→API tests
+  1681→Database tests
+  1682→Component tests
+  1683→End-to-end tests
+  1684→
+  1685→Critical E2E journey:
+  1686→
+  1687→Customer opens website
+  1688→→ searches laptop
+  1689→→ filters
+  1690→→ opens product
+  1691→→ adds to cart
+  1692→→ checkout
+  1693→→ payment
+  1694→→ order created
+  1695→→ inventory reserved
+  1696→→ notification sent
+  1697→→ staff sees order
+  1698→→ order fulfilled
+  1699→→ customer sees status
+  1700→
+  1701→Also test:
+  1702→
+  1703→Payment failure
+  1704→Duplicate webhook
+  1705→Out-of-stock product
+  1706→Concurrent checkout
+  1707→Expired promotion
+  1708→Cancelled order
+  1709→Refund
+  1710→Return
+  1711→Warranty claim
+  1712→
+  1713→---
+  1714→
+  1715→# 51. SEED DATA
+  1716→
+  1717→Create realistic development seed data.
+  1718→
+  1719→Brands:
+  1720→
+  1721→HP
+  1722→Dell
+  1723→Lenovo
+  1724→Apple
+  1725→ASUS
+  1726→Acer
+  1727→MSI
+  1728→Microsoft
+  1729→Samsung
+  1730→Logitech
+  1731→TP-Link
+  1732→Canon
+  1733→Epson
+  1734→Brother
+  1735→
+  1736→Categories:
+  1737→
+  1738→Laptops
+  1739→Desktops
+  1740→Gaming
+  1741→Workstations
+  1742→MacBooks
+  1743→Printers
+  1744→Accessories
+  1745→Storage
+  1746→Networking
+  1747→Power
+  1748→Monitors
+  1749→Keyboards
+  1750→Mice
+  1751→Headsets
+  1752→Bags
+  1753→Cables
+  1754→
+  1755→Clearly label seed/demo products as development data.
+  1756→
+  1757→Do not represent fabricated data as real Bigman inventory.
+  1758→
+  1759→---
+  1760→
+  1761→# 52. MIGRATION STRATEGY
+  1762→
+  1763→The existing Bigman domain may be migrated.
+  1764→
+  1765→Before changing DNS:
+  1766→
+  1767→1. Inventory existing URLs
+  1768→2. Capture current SEO URLs
+  1769→3. Identify indexed pages
+  1770→4. Create redirect map
+  1771→5. Preserve valuable backlinks
+  1772→6. Configure HTTPS
+  1773→7. Configure canonical URLs
+  1774→8. Configure sitemap
+  1775→9. Configure robots.txt
+  1776→10. Configure analytics
+  1777→11. Verify Search Console
+  1778→12. Test mobile
+  1779→13. Test checkout
+  1780→14. Test payment
+  1781→15. Test WhatsApp
+  1782→16. Test delivery
+  1783→17. Deploy
+  1784→18. Change DNS
+  1785→19. Monitor errors
+  1786→
+  1787→Do not destroy existing search equity.
+  1788→
+  1789→The historical site has had SEO/technical shortcomings, so the rebuild should explicitly address HTTPS, sitemap, analytics, canonicalization and modern performance. Treat historical audits as diagnostic context rather than current measurements.
+  1790→
+  1791→---
+  1792→
+  1793→# 53. DOMAIN-AGNOSTIC CONFIGURATION
+  1794→
+  1795→Create:
+  1796→
+  1797→SITE_NAME
+  1798→SITE_URL
+  1799→CURRENCY
+  1800→COUNTRY
+  1801→TIMEZONE
+  1802→SUPPORT_PHONE
+  1803→WHATSAPP_NUMBER
+  1804→SUPPORT_EMAIL
+  1805→STORE_ADDRESS
+  1806→BUSINESS_HOURS
+  1807→
+  1808→All configurable through environment/config.
+  1809→
+  1810→---
+  1811→
+  1812→# 54. FUTURE MARKETPLACE CAPABILITY
+  1813→
+  1814→Do not implement a marketplace in V1.
+  1815→
+  1816→But architect catalog ownership so later we can support:
+  1817→
+  1818→Seller
+  1819→Vendor
+  1820→Supplier
+  1821→Warehouse
+  1822→
+  1823→This means Bigman could eventually allow approved third-party technology sellers to list products.
+  1824→
+  1825→The system must NOT require a rewrite to support this.
+  1826→
+  1827→---
+  1828→
+  1829→# 55. FUTURE MULTI-LOCATION
+  1830→
+  1831→Architecture must support:
+  1832→
+  1833→Nairobi CBD
+  1834→Gaming Hub 1
+  1835→Gaming Hub 2
+  1836→Future branches
+  1837→Warehouses
+  1838→Pickup locations
+  1839→
+  1840→Inventory belongs to a location.
+  1841→
+  1842→Products can exist across multiple locations.
+  1843→
+  1844→---
+  1845→
+  1846→# 56. OBSERVABILITY
+  1847→
+  1848→Implement:
+  1849→
+  1850→Health endpoint
+  1851→Readiness endpoint
+  1852→Liveness endpoint
+  1853→
+  1854→Metrics:
+  1855→
+  1856→Request latency
+  1857→Error rate
+  1858→Payment failures
+  1859→Checkout failures
+  1860→Inventory failures
+  1861→Queue failures
+  1862→
+  1863→Structured logs.
+  1864→
+  1865→Trace:
+  1866→
+  1867→Customer request
+  1868→→ API
+  1869→→ database
+  1870→→ payment
+  1871→→ event
+  1872→→ notification
+  1873→
+  1874→---
+  1875→
+  1876→# 57. DEPLOYMENT
+  1877→
+  1878→Provide:
+  1879→
+  1880→Dockerfiles
+  1881→docker-compose development environment
+  1882→Environment configuration
+  1883→Database migrations
+  1884→Seed scripts
+  1885→CI/CD
+  1886→Production deployment documentation
+  1887→
+  1888→Separate:
+  1889→
+  1890→development
+  1891→staging
+  1892→production
+  1893→
+  1894→Never use production credentials in development.
+  1895→
+  1896→---
+  1897→
+  1898→# 58. PROJECT STRUCTURE
+  1899→
+  1900→Use a maintainable monorepo.
+  1901→
+  1902→Suggested:
+  1903→
+  1904→apps/
+  1905→web/
+  1906→admin/
+  1907→api/
+  1908→
+  1909→packages/
+  1910→ui/
+  1911→config/
+  1912→database/
+  1913→types/
+  1914→validation/
+  1915→auth/
+  1916→payments/
+  1917→search/
+  1918→analytics/
+  1919→
+  1920→infra/
+  1921→docker/
+  1922→terraform/
+  1923→kubernetes/
+  1924→
+  1925→docs/
+  1926→architecture/
+  1927→api/
+  1928→product/
+  1929→operations/
+  1930→security/
+  1931→
+  1932→Do not create packages that have no meaningful boundary.
+  1933→
+  1934→---
+  1935→
+  1936→# 59. DOCUMENTATION
+  1937→
+  1938→Produce:
+  1939→
+  1940→README
+  1941→Architecture Decision Records
+  1942→System Architecture
+  1943→Database Design
+  1944→API documentation
+  1945→Security model
+  1946→Deployment guide
+  1947→Environment variables
+  1948→Payment integration
+  1949→Inventory model
+  1950→Gaming architecture
+  1951→SEO strategy
+  1952→Testing strategy
+  1953→Disaster recovery
+  1954→Operational runbook
+  1955→
+  1956→---
+  1957→
+  1958→# 60. DEVELOPMENT PROCESS
+  1959→
+  1960→Do not attempt to build everything in one giant implementation.
+  1961→
+  1962→Work in vertical slices.
+  1963→
+  1964→Phase 1:
+  1965→
+  1966→Foundation
+  1967→Authentication
+  1968→Database
+  1969→Design system
+  1970→Catalog
+  1971→Product pages
+  1972→
+  1973→Phase 2:
+  1974→
+  1975→Cart
+  1976→Checkout
+  1977→Orders
+  1978→Payments
+  1979→
+  1980→Phase 3:
+  1981→
+  1982→Inventory
+  1983→Fulfillment
+  1984→Delivery
+  1985→Notifications
+  1986→
+  1987→Phase 4:
+  1988→
+  1989→Admin
+  1990→Analytics
+  1991→Promotions
+  1992→
+  1993→Phase 5:
+  1994→
+  1995→Gaming Hub
+  1996→
+  1997→Phase 6:
+  1998→
+  1999→Business/B2B
+  2000→
+
+[showing lines 1-2000 of 3384; use offset=2001 with limit to continue reading]

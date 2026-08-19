@@ -1,0 +1,505 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS (mapped to String for SQLite)
+// ============================================================
+
+model EnumValue {
+  id        String  @id @default(cuid())
+  enumType  String
+  value     String
+  label     String
+  createdAt DateTime @default(now())
+
+  @@unique([enumType, value])
+  @@index([enumType])
+}
+
+// ============================================================
+// BUSINESS UNIT
+// ============================================================
+
+model BusinessUnit {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   @default("COMPUTERS") // COMPUTERS, GAMING, BUSINESS, SERVICES
+  slug        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products    Product[]
+}
+
+// ============================================================
+// BRAND
+// ============================================================
+
+model Brand {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  logo        String?
+  description String?
+  website     String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products    Product[]
+}
+
+// ============================================================
+// CATEGORY - First-class database entity with full taxonomy
+// ============================================================
+
+model Category {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String
+  description   String?
+  image         String?
+  parentId      String?
+  sortOrder     Int       @default(0)
+  isActive      Boolean   @default(true)
+  isFeatured    Boolean   @default(false)
+  level         Int       @default(0)
+
+  // SEO
+  seoTitle      String?
+  seoDescription String?
+  canonical      String?
+  ogImage       String?
+  introduction   String?
+  faq           String?   // JSON array of {q, a}
+  schemaMarkup  String?   // JSON-LD
+
+  // Navigation
+  showInNav     Boolean   @default(true)
+  navIcon       String?   // lucide icon name
+  navColumns    Int       @default(3) // mega-menu columns
+
+  // Filters config (JSON: which filters to show)
+  filterConfig  String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  parent        Category?         @relation("CategoryTree", fields: [parentId], references: [id])
+  children      Category[]        @relation("CategoryTree")
+  products      ProductCategory[]
+
+  @@unique([slug, parentId])
+  @@index([parentId])
+  @@index([slug])
+  @@index([sortOrder])
+}
+
+// ============================================================
+// PRODUCT
+// ============================================================
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?  // long description, markdown
+  shortDescription String?
+
+  // Brand & Business Unit
+  brandId         String?
+  businessUnitId  String?
+
+  // Condition
+  condition       String   @default("NEW") // NEW, REFURBISHED, USED, OPEN_BOX
+  conditionGrade  String?  // A_PLUS, A, B_PLUS, B, C
+  conditionNote   String?  // admin-configurable grade description
+
+  // Pricing - multiple price types
+  basePrice       Float    // authoritative Bigman-managed price (KSh)
+  salePrice       Float?
+  costPrice       Float?
+  compareAtPrice  Float?   // "Was" price
+  wholesalePrice  Float?
+  corporatePrice  Float?
+  bundlePrice     Float?
+  currency        String   @default("KES")
+
+  // Product type
+  productType     String   @default("PHYSICAL") // PHYSICAL, SERVICE, DIGITAL, BUNDLE
+
+  // Specs (JSON blob for flexible attributes)
+  specifications  String?  // JSON: {processor: "...", ram: "...", ...}
+
+  // Media
+  images          String?  // JSON array of image URLs
+  thumbnail       String?
+  videoUrl        String?
+
+  // Inventory
+  trackInventory  Boolean  @default(true)
+  stockCount      Int      @default(0)
+  lowStockThreshold Int    @default(5)
+
+  // Warranty
+  warrantyMonths  Int?
+  warrantyInfo    String?
+
+  // Shipping
+  weight          Float?
+  dimensions      String?  // JSON: {l, w, h}
+
+  // Status
+  status          String   @default("DRAFT") // DRAFT, ACTIVE, ARCHIVED
+  isFeatured      Boolean  @default(false)
+  isDeal          Boolean  @default(false)
+  isGaming        Boolean  @default(false)
+
+  // SEO
+  seoTitle        String?
+  seoDescription  String?
+  metaKeywords    String?
+
+  // Compatibility - comma-separated compatible model slugs
+  compatibleModels String?
+
+  // Part number / SKU
+  sku             String?
+  partNumber      String?
+  upc             String?
+
+  // Sort & timestamps
+  sortOrder       Int      @default(0)
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  brand           Brand?           @relation(fields: [brandId], references: [id])
+  businessUnit    BusinessUnit?    @relation(fields: [businessUnitId], references: [id])
+  categories      ProductCategory[]
+  inventoryUnits  InventoryUnit[]
+  priceHistory    PriceHistory[]
+  crossSells      ProductCrossSell[] @relation("ProductCrossSellFrom")
+  recommendedBy   ProductCrossSell[] @relation("ProductCrossSellTo")
+  comparisons     ProductComparison[]
+  alerts          PriceAlert[]
+  stockAlerts     StockAlert[]
+
+  @@index([brandId])
+  @@index([businessUnitId])
+  @@index([condition])
+  @@index([status])
+  @@index([isFeatured])
+  @@index([isDeal])
+  @@index([isGaming])
+  @@index([basePrice])
+  @@index([sortOrder])
+  @@index([sku])
+}
+
+// ============================================================
+// PRODUCT-CATEGORY (many-to-many)
+// ============================================================
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  sortOrder  Int    @default(0)
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category  Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@index([categoryId])
+}
+
+// ============================================================
+// INVENTORY UNIT - Individual physical device tracking
+// Critical for refurbished: each unit tracked separately
+// ============================================================
+
+model InventoryUnit {
+  id              String   @id @default(cuid())
+  productId       String
+  serialNumber    String?
+  assetNumber     String?
+
+  // Condition grading
+  condition       String   @default("NEW")
+  conditionGrade  String?  // A_PLUS, A, B_PLUS, B, C
+  cosmeticNotes   String?
+
+  // Device-specific specs (can differ from product defaults for refurbished)
+  cpuModel        String?
+  ramSize         String?  // e.g. "8GB DDR5"
+  storageSize     String?  // e.g. "256GB SSD"
+  gpuModel        String?
+
+  // Battery (for laptops)
+  batteryHealth   String?  // e.g. "85%", "Good", "Fair"
+  batteryCycles   Int?
+
+  // Inspection results (JSON)
+  inspectionData  String?  // JSON: {display: true, keyboard: true, ...}
+  inspectionDate  DateTime?
+  inspector       String?
+  inspectionNotes String?
+
+  // Photos of actual device
+  photos          String?  // JSON array of URLs
+
+  // Status
+  status          String   @default("AVAILABLE") // AVAILABLE, RESERVED, SOLD, PROCESSING, REPAIR, RETURNED, WARRANTY, DAMAGED, QUARANTINED
+
+  // Acquisition
+  acquisitionSource String?
+
+  // Accessories included
+  includedAccessories String? // JSON array
+  chargerIncluded  Boolean  @default(false)
+
+  // Warranty for this specific unit
+  warrantyStart   DateTime?
+  warrantyEnd     DateTime?
+  warrantyMonths  Int?
+
+  // Pricing override (if different from product base price)
+  price           Float?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([serialNumber])
+  @@index([status])
+  @@index([conditionGrade])
+}
+
+// ============================================================
+// SERVICE PRODUCT - Services are NOT physical inventory
+// ============================================================
+
+model ServiceProduct {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  shortDescription String?
+  basePrice       Float
+  salePrice       Float?
+  currency        String   @default("KES")
+  duration        String?  // e.g. "1-2 hours", "24 hours"
+  isActive        Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  categoryId      String?
+  serviceType     String?  // REPAIR, UPGRADE, INSTALLATION, RECOVERY, SUPPORT
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([serviceType])
+  @@index([isActive])
+}
+
+// ============================================================
+// PRICE HISTORY - Every price change must be recorded
+// ============================================================
+
+model PriceHistory {
+  id            String   @id @default(cuid())
+  productId     String
+  previousPrice Float?
+  newPrice      Float
+  priceField    String   @default("basePrice") // which price field changed
+  currency      String   @default("KES")
+  changedBy     String?  // admin user id
+  reason        String?
+  createdAt     DateTime @default(now())
+
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([createdAt])
+}
+
+// ============================================================
+// MARKET PRICE OBSERVATION - Research reference only, NOT production prices
+// ============================================================
+
+model MarketPriceObservation {
+  id              String   @id @default(cuid())
+  source          String   // e.g. "Jiji", "Pigiame", "WhatsApp", "Social Media"
+  productName     String?
+  productCategory String?
+  observedPrice   Float
+  currency        String   @default("KES")
+  observedDate    DateTime
+  url             String?
+  condition       String?  // NEW, REFURBISHED, USED
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@index([source])
+  @@index([observedDate])
+  @@index([productCategory])
+}
+
+// ============================================================
+// PRODUCT CROSS-SELL / FREQUENTLY BOUGHT TOGETHER
+// ============================================================
+
+model ProductCrossSell {
+  fromId     String
+  toId       String
+  type       String  @default("CROSS_SELL") // CROSS_SELL, UPSELL, BUNDLE, FREQUENTLY_BOUGHT
+  sortOrder  Int     @default(0)
+
+  fromProduct Product @relation("ProductCrossSellFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toProduct   Product @relation("ProductCrossSellTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@id([fromId, toId])
+  @@index([fromId])
+  @@index([toId])
+}
+
+// ============================================================
+// PRODUCT COMPARISON
+// ============================================================
+
+model ProductComparison {
+  id         String  @id @default(cuid())
+  productId  String
+  sessionId  String  // anonymous session or user id
+  createdAt  DateTime @default(now())
+
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([productId])
+}
+
+// ============================================================
+// PRICE ALERTS - "Notify me when price drops"
+// ============================================================
+
+model PriceAlert {
+  id            String   @id @default(cuid())
+  productId     String
+  customerEmail String?
+  customerPhone String?
+  targetPrice   Float?
+  currentPrice  Float?
+  status        String   @default("ACTIVE") // ACTIVE, TRIGGERED, CANCELLED
+  createdAt     DateTime @default(now())
+  triggeredAt   DateTime?
+
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([status])
+}
+
+// ============================================================
+// STOCK ALERTS - "Notify me when back in stock"
+// ============================================================
+
+model StockAlert {
+  id            String   @id @default(cuid())
+  productId     String
+  customerEmail String?
+  customerPhone String?
+  status        String   @default("WAITING") // WAITING, TRIGGERED, CANCELLED
+  createdAt     DateTime @default(now())
+  triggeredAt   DateTime?
+
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([status])
+}
+
+// ============================================================
+// GAMING PC BUILDER - Component compatibility
+// ============================================================
+
+model GamingBuildComponent {
+  id              String  @id @default(cuid())
+  componentType   String  // CPU, MOTHERBOARD, RAM, GPU, SSD, HDD, PSU, CASE, COOLING, MONITOR, KEYBOARD, MOUSE, HEADSET
+  productId       String?
+  compatibleWith  String? // JSON: component type -> required spec
+  sortOrder       Int     @default(0)
+  createdAt       DateTime @default(now())
+
+  @@index([componentType])
+}
+
+// ============================================================
+// SEARCH SYNONYMS
+// ============================================================
+
+model SearchSynonym {
+  id        String   @id @default(cuid())
+  term      String   // primary term
+  synonym   String   // synonym that maps to term
+  createdAt DateTime @default(now())
+
+  @@unique([term, synonym])
+  @@index([term])
+  @@index([synonym])
+}
+
+// ============================================================
+// REVIEW (for future use)
+// ============================================================
+
+model Review {
+  id          String   @id @default(cuid())
+  productId   String
+  rating      Int      // 1-5
+  title       String?
+  body        String?
+  authorName  String?
+  authorEmail String?
+  isVerified  Boolean  @default(false)
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productId])
+  @@index([rating])
+  @@index([isPublished])
+}
+
+// ============================================================
+// PROMOTION / DEAL
+// ============================================================
+
+model Promotion {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?
+  discountType  String   @default("PERCENTAGE") // PERCENTAGE, FIXED_AMOUNT, BUNDLE
+  discountValue Float?
+  startDate     DateTime
+  endDate       DateTime?
+  isActive      Boolean  @default(true)
+  promoType      String   @default("DEAL") // DEAL, CLEARANCE, FLASH_SALE, BUNDLE
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([startDate])
+}
