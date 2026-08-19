@@ -1,0 +1,416 @@
+     1→     1→import { PrismaClient } from '@prisma/client'
+     2→     2→const db = new PrismaClient()
+     3→     3→
+     4→     4→async function main() {
+     5→     5→  // ============================================================
+     6→     6→  // 1. BUSINESS UNITS
+     7→     7→  // ============================================================
+     8→     8→  const units: Record<string, string> = {}
+     9→     9→  for (const [name, type] of [
+    10→    10→    ['Bigman Computers', 'COMPUTERS'],
+    11→    11→    ['Bigman Gaming', 'GAMING'],
+    12→    12→    ['Bigman Business', 'BUSINESS'],
+    13→    13→    ['Bigman Services', 'SERVICES'],
+    14→    14→  ] as const) {
+    15→    15→    const u = await db.businessUnit.create({ data: { name, type, slug: name.toLowerCase().replace(/ /g, '-') } })
+    16→    16→    units[name] = u.id
+    17→    17→  }
+    18→    18→
+    19→    19→  // ============================================================
+    20→    20→  // 2. BRANDS
+    21→    21→  // ============================================================
+    22→    22→  const brandData = [
+    23→    23→    'HP', 'Dell', 'Lenovo', 'Apple', 'ASUS', 'Acer', 'MSI', 'Microsoft', 'Samsung',
+    24→    24→    'Canon', 'Epson', 'Brother', 'Logitech', 'TP-Link', 'Kingston', 'Crucial', 'Seagate',
+    25→    25→    'Western Digital', 'NVIDIA', 'AMD', 'Intel', 'Razer', 'HyperX', 'Corsair', 'Cooler Master',
+    26→    26→    'AOC', 'LG', 'Belkin', 'Anker'
+    27→    27→  ]
+    28→    28→  const brands: Record<string, string> = {}
+    29→    29→  for (const name of brandData) {
+    30→    30→    const b = await db.brand.create({
+    31→    31→      data: { name, slug: name.toLowerCase().replace(/ /g, '-'), description: `${name} products at Bigman Computers` }
+    32→    32→    })
+    33→    33→    brands[name] = b.id
+    34→    34→  }
+    35→    35→
+    36→    36→  // ============================================================
+    37→    37→  // 3. FULL CATEGORY TREE (22 top-level categories)
+    38→    38→  // ============================================================
+    39→    39→  const catIds: Record<string, string> = {}
+    40→    40→
+    41→    41→  interface CatDef {
+    42→    42→    name: string; slug: string; desc?: string; icon?: string; children?: CatDef[]; navCols?: number; isFeatured?: boolean
+    43→    43→  }
+    44→    44→
+    45→    45→  const categories: CatDef[] = [
+    46→    46→    {
+    47→    47→      name: 'Laptops', slug: 'laptops', icon: 'Laptop', navCols: 4,
+    48→    48→      children: [
+    49→    49→        { name: 'HP', slug: 'hp' }, { name: 'Dell', slug: 'dell' }, { name: 'Lenovo', slug: 'lenovo' },
+    50→    50→        { name: 'Apple', slug: 'apple' }, { name: 'ASUS', slug: 'asus' }, { name: 'Acer', slug: 'acer' },
+    51→    51→        { name: 'MSI', slug: 'msi' }, { name: 'Microsoft', slug: 'microsoft' }, { name: 'Samsung', slug: 'samsung' },
+    52→    52→        { name: 'New', slug: 'new' }, { name: 'Refurbished', slug: 'refurbished' }, { name: 'Student', slug: 'student' },
+    53→    53→        { name: 'Business', slug: 'business' }, { name: 'Programming', slug: 'programming' },
+    54→    54→        { name: 'Design', slug: 'design' }, { name: 'Gaming', slug: 'gaming' },
+    55→    55→      ]
+    56→    56→    },
+    57→    57→    {
+    58→    58→      name: 'Desktops', slug: 'desktops', icon: 'Monitor', navCols: 3,
+    59→    59→      children: [
+    60→    60→        { name: 'Office Desktops', slug: 'office' }, { name: 'Home Desktops', slug: 'home' },
+    61→    61→        { name: 'All-in-One', slug: 'all-in-one' }, { name: 'Mini PCs', slug: 'mini-pcs' },
+    62→    62→        { name: 'Tower PCs', slug: 'tower' }, { name: 'Custom PCs', slug: 'custom' },
+    63→    63→        { name: 'Refurbished Desktops', slug: 'refurbished' }, { name: 'Business Desktops', slug: 'business' },
+    64→    64→      ]
+    65→    65→    },
+    66→    66→    {
+    67→    67→      name: 'Gaming', slug: 'gaming', icon: 'Gamepad2', navCols: 4,
+    68→    68→      children: [
+    69→    69→        { name: 'Gaming Laptops', slug: 'laptops' }, { name: 'Gaming PCs', slug: 'pcs' },
+    70→    70→        { name: 'Gaming Monitors', slug: 'monitors' }, { name: 'Gaming GPUs', slug: 'gpus' },
+    71→    71→        { name: 'Gaming Keyboards', slug: 'keyboards' }, { name: 'Gaming Mice', slug: 'mice' },
+    72→    72→        { name: 'Gaming Headsets', slug: 'headsets' }, { name: 'Gaming Controllers', slug: 'controllers' },
+    73→    73→        { name: 'Gaming Chairs', slug: 'chairs' }, { name: 'Gaming Desks', slug: 'desks' },
+    74→    74→        { name: 'Gaming Accessories', slug: 'accessories' }, { name: 'Gaming Bundles', slug: 'bundles' },
+    75→    75→      ]
+    76→    76→    },
+    77→    77→    {
+    78→    78→      name: 'Mac & Apple', slug: 'mac-apple', icon: 'Apple', navCols: 3,
+    79→    79→      children: [
+    80→    80→        { name: 'MacBook Air', slug: 'macbook-air' }, { name: 'MacBook Pro', slug: 'macbook-pro' },
+    81→    81→        { name: 'Mac Mini', slug: 'mac-mini' }, { name: 'iMac', slug: 'imac' },
+    82→    82→        { name: 'Apple Accessories', slug: 'accessories' }, { name: 'Refurbished MacBooks', slug: 'refurbished' },
+    83→    83→      ]
+    84→    84→    },
+    85→    85→    {
+    86→    86→      name: 'Workstations', slug: 'workstations', icon: 'Server', navCols: 3,
+    87→    87→      children: [
+    88→    88→        { name: 'HP ZBook', slug: 'hp-zbook' }, { name: 'Dell Precision', slug: 'dell-precision' },
+    89→    89→        { name: 'Lenovo ThinkPad P', slug: 'lenovo-thinkpad-p' }, { name: 'Desktop Workstations', slug: 'desktop' },
+    90→    90→        { name: 'Mobile Workstations', slug: 'mobile' }, { name: 'Refurbished Workstations', slug: 'refurbished' },
+    91→    91→      ]
+    92→    92→    },
+    93→    93→    {
+    94→    94→      name: 'Monitors', slug: 'monitors', icon: 'Monitor', navCols: 3,
+    95→    95→      children: [
+    96→    96→        { name: 'Office Monitors', slug: 'office' }, { name: 'Gaming Monitors', slug: 'gaming' },
+    97→    97→        { name: 'Professional Monitors', slug: 'professional' }, { name: '4K Monitors', slug: '4k' },
+    98→    98→        { name: 'Ultrawide', slug: 'ultrawide' }, { name: 'Portable Monitors', slug: 'portable' },
+    99→    99→      ]
+   100→   100→    },
+   101→   101→    {
+   102→   102→      name: 'Printers', slug: 'printers', icon: 'Printer', navCols: 3,
+   103→   103→      children: [
+   104→   104→        { name: 'HP', slug: 'hp' }, { name: 'Canon', slug: 'canon' }, { name: 'Epson', slug: 'epson' },
+   105→   105→        { name: 'Brother', slug: 'brother' }, { name: 'Inkjet', slug: 'inkjet' },
+   106→   106→        { name: 'Laser', slug: 'laser' }, { name: 'All-in-One', slug: 'all-in-one' },
+   107→   107→        { name: 'Printer Ink', slug: 'ink' }, { name: 'Toner', slug: 'toner' },
+   108→   108→      ]
+   109→   109→    },
+   110→   110→    {
+   111→   111→      name: 'Accessories', slug: 'accessories', icon: 'Mouse', navCols: 4,
+   112→   112→      children: [
+   113→   113→        { name: 'Keyboards', slug: 'keyboards' }, { name: 'Mice', slug: 'mice' },
+   114→   114→        { name: 'Laptop Bags', slug: 'bags' }, { name: 'Chargers', slug: 'chargers' },
+   115→   115→        { name: 'Cables', slug: 'cables' }, { name: 'USB Hubs', slug: 'usb-hubs' },
+   116→   116→        { name: 'Docking Stations', slug: 'docking-stations' }, { name: 'Adapters', slug: 'adapters' },
+   117→   117→        { name: 'Headsets', slug: 'headsets' }, { name: 'Speakers', slug: 'speakers' },
+   118→   118→        { name: 'Webcams', slug: 'webcams' }, { name: 'Cleaning', slug: 'cleaning' },
+   119→   119→      ]
+   120→   120→    },
+   121→   121→    {
+   122→   122→      name: 'Parts', slug: 'parts', icon: 'Wrench', navCols: 3,
+   123→   123→      children: [
+   124→   124→        { name: 'Laptop Screens', slug: 'screens' }, { name: 'Laptop Keyboards', slug: 'keyboards' },
+   125→   125→        { name: 'Laptop Batteries', slug: 'batteries' }, { name: 'Laptop Chargers', slug: 'chargers' },
+   126→   126→        { name: 'Laptop Fans', slug: 'fans' }, { name: 'Laptop Speakers', slug: 'speakers' },
+   127→   127→        { name: 'Laptop Hinges', slug: 'hinges' }, { name: 'Laptop Cases', slug: 'cases' },
+   128→   128→      ]
+   129→   129→    },
+   130→   130→    {
+   131→   131→      name: 'Hardware', slug: 'hardware', icon: 'Cpu', navCols: 3,
+   132→   132→      children: [
+   133→   133→        { name: 'RAM', slug: 'ram' }, { name: 'SSDs', slug: 'ssds' }, { name: 'HDDs', slug: 'hdds' },
+   134→   134→        { name: 'Graphics Cards', slug: 'gpus' }, { name: 'Processors', slug: 'cpus' },
+   135→   135→        { name: 'Motherboards', slug: 'motherboards' }, { name: 'Power Supplies', slug: 'psus' },
+   136→   136→        { name: 'Computer Cases', slug: 'cases' }, { name: 'Cooling', slug: 'cooling' },
+   137→   137→      ]
+   138→   138→    },
+   139→   139→    {
+   140→   140→      name: 'Storage', slug: 'storage', icon: 'HardDrive', navCols: 3,
+   141→   141→      children: [
+   142→   142→        { name: 'SSD', slug: 'ssd' }, { name: 'HDD', slug: 'hdd' },
+   143→   143→        { name: 'External HDD', slug: 'external-hdd' }, { name: 'External SSD', slug: 'external-ssd' },
+   144→   144→        { name: 'USB Flash Drives', slug: 'flash-drives' }, { name: 'Memory Cards', slug: 'memory-cards' },
+   145→   145→        { name: 'NAS Storage', slug: 'nas' },
+   146→   146→      ]
+   147→   147→    },
+   148→   148→    {
+   149→   149→      name: 'RAM & Memory', slug: 'ram-memory', icon: 'MemoryStick', navCols: 3,
+   150→   150→      children: [
+   151→   151→        { name: 'Laptop RAM', slug: 'laptop' }, { name: 'Desktop RAM', slug: 'desktop' },
+   152→   152→        { name: 'DDR3', slug: 'ddr3' }, { name: 'DDR4', slug: 'ddr4' }, { name: 'DDR5', slug: 'ddr5' },
+   153→   153→      ]
+   154→   154→    },
+   155→   155→    {
+   156→   156→      name: 'Networking', slug: 'networking', icon: 'Wifi', navCols: 3,
+   157→   157→      children: [
+   158→   158→        { name: 'Routers', slug: 'routers' }, { name: 'Wi-Fi Adapters', slug: 'wifi-adapters' },
+   159→   159→        { name: 'Bluetooth Adapters', slug: 'bluetooth' }, { name: 'Network Switches', slug: 'switches' },
+   160→   160→        { name: 'Ethernet Cables', slug: 'ethernet-cables' }, { name: 'Modems', slug: 'modems' },
+   161→   161→        { name: 'Access Points', slug: 'access-points' },
+   162→   162→      ]
+   163→   163→    },
+   164→   164→    {
+   165→   165→      name: 'Power', slug: 'power', icon: 'Zap', navCols: 3,
+   166→   166→      children: [
+   167→   167→        { name: 'UPS', slug: 'ups' }, { name: 'Laptop Chargers', slug: 'laptop-chargers' },
+   168→   168→        { name: 'Power Adapters', slug: 'adapters' }, { name: 'Surge Protectors', slug: 'surge-protectors' },
+   169→   169→        { name: 'Extension Cables', slug: 'extensions' },
+   170→   170→      ]
+   171→   171→    },
+   172→   172→    {
+   173→   173→      name: 'Software', slug: 'software', icon: 'Code', navCols: 3,
+   174→   174→      children: [
+   175→   175→        { name: 'Operating Systems', slug: 'operating-systems' },
+   176→   176→        { name: 'Productivity', slug: 'productivity' },
+   177→   177→        { name: 'Security', slug: 'security' },
+   178→   178→      ]
+   179→   179→    },
+   180→   180→    {
+   181→   181→      name: 'Bags & Protection', slug: 'bags-protection', icon: 'Briefcase', navCols: 3,
+   182→   182→      children: [
+   183→   183→        { name: 'Laptop Bags', slug: 'laptop-bags' }, { name: 'Laptop Backpacks', slug: 'backpacks' },
+   184→   184→        { name: 'Laptop Sleeves', slug: 'sleeves' }, { name: 'Hard Cases', slug: 'hard-cases' },
+   185→   185→        { name: 'Screen Protectors', slug: 'screen-protectors' },
+   186→   186→      ]
+   187→   187→    },
+   188→   188→    {
+   189→   189→      name: 'Office Technology', slug: 'office-technology', icon: 'Building2', navCols: 3,
+   190→   190→      children: [
+   191→   191→        { name: 'Projectors', slug: 'projectors' }, { name: 'Scanners', slug: 'scanners' },
+   192→   192→        { name: 'Conference Cameras', slug: 'conference-cameras' },
+   193→   193→        { name: 'Office Accessories', slug: 'office-accessories' },
+   194→   194→      ]
+   195→   195→    },
+   196→   196→    {
+   197→   197→      name: 'Refurbished', slug: 'refurbished', icon: 'RotateCcw', navCols: 3, isFeatured: true,
+   198→   198→      children: [
+   199→   199→        { name: 'Refurbished Laptops', slug: 'laptops' }, { name: 'Refurbished Desktops', slug: 'desktops' },
+   200→   200→        { name: 'Refurbished Workstations', slug: 'workstations' }, { name: 'Refurbished MacBooks', slug: 'macbooks' },
+   201→   201→        { name: 'Refurbished Monitors', slug: 'monitors' }, { name: 'Refurbished Accessories', slug: 'accessories' },
+   202→   202→      ]
+   203→   203→    },
+   204→   204→    {
+   205→   205→      name: 'Deals', slug: 'deals', icon: 'Percent', navCols: 3, isFeatured: true,
+   206→   206→      children: [
+   207→   207→        { name: "Today's Deals", slug: 'today' }, { name: 'Clearance', slug: 'clearance' },
+   208→   208→        { name: 'Laptop Deals', slug: 'laptops' }, { name: 'Gaming Deals', slug: 'gaming' },
+   209→   209→        { name: 'Accessory Deals', slug: 'accessories' }, { name: 'Bundle Deals', slug: 'bundles' },
+   210→   210→      ]
+   211→   211→    },
+   212→   212→    {
+   213→   213→      name: 'Services', slug: 'services', icon: 'Settings', navCols: 3,
+   214→   214→      children: [
+   215→   215→        { name: 'Repairs', slug: 'repairs' }, { name: 'Upgrades', slug: 'upgrades' },
+   216→   216→        { name: 'Installation', slug: 'installation' }, { name: 'Data Recovery', slug: 'data-recovery' },
+   217→   217→        { name: 'Support', slug: 'support' },
+   218→   218→      ]
+   219→   219→    },
+   220→   220→    {
+   221→   221→      name: 'Business', slug: 'business', icon: 'Building', navCols: 3, isFeatured: true,
+   222→   222→      children: [
+   223→   223→        { name: 'Bulk Orders', slug: 'bulk-orders' }, { name: 'Corporate Laptops', slug: 'corporate-laptops' },
+   224→   224→        { name: 'Office Setup', slug: 'office-setup' }, { name: 'Networking Solutions', slug: 'networking' },
+   225→   225→        { name: 'Request a Quote', slug: 'request-quote' },
+   226→   226→      ]
+   227→   227→    },
+   228→   228→    {
+   229→   229→      name: 'Cables & Adapters', slug: 'cables-adapters', icon: 'Cable', navCols: 2,
+   230→   230→      children: [
+   231→   231→        { name: 'HDMI Cables', slug: 'hdmi' }, { name: 'DisplayPort Cables', slug: 'displayport' },
+   232→   232→        { name: 'USB Cables', slug: 'usb' }, { name: 'Ethernet Cables', slug: 'ethernet' },
+   233→   233→        { name: 'Adapters', slug: 'adapters' },
+   234→   234→      ]
+   235→   235→    },
+   236→   236→  ]
+   237→   237→
+   238→   238→  async function insertCategories(cats: CatDef[], parentId: string | null, level: number) {
+   239→   239→    for (let i = 0; i < cats.length; i++) {
+   240→   240→      const c = cats[i]
+   241→   241→      const cat = await db.category.create({
+   242→   242→        data: {
+   243→   243→          name: c.name, slug: c.slug,
+   244→   244→          description: c.desc || `${c.name} at Bigman Computers - Quality technology at competitive prices.`,
+   245→   245→          parentId, sortOrder: i, level, isActive: true,
+   246→   246→          isFeatured: c.isFeatured || false,
+   247→   247→          navIcon: c.icon || null, navColumns: c.navCols || 3,
+   248→   248→          showInNav: true,
+   249→   249→          seoTitle: `${c.name} in Kenya | Bigman Computers`,
+   250→   250→          seoDescription: `Shop ${c.name.toLowerCase()} at Bigman Computers, Nairobi. ${c.desc || `Quality ${c.name.toLowerCase()} at competitive prices.`}`,
+   251→   251→        }
+   252→   252→      })
+   253→   253→      catIds[c.slug] = cat.id
+   254→   254→      if (c.children?.length) {
+   255→   255→        await insertCategories(c.children, cat.id, level + 1)
+   256→   256→      }
+   257→   257→    }
+   258→   258→  }
+   259→   259→
+   260→   260→  await insertCategories(categories, null, 0)
+   261→   261→  console.log(`Created ${Object.keys(catIds).length} categories`)
+   262→   262→
+   263→   263→  // ============================================================
+   264→   264→  // 4. SAMPLE PRODUCTS
+   265→   265→  // ============================================================
+   266→   266→  const products = [
+   267→   267→    { name: 'HP EliteBook 840 G8', slug: 'hp-elitebook-840-g8', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 89500, compareAtPrice: 95000, warrantyMonths: 12, specs: { processor: 'Intel Core i5-1135G7', ram: '8GB DDR4', storage: '256GB SSD', display: '14" FHD IPS', os: 'Windows 11 Pro' }, categories: ['laptops', 'hp', 'business'], isFeatured: true, stock: 8 },
+   268→   268→    { name: 'HP ProBook 450 G9', slug: 'hp-probook-450-g9', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 72500, warrantyMonths: 12, specs: { processor: 'Intel Core i5-1235U', ram: '8GB DDR4', storage: '512GB SSD', display: '15.6" FHD IPS', os: 'Windows 11 Pro' }, categories: ['laptops', 'hp', 'business'], stock: 12 },
+   269→   269→    { name: 'Dell Latitude 5540', slug: 'dell-latitude-5540', brandId: brands['Dell'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 98000, compareAtPrice: 105000, warrantyMonths: 12, specs: { processor: 'Intel Core i7-1355U', ram: '16GB DDR5', storage: '512GB SSD', display: '15.6" FHD IPS', os: 'Windows 11 Pro' }, categories: ['laptops', 'dell', 'business'], isFeatured: true, stock: 5 },
+   270→   270→    { name: 'Lenovo ThinkPad E14 Gen 5', slug: 'lenovo-thinkpad-e14-gen5', brandId: brands['Lenovo'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 65000, warrantyMonths: 12, specs: { processor: 'Intel Core i5-1335U', ram: '8GB DDR4', storage: '256GB SSD', display: '14" FHD IPS', os: 'Windows 11 Pro' }, categories: ['laptops', 'lenovo', 'business'], stock: 15 },
+   271→   271→    { name: 'Lenovo IdeaPad 3', slug: 'lenovo-ideapad-3', brandId: brands['Lenovo'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 42000, warrantyMonths: 12, specs: { processor: 'AMD Ryzen 5 5500U', ram: '8GB DDR4', storage: '512GB SSD', display: '15.6" FHD', os: 'Windows 11 Home' }, categories: ['laptops', 'lenovo', 'student'], stock: 20 },
+   272→   272→    { name: 'HP EliteBook 850 G5 - Refurbished', slug: 'hp-elitebook-850-g5-refurbished', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'REFURBISHED', conditionGrade: 'A', basePrice: 34500, compareAtPrice: 42000, warrantyMonths: 6, specs: { processor: 'Intel Core i5-8350U', ram: '8GB DDR4', storage: '256GB SSD', display: '15.6" FHD IPS', os: 'Windows 11 Pro' }, categories: ['laptops', 'refurbished', 'business', 'hp'], isFeatured: true, stock: 4 },
+   273→   273→    { name: 'Dell Latitude E7440 - Refurbished', slug: 'dell-latitude-e7440-refurbished', brandId: brands['Dell'], buId: units['Bigman Computers'], condition: 'REFURBISHED', conditionGrade: 'B', basePrice: 18500, compareAtPrice: 24000, warrantyMonths: 3, specs: { processor: 'Intel Core i5-4300U', ram: '8GB DDR3', storage: '500GB HDD', display: '14" HD', os: 'Windows 10 Pro' }, categories: ['laptops', 'refurbished', 'dell', 'student'], stock: 6 },
+   274→   274→    { name: 'HP ProBook 450 G3 - Refurbished', slug: 'hp-probook-450-g3-refurbished', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'REFURBISHED', conditionGrade: 'B_PLUS', basePrice: 22000, compareAtPrice: 28000, warrantyMonths: 3, specs: { processor: 'Intel Core i5-6200U', ram: '8GB DDR4', storage: '256GB SSD', display: '15.6" FHD', os: 'Windows 10 Pro' }, categories: ['laptops', 'refurbished', 'hp'], stock: 7 },
+   275→   275→    { name: 'Acer Aspire 3', slug: 'acer-aspire-3', brandId: brands['Acer'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 38500, warrantyMonths: 12, specs: { processor: 'Intel Core i3-N305', ram: '4GB DDR5', storage: '256GB SSD', display: '15.6" FHD', os: 'Windows 11 Home' }, categories: ['laptops', 'acer', 'student'], stock: 25 },
+   276→   276→    { name: 'MSI GF63 Thin', slug: 'msi-gf63-thin', brandId: brands['MSI'], buId: units['Bigman Gaming'], condition: 'NEW', basePrice: 89000, compareAtPrice: 95000, warrantyMonths: 12, specs: { processor: 'Intel Core i5-11400H', ram: '8GB DDR4', storage: '512GB SSD', gpu: 'NVIDIA GTX 1650', display: '15.6" FHD 144Hz', os: 'Windows 11 Home' }, categories: ['gaming', 'laptops', 'msi'], isGaming: true, isFeatured: true, stock: 6 },
+   277→   277→    { name: 'ASUS TUF Gaming A15', slug: 'asus-tuf-a15', brandId: brands['ASUS'], buId: units['Bigman Gaming'], condition: 'NEW', basePrice: 125000, compareAtPrice: 135000, warrantyMonths: 12, specs: { processor: 'AMD Ryzen 7 7735HS', ram: '16GB DDR5', storage: '512GB SSD', gpu: 'NVIDIA RTX 4050', display: '15.6" FHD 144Hz', os: 'Windows 11 Home' }, categories: ['gaming', 'laptops', 'asus'], isGaming: true, stock: 4 },
+   278→   278→    { name: 'Lenovo Legion 5', slug: 'lenovo-legion-5', brandId: brands['Lenovo'], buId: units['Bigman Gaming'], condition: 'NEW', basePrice: 165000, compareAtPrice: 180000, warrantyMonths: 12, specs: { processor: 'Intel Core i7-13700HX', ram: '16GB DDR5', storage: '1TB SSD', gpu: 'NVIDIA RTX 4060', display: '15.6" FHD 165Hz', os: 'Windows 11 Home' }, categories: ['gaming', 'laptops', 'lenovo'], isGaming: true, isFeatured: true, stock: 3 },
+   279→   279→    { name: 'MacBook Air M2', slug: 'macbook-air-m2', brandId: brands['Apple'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 145000, compareAtPrice: 155000, warrantyMonths: 12, specs: { processor: 'Apple M2', ram: '8GB Unified', storage: '256GB SSD', display: '13.6" Liquid Retina', os: 'macOS Sonoma' }, categories: ['mac-apple', 'macbook-air', 'laptops', 'apple'], isFeatured: true, stock: 5 },
+   280→   280→    { name: 'MacBook Pro M3', slug: 'macbook-pro-m3', brandId: brands['Apple'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 215000, compareAtPrice: 230000, warrantyMonths: 12, specs: { processor: 'Apple M3 Pro', ram: '18GB Unified', storage: '512GB SSD', display: '14" Liquid Retina XDR', os: 'macOS Sonoma' }, categories: ['mac-apple', 'macbook-pro', 'laptops', 'apple'], isFeatured: true, stock: 3 },
+   281→   281→    { name: 'HP ZBook 15 G8 - Refurbished', slug: 'hp-zbook-15-g8-refurbished', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'REFURBISHED', conditionGrade: 'A', basePrice: 85000, compareAtPrice: 110000, warrantyMonths: 6, specs: { processor: 'Intel Core i7-11800H', ram: '32GB DDR4', storage: '512GB SSD', gpu: 'NVIDIA T600', display: '15.6" FHD', os: 'Windows 11 Pro' }, categories: ['workstations', 'hp-zbook', 'refurbished'], isFeatured: true, stock: 2 },
+   282→   282→    { name: 'Dell Precision 5560 - Refurbished', slug: 'dell-precision-5560-refurbished', brandId: brands['Dell'], buId: units['Bigman Computers'], condition: 'REFURBISHED', conditionGrade: 'A_PLUS', basePrice: 120000, compareAtPrice: 155000, warrantyMonths: 6, specs: { processor: 'Intel Core i9-11950H', ram: '32GB DDR4', storage: '1TB SSD', gpu: 'NVIDIA RTX A2000', display: '15.6" 4K OLED', os: 'Windows 11 Pro' }, categories: ['workstations', 'dell-precision', 'refurbished'], stock: 1 },
+   283→   283→    { name: 'HP ProDesk 400 G7 Desktop', slug: 'hp-prodesk-400-g7', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 55000, warrantyMonths: 12, specs: { processor: 'Intel Core i5-10500', ram: '8GB DDR4', storage: '256GB SSD', os: 'Windows 11 Pro' }, categories: ['desktops', 'office', 'hp'], stock: 10 },
+   284→   284→    { name: 'HP 24fh FHD Monitor', slug: 'hp-24fh-monitor', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 18500, warrantyMonths: 12, specs: { size: '24"', resolution: '1920x1080', panel: 'IPS', refreshRate: '75Hz' }, categories: ['monitors', 'office', 'hp'], stock: 18 },
+   285→   285→    { name: 'AOC 24G2 Gaming Monitor', slug: 'aoc-24g2-gaming-monitor', brandId: brands['AOC'], buId: units['Bigman Gaming'], condition: 'NEW', basePrice: 32000, compareAtPrice: 36000, warrantyMonths: 12, specs: { size: '24"', resolution: '1920x1080', panel: 'IPS', refreshRate: '144Hz', responseTime: '1ms' }, categories: ['monitors', 'gaming', 'gaming'], isGaming: true, isDeal: true, stock: 8 },
+   286→   286→    { name: 'LG 27UK850 4K Monitor', slug: 'lg-27uk850-4k', brandId: brands['LG'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 58000, warrantyMonths: 12, specs: { size: '27"', resolution: '3840x2160', panel: 'IPS', refreshRate: '60Hz', hdr: 'HDR10' }, categories: ['monitors', 'professional', '4k'], isFeatured: true, stock: 4 },
+   287→   287→    { name: 'HP LaserJet Pro M404dn', slug: 'hp-laserjet-m404dn', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 45000, warrantyMonths: 12, specs: { type: 'Mono Laser', speed: '38ppm', resolution: '1200x1200 dpi', connectivity: 'USB, Ethernet, Wi-Fi' }, categories: ['printers', 'hp', 'laser'], stock: 6 },
+   288→   288→    { name: 'Epson EcoTank L3250', slug: 'epson-ecotank-l3250', brandId: brands['Epson'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 28000, compareAtPrice: 32000, warrantyMonths: 12, specs: { type: 'Color Inkjet', speed: '10ppm (color)', resolution: '5760x1440 dpi', connectivity: 'Wi-Fi, USB' }, categories: ['printers', 'epson', 'inkjet', 'all-in-one'], isDeal: true, stock: 10 },
+   289→   289→    { name: 'Logitech MK270 Wireless Combo', slug: 'logitech-mk270', brandId: brands['Logitech'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 4500, warrantyMonths: 12, specs: { type: 'Wireless Combo', connectivity: '2.4GHz', battery: 'Keyboard: 24mo, Mouse: 12mo' }, categories: ['accessories', 'keyboards', 'mice'], stock: 30 },
+   290→   290→    { name: 'Razer DeathAdder Essential', slug: 'razer-deathadder-essential', brandId: brands['Razer'], buId: units['Bigman Gaming'], condition: 'NEW', basePrice: 6500, compareAtPrice: 7500, warrantyMonths: 24, specs: { sensor: '6400 DPI Optical', buttons: '5', lighting: 'RGB', weight: '96g' }, categories: ['gaming', 'mice', 'accessories'], isGaming: true, isDeal: true, stock: 15 },
+   291→   291→    { name: 'HyperX Cloud Stinger', slug: 'hyperx-cloud-stinger', brandId: brands['HyperX'], buId: units['Bigman Gaming'], condition: 'NEW', basePrice: 8500, compareAtPrice: 10000, warrantyMonths: 24, specs: { driver: '50mm', type: 'Over-ear', mic: 'Swivel-to-mute', weight: '275g' }, categories: ['gaming', 'headsets', 'accessories'], isGaming: true, isDeal: true, stock: 12 },
+   292→   292→    { name: 'Kingston 8GB DDR5-4800 SO-DIMM', slug: 'kingston-8gb-ddr5-sodimm', brandId: brands['Kingston'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 4799, compareAtPrice: 5500, warrantyMonths: 36, specs: { capacity: '8GB', type: 'DDR5', speed: '4800MHz', formFactor: 'SO-DIMM', voltage: '1.1V' }, categories: ['ram-memory', 'laptop', 'ddr5', 'hardware', 'ram'], isDeal: true, stock: 40 },
+   293→   293→    { name: 'Crucial 16GB DDR4-3200 DIMM', slug: 'crucial-16gb-ddr4-dimm', brandId: brands['Crucial'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 7200, warrantyMonths: 36, specs: { capacity: '16GB', type: 'DDR4', speed: '3200MHz', formFactor: 'DIMM', voltage: '1.2V' }, categories: ['ram-memory', 'desktop', 'ddr4', 'hardware', 'ram'], stock: 20 },
+   294→   294→    { name: 'Samsung 500GB 870 EVO SSD', slug: 'samsung-870-evo-500gb', brandId: brands['Samsung'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 6800, warrantyMonths: 60, specs: { capacity: '500GB', interface: 'SATA III', formFactor: '2.5"', readSpeed: '560MB/s', writeSpeed: '530MB/s' }, categories: ['storage', 'ssd', 'hardware', 'ssds'], stock: 25 },
+   295→   295→    { name: 'Seagate 1TB BarraCuda HDD', slug: 'seagate-1tb-barracuda', brandId: brands['Seagate'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 5500, warrantyMonths: 24, specs: { capacity: '1TB', interface: 'SATA III', formFactor: '3.5"', speed: '7200RPM', cache: '256MB' }, categories: ['storage', 'hdd', 'hardware', 'hdds'], stock: 30 },
+   296→   296→    { name: 'HP EliteBook 850 G5 Keyboard', slug: 'hp-elitebook-850-g5-keyboard', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 1699, warrantyMonths: 6, specs: { compatibility: 'HP EliteBook 850 G5', type: 'US Layout', backlit: 'No', color: 'Silver' }, categories: ['parts', 'keyboards'], compatibleModels: 'hp-elitebook-850-g5,hp-elitebook-840-g5', stock: 8 },
+   297→   297→    { name: 'Dell E7440 Replacement Screen', slug: 'dell-e7440-screen', brandId: brands['Dell'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 5999, compareAtPrice: 7000, warrantyMonths: 6, specs: { compatibility: 'Dell Latitude E7440', size: '14"', resolution: '1366x768 HD', panel: 'LED', finish: 'Matte' }, categories: ['parts', 'screens'], compatibleModels: 'dell-latitude-e7440-refurbished', isDeal: true, stock: 5 },
+   298→   298→    { name: 'HP ProBook 450 G3 Battery', slug: 'hp-probook-450-g3-battery', brandId: brands['HP'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 3500, warrantyMonths: 12, specs: { compatibility: 'HP ProBook 450 G3', capacity: '2200mAh', voltage: '14.4V', type: 'Li-ion' }, categories: ['parts', 'batteries'], compatibleModels: 'hp-probook-450-g3-refurbished', stock: 10 },
+   299→   299→    { name: 'TP-Link TL-R470T Router', slug: 'tp-link-tl-r470t', brandId: brands['TP-Link'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 12000, warrantyMonths: 24, specs: { ports: '5x Gigabit', wan: '2x WAN', throughput: 'Gigabit', type: 'Wired Router' }, categories: ['networking', 'routers'], stock: 8 },
+   300→   300→    { name: 'Targus 15.6" Laptop Bag', slug: 'targus-classic-15-6', brandId: brands['Targus'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 3500, warrantyMonths: 12, specs: { fit: 'Up to 15.6" laptops', material: 'Polyester', pockets: 'Multiple', color: 'Black' }, categories: ['bags-protection', 'laptop-bags', 'accessories', 'bags'], stock: 20 },
+   301→   301→    { name: 'Windows 11 Pro License', slug: 'windows-11-pro-license', brandId: brands['Microsoft'], buId: units['Bigman Computers'], condition: 'NEW', basePrice: 15000, warrantyMonths: 0, specs: { licenseType: 'OEM', devices: '1 PC', duration: 'Perpetual', activation: 'Digital', delivery: 'Email' }, categories: ['software', 'operating-systems'], productType: 'DIGITAL', stock: 999 },
+   302→   302→  ]
+   303→   303→
+   304→   304→  for (const p of products) {
+   305→   305→    const catSlugs = [...new Set((p as any).categories as string[])]
+   306→   306→    const catConnects = catSlugs.map(slug => ({ categoryId: catIds[slug] })).filter(c => c.categoryId)
+   307→   307→    await db.product.create({
+   308→   308→      data: {
+   309→   309→        name: p.name, slug: p.slug,
+   310→   310→        shortDescription: `${(p as any).specs?.processor || (p as any).specs?.type || (p as any).specs?.capacity || ''} ${(p as any).specs?.ram || (p as any).specs?.speed || (p as any).specs?.size || ''}`.trim(),
+   311→   311→        description: `The ${p.name} is available at Bigman Computers, Nairobi. Contact us for the latest pricing and availability.`,
+   312→   312→        brandId: p.brandId, businessUnitId: p.buId,
+   313→   313→        condition: p.condition, conditionGrade: (p as any).conditionGrade || null,
+   314→   314→        basePrice: p.basePrice, compareAtPrice: p.compareAtPrice || null,
+   315→   315→        salePrice: p.salePrice || null, warrantyMonths: p.warrantyMonths,
+   316→   316→        specifications: JSON.stringify((p as any).specs || {}),
+   317→   317→        productType: (p as any).productType || 'PHYSICAL',
+   318→   318→        stockCount: p.stock, trackInventory: true,
+   319→   319→        isFeatured: (p as any).isFeatured || false, isDeal: (p as any).isDeal || false,
+   320→   320→        isGaming: (p as any).isGaming || false, status: 'ACTIVE', publishedAt: new Date(),
+   321→   321→        compatibleModels: (p as any).compatibleModels || null,
+   322→   322→        categories: { create: catConnects.map((c, i) => ({ ...c, sortOrder: i })) },
+   323→   323→      }
+   324→   324→    })
+   325→   325→  }
+   326→   326→  console.log(`Created ${products.length} products`)
+   327→   327→
+   328→   328→  // ============================================================
+   329→   329→  // 5. MARKET PRICE OBSERVATIONS
+   330→   330→  // ============================================================
+   331→   331→  const observations = [
+   332→   332→    { product: 'Core i5 Laptop', category: 'laptops', price: 24000, source: 'WhatsApp Listing', condition: 'REFURBISHED', date: '2024-06-15', notes: 'Historical Bigman Core i5 messaging' },
+   333→   333→    { product: 'Core i7 Laptop', category: 'laptops', price: 30000, source: 'Social Media', condition: 'REFURBISHED', date: '2024-06-15', notes: 'Historical Bigman Core i7 messaging' },
+   334→   334→    { product: 'Entry Laptop', category: 'laptops', price: 17000, source: 'Jiji', condition: 'REFURBISHED', date: '2024-07-01', notes: 'Lowest observed laptop pricing' },
+   335→   335→    { product: '8GB DDR5 RAM', category: 'ram', price: 4799, source: 'Social Media', condition: 'NEW', date: '2024-08-01', notes: 'Bigman-associated listing' },
+   336→   336→    { product: '500GB HDD', category: 'storage', price: 1997, source: 'Jiji', condition: 'NEW', date: '2024-07-15', notes: 'Market reference' },
+   337→   337→    { product: 'Laptop Screen 14"', category: 'parts', price: 5497, source: 'WhatsApp Listing', condition: 'NEW', date: '2024-08-10', notes: 'Bigman-associated listing' },
+   338→   338→    { product: 'Laptop Screen 15.6"', category: 'parts', price: 5999, source: 'Social Media', condition: 'NEW', date: '2024-08-10', notes: 'Bigman-associated listing' },
+   339→   339→    { product: 'Laptop Keyboard', category: 'parts', price: 1599, source: 'WhatsApp Listing', condition: 'NEW', date: '2024-08-05', notes: 'Bigman-associated listing' },
+   340→   340→    { product: 'Keyboard Stickers', category: 'accessories', price: 249, source: 'Social Media', condition: 'NEW', date: '2024-08-01', notes: 'Bigman-associated listing' },
+   341→   341→    { product: 'Windows License', category: 'software', price: 5000, source: 'WhatsApp Listing', condition: 'NEW', date: '2024-07-20', notes: 'Approximate range from Bigman listings' },
+   342→   342→  ]
+   343→   343→  for (const o of observations) {
+   344→   344→    await db.marketPriceObservation.create({
+   345→   345→      data: { source: o.source, productName: o.product, productCategory: o.category, observedPrice: o.price, currency: 'KES', observedDate: new Date(o.date), condition: o.condition, notes: o.notes }
+   346→   346→    })
+   347→   347→  }
+   348→   348→  console.log(`Created ${observations.length} market price observations`)
+   349→   349→
+   350→   350→  // ============================================================
+   351→   351→  // 6. SEARCH SYNONYMS
+   352→   352→  // ============================================================
+   353→   353→  const synonymGroups = [
+   354→   354→    ['laptop', 'computer', 'notebook'],
+   355→   355→    ['hard disk', 'HDD', 'drive', 'hard drive'],
+   356→   356→    ['memory', 'RAM'],
+   357→   357→    ['charger', 'power adapter'],
+   358→   358→    ['screen', 'display', 'LCD', 'panel'],
+   359→   359→    ['mouse', 'wireless mouse'],
+   360→   360→    ['keyboard', 'key board'],
+   361→   361→    ['gaming PC', 'gaming computer'],
+   362→   362→    ['SSD', 'solid state'],
+   363→   363→    ['monitor', 'screen display'],
+   364→   364→  ]
+   365→   365→  let synCount = 0
+   366→   366→  for (const group of synonymGroups) {
+   367→   367→    for (const term of group) {
+   368→   368→      for (const syn of group) {
+   369→   369→        if (term !== syn) {
+   370→   370→          try { await db.searchSynonym.create({ data: { term: term.toLowerCase(), synonym: syn.toLowerCase() } }); synCount++ }
+   371→   371→          catch { /* unique */ }
+   372→   372→        }
+   373→   373→      }
+   374→   374→    }
+   375→   375→  }
+   376→   376→  console.log(`Created ${synCount} search synonyms`)
+   377→   377→
+   378→   378→  // ============================================================
+   379→   379→  // 7. SERVICES
+   380→   380→  // ============================================================
+   381→   381→  const services = [
+   382→   382→    { name: 'Laptop Repair', slug: 'laptop-repair', type: 'REPAIR', price: 1500, duration: '1-3 hours' },
+   383→   383→    { name: 'Desktop Repair', slug: 'desktop-repair', type: 'REPAIR', price: 1500, duration: '1-3 hours' },
+   384→   384→    { name: 'Screen Replacement', slug: 'screen-replacement', type: 'REPAIR', price: 3500, duration: '2-4 hours' },
+   385→   385→    { name: 'Keyboard Replacement', slug: 'keyboard-replacement', type: 'REPAIR', price: 2500, duration: '1-2 hours' },
+   386→   386→    { name: 'Battery Replacement', slug: 'battery-replacement', type: 'REPAIR', price: 2000, duration: '30 min - 1 hour' },
+   387→   387→    { name: 'OS Installation', slug: 'os-installation', type: 'INSTALLATION', price: 1000, duration: '1-2 hours' },
+   388→   388→    { name: 'Software Installation', slug: 'software-installation', type: 'INSTALLATION', price: 500, duration: '30 min' },
+   389→   389→    { name: 'RAM Upgrade', slug: 'ram-upgrade', type: 'UPGRADE', price: 500, duration: '30 min' },
+   390→   390→    { name: 'SSD Upgrade', slug: 'ssd-upgrade', type: 'UPGRADE', price: 1000, duration: '1 hour' },
+   391→   391→    { name: 'Virus/Malware Cleanup', slug: 'virus-cleanup', type: 'REPAIR', price: 1500, duration: '2-4 hours' },
+   392→   392→    { name: 'Data Recovery', slug: 'data-recovery', type: 'RECOVERY', price: 5000, duration: '24-72 hours' },
+   393→   393→    { name: 'Computer Setup', slug: 'computer-setup', type: 'INSTALLATION', price: 1000, duration: '1 hour' },
+   394→   394→    { name: 'Printer Setup', slug: 'printer-setup', type: 'INSTALLATION', price: 500, duration: '30 min' },
+   395→   395→    { name: 'Network Setup', slug: 'network-setup', type: 'INSTALLATION', price: 2000, duration: '1-3 hours' },
+   396→   396→    { name: 'Hardware Diagnostics', slug: 'hardware-diagnostics', type: 'SUPPORT', price: 500, duration: '1 hour' },
+   397→   397→  ]
+   398→   398→  for (const s of services) {
+   399→   399→    await db.serviceProduct.create({
+   400→   400→      data: { name: s.name, slug: s.slug, serviceType: s.type, basePrice: s.price, duration: s.duration, isActive: true, shortDescription: `Professional ${s.name.toLowerCase()} service at Bigman Computers, Nairobi.`, description: `Our experienced technicians provide reliable ${s.name.toLowerCase()} services. Walk in or contact us to book.` }
+   401→   401→    })
+   402→   402→  }
+   403→   403→  console.log(`Created ${services.length} services`)
+   404→   404→
+   405→   405→  // ============================================================
+   406→   406→  // 8. PROMOTIONS
+   407→   407→  // ============================================================
+   408→   408→  await db.promotion.create({ data: { name: 'Back to School Deals', slug: 'back-to-school-2024', promoType: 'DEAL', description: 'Special pricing on laptops and accessories for students.', startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), isActive: true } })
+   409→   409→  await db.promotion.create({ data: { name: 'Gaming Week', slug: 'gaming-week-2024', promoType: 'DEAL', description: 'Discounts on gaming laptops, peripherals, and accessories.', startDate: new Date('2024-09-01'), endDate: new Date('2024-09-07'), isActive: true } })
+   410→   410→  console.log('Created promotions')
+   411→   411→
+   412→   412→  console.log('\n=== SEED COMPLETE ===')
+   413→   413→}
+   414→   414→
+   415→   415→main().catch(e => { console.error(e); process.exit(1) }).finally(() => db.$disconnect())
+   416→   416→

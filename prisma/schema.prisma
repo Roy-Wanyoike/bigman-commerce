@@ -159,8 +159,8 @@ model Product {
   weight          Float?
   dimensions      String?  // JSON: {l, w, h}
 
-  // Status
-  status          String   @default("DRAFT") // DRAFT, ACTIVE, ARCHIVED
+  // Status & Approval Workflow
+  status          String   @default("DRAFT") // IMPORTED, DRAFT, UNDER_REVIEW, APPROVED, PUBLISHED, UNPUBLISHED, ARCHIVED
   isFeatured      Boolean  @default(false)
   isDeal          Boolean  @default(false)
   isGaming        Boolean  @default(false)
@@ -177,6 +177,12 @@ model Product {
   sku             String?
   partNumber      String?
   upc             String?
+
+  // Price verification
+  lastVerifiedAt  DateTime?
+  verifiedBy      String?  // admin user id
+  verifiedPrice   Float?   // staff-confirmed Bigman price
+  observationId   String?  // link to MarketPriceObservation that informed pricing
 
   // Sort & timestamps
   sortOrder       Int      @default(0)
@@ -195,6 +201,7 @@ model Product {
   comparisons     ProductComparison[]
   alerts          PriceAlert[]
   stockAlerts     StockAlert[]
+  productImages   ProductImage[]
 
   @@index([brandId])
   @@index([businessUnitId])
@@ -206,6 +213,8 @@ model Product {
   @@index([basePrice])
   @@index([sortOrder])
   @@index([sku])
+  @@index([lastVerifiedAt])
+  @@index([productType])
 }
 
 // ============================================================
@@ -281,6 +290,7 @@ model InventoryUnit {
   updatedAt       DateTime @updatedAt
 
   product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  unitImages      ProductImage[]
 
   @@index([productId])
   @@index([serialNumber])
@@ -485,6 +495,70 @@ model Review {
 // ============================================================
 // PROMOTION / DEAL
 // ============================================================
+
+model ProductImage {
+  id              String   @id @default(cuid())
+  productId       String
+  inventoryUnitId String?  // for per-unit refurbished photos
+
+  // Image data
+  url             String   // CDN / object storage URL
+  originalUrl     String?  // original unprocessed URL
+  thumbnailUrl    String?
+  altText         String?
+  caption         String?
+  sortOrder       Int      @default(0)
+  isPrimary       Boolean  @default(false)
+
+  // Image metadata
+  source          String?  // BIGMAN_OWN, MANUFACTURER, DISTRIBUTOR, SUPPLIER, STAFF_UPLOAD, IMPORTED
+  sourceUrl       String?  // original source URL
+  licenseStatus   String?  // VERIFIED, PENDING_REVIEW, UNVERIFIED
+  width           Int?
+  height          Int?
+  mimeType        String?
+  fileSize        Int?     // bytes
+  qualityScore    Float?   // 0-100 internal quality assessment
+
+  // Image type
+  imageType       String?  // FRONT, BACK, SIDE, PORTS, PACKAGING, ACCESSORIES, CLOSEUP, LIFESTYLE, OPEN, CLOSED, KEYBOARD, DISPLAY, BOTTOM, CHARGER, SCREEN, OTHER
+
+  // Status
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  rejectionReason String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  inventoryUnit   InventoryUnit? @relation(fields: [inventoryUnitId], references: [id], onDelete: SetNull)
+
+  @@index([productId])
+  @@index([inventoryUnitId])
+  @@index([status])
+  @@index([isPrimary])
+  @@index([source])
+}
+
+model CategoryAttributeDefinition {
+  id          String   @id @default(cuid())
+  categoryId  String   // category this attribute set applies to
+  name        String   // e.g. "CPU", "RAM", "Capacity"
+  key         String   @unique // e.g. "cpu", "ram", "capacity"
+  type        String   @default("TEXT") // TEXT, NUMBER, SELECT, MULTI_SELECT, BOOLEAN, RANGE
+  unit        String?  // e.g. "GB", "MHz", "MHz", "W", "V", "inches"
+  options     String?  // JSON: allowed values for SELECT/MULTI_SELECT
+  isRequired  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([key])
+}
 
 model Promotion {
   id            String   @id @default(cuid())

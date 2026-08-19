@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Search, ShoppingCart, Heart, Menu, X, ChevronDown, Phone, MessageCircle, User, Building2, Gamepad2, Wrench, Percent, RotateCcw, Laptop, Monitor, Printer, Mouse, Cpu, HardDrive, MemoryStick, Wifi, Zap, Code, Briefcase } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -23,6 +24,7 @@ interface HeaderProps {
 
 export default function Header({ categories }: HeaderProps) {
   const [megaOpen, setMegaOpen] = useState<string | null>(null)
+  const router = useRouter()
   const [searchQ, setSearchQ] = useState('')
   const [searchResults, setSearchResults] = useState<any>(null)
   const [searching, setSearching] = useState(false)
@@ -122,6 +124,7 @@ export default function Header({ categories }: HeaderProps) {
                 value={searchQ}
                 onChange={e => setSearchQ(e.target.value)}
                 onFocus={() => searchQ.length >= 2 && setSearchResults(searchResults)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (searchQ.trim()) { setSearchResults(null); router.push(`/search?q=${encodeURIComponent(searchQ.trim())}`) } } }}
               />
               {searching && <div className="absolute right-3 top-1/2 -translate-y-1/2"><div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}
             </div>

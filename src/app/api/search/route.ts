@@ -20,14 +20,18 @@ export async function GET(req: NextRequest) {
 
     const products = await db.product.findMany({
       where: {
-        status: 'ACTIVE',
+        status: { in: ['ACTIVE', 'PUBLISHED'] },
         OR: uniqueTerms.flatMap(t => [
           { name: { contains: t, mode: 'insensitive' } },
           { shortDescription: { contains: t, mode: 'insensitive' } },
         ]),
       },
-      include: { brand: true },
-      take: 10, orderBy: { sortOrder: 'asc' },
+      include: {
+        brand: true,
+        categories: { include: { category: { select: { name: true } } } },
+      },
+      take: 10,
+      orderBy: { sortOrder: 'asc' },
     })
 
     const categories = await db.category.findMany({
@@ -37,7 +41,8 @@ export async function GET(req: NextRequest) {
           { name: { contains: t, mode: 'insensitive' } },
         ]),
       },
-      take: 5, orderBy: { sortOrder: 'asc' },
+      take: 5,
+      orderBy: { sortOrder: 'asc' },
     })
 
     return NextResponse.json({ products, categories })
