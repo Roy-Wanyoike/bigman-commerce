@@ -1,7 +1,7 @@
 import Header from './Header'
 import Hero from './Hero'
-import TrustStrip from './TrustStrip'
 import {
+  TrustStrip,
   FeaturedCategories,
   ProductSection,
   FullCatalog,
@@ -9,6 +9,8 @@ import {
   BudgetSection,
   BrandSection,
   ServicesSection,
+  StoreLocation,
+  LaptopFinder,
   BigmanFooter,
   CompareBar,
   MobileBottomNav,
@@ -46,25 +48,37 @@ export default function HomePage({ categories, products, brands, services }: Pro
           />
         )}
 
+        {newLaptops.length > 0 && (
+          <ProductSection
+            title="New Laptops"
+            subtitle="Latest models from top brands"
+            products={newLaptops}
+            viewAllHref="/shop/laptops"
+          />
+        )}
+
         {deals.length > 0 && (
           <ProductSection
             title="Today's Deals"
             subtitle="Limited-time offers on top products"
             products={deals}
             viewAllHref="/deals"
-            accentColor="bg-orange-500"
+            accentColor="bg-deal"
           />
         )}
 
         {gaming.length > 0 && (
           <ProductSection
             title="Gaming"
-            subtitle="Laptops, peripherals and accessories"
+            subtitle="High-performance laptops, PCs and peripherals"
             products={gaming}
             viewAllHref="/gaming"
-            accentColor="bg-purple-500"
+            accentColor="bg-gaming"
+            surface="gaming"
           />
         )}
+
+        <LaptopFinder products={products} />
 
         {refurbished.length > 0 && (
           <ProductSection
@@ -72,16 +86,7 @@ export default function HomePage({ categories, products, brands, services }: Pro
             subtitle="Inspected, graded, and warrantied devices"
             products={refurbished}
             viewAllHref="/refurbished"
-            accentColor="bg-amber-500"
-          />
-        )}
-
-        {newLaptops.length > 0 && (
-          <ProductSection
-            title="New Laptops"
-            subtitle="Latest models from top brands"
-            products={newLaptops}
-            viewAllHref="/laptops"
+            accentColor="bg-refurb"
           />
         )}
 
@@ -90,11 +95,12 @@ export default function HomePage({ categories, products, brands, services }: Pro
         <BrandSection brands={brands} />
         <ServicesSection services={services} />
         <FullCatalog products={products} categories={categories} brands={brands} />
+        <StoreLocation />
       </main>
       <CompareBar />
       <BigmanFooter categories={categories} />
       <MobileBottomNav />
-      <div className="md:hidden h-14" />
+      <div className="lg:hidden h-14" />
     </div>
   )
 }

@@ -24,6 +24,7 @@ interface StoreState {
   cart: CartItem[]
   addToCart: (item: CartItem) => void
   removeFromCart: (productId: string) => void
+  updateQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
   cartTotal: () => number
   cartCount: () => number
@@ -61,6 +62,10 @@ export const useStore = create<StoreState>((set, get) => ({
     return { cart: [...s.cart, item] }
   }),
   removeFromCart: (productId) => set((s) => ({ cart: s.cart.filter(c => c.productId !== productId) })),
+  updateQuantity: (productId, quantity) => set((s) => {
+    if (quantity <= 0) return { cart: s.cart.filter(c => c.productId !== productId) }
+    return { cart: s.cart.map(c => c.productId === productId ? { ...c, quantity } : c) }
+  }),
   clearCart: () => set({ cart: [] }),
   cartTotal: () => get().cart.reduce((sum, c) => sum + c.price * c.quantity, 0),
   cartCount: () => get().cart.reduce((sum, c) => sum + c.quantity, 0),

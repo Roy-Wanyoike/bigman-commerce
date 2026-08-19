@@ -3,6 +3,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   BIGMAN COMMERCE — DESIGN SYSTEM TOKENS
+   ============================================================
+   Primary: Deep charcoal-slate (technical authority)
+   Accent:  Electric teal/cyan (technology energy)
+   Gaming:  Rich purple (gaming identity)
+   Refurb:  Warm amber (certified quality)
+   Success: Emerald green (stock, savings, trust)
+   ============================================================ */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -41,73 +51,169 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-cyan: oklch(0.75 0.15 195);
-  --color-cyan-foreground: oklch(0.15 0.04 195);
-  --color-emerald-accent: oklch(0.6 0.15 160);
+  /* Extended semantic colors */
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-emerald-accent: oklch(0.55 0.17 163);
   --color-emerald-accent-foreground: oklch(0.98 0 0);
-  --color-gaming: oklch(0.65 0.2 310);
+  --color-gaming: oklch(0.55 0.22 305);
   --color-gaming-foreground: oklch(0.98 0 0);
-  --color-refurb: oklch(0.7 0.12 85);
-  --color-refurb-foreground: oklch(0.15 0.04 85);
+  --color-refurb: oklch(0.72 0.13 80);
+  --color-refurb-foreground: oklch(0.18 0.04 80);
+  --color-deal: oklch(0.65 0.22 45);
+  --color-deal-foreground: oklch(0.98 0 0);
 }
 
 :root {
-  --radius: 0.625rem;
+  /* Radius — slightly softer for modern feel */
+  --radius: 0.5rem;
+
+  /* Background: very faint cool grey */
   --background: oklch(0.985 0.002 250);
-  --foreground: oklch(0.15 0.01 260);
+  --foreground: oklch(0.145 0.01 260);
+
+  /* Card / Popover: pure white */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 260);
+  --card-foreground: oklch(0.145 0.01 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 260);
-  --primary: oklch(0.25 0.02 260);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.96 0.005 250);
-  --secondary-foreground: oklch(0.2 0.02 260);
-  --muted: oklch(0.96 0.005 250);
-  --muted-foreground: oklch(0.5 0.01 260);
-  --accent: oklch(0.75 0.15 195);
+  --popover-foreground: oklch(0.145 0.01 260);
+
+  /* Primary: deep charcoal slate */
+  --primary: oklch(0.22 0.015 260);
+  --primary-foreground: oklch(0.985 0 0);
+
+  /* Secondary: light cool grey */
+  --secondary: oklch(0.955 0.005 250);
+  --secondary-foreground: oklch(0.2 0.015 260);
+
+  /* Muted: subtle backgrounds */
+  --muted: oklch(0.955 0.005 250);
+  --muted-foreground: oklch(0.48 0.01 260);
+
+  /* Accent: electric teal/cyan — the Bigman energy color */
+  --accent: oklch(0.72 0.17 195);
   --accent-foreground: oklch(0.12 0.04 195);
+
+  /* Destructive */
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.008 250);
-  --input: oklch(0.9 0.008 250);
-  --ring: oklch(0.7 0.15 195);
-  --chart-1: oklch(0.75 0.15 195);
-  --chart-2: oklch(0.6 0.15 160);
-  --chart-3: oklch(0.65 0.2 310);
-  --chart-4: oklch(0.8 0.12 85);
-  --chart-5: oklch(0.7 0.18 30);
+
+  /* Borders & inputs */
+  --border: oklch(0.91 0.008 250);
+  --input: oklch(0.91 0.008 250);
+  --ring: oklch(0.72 0.17 195);
+
+  /* Chart palette */
+  --chart-1: oklch(0.72 0.17 195);
+  --chart-2: oklch(0.55 0.17 163);
+  --chart-3: oklch(0.55 0.22 305);
+  --chart-4: oklch(0.72 0.13 80);
+  --chart-5: oklch(0.65 0.22 45);
+
+  /* Sidebar */
   --sidebar: oklch(0.985 0.002 250);
-  --sidebar-foreground: oklch(0.15 0.01 260);
-  --sidebar-primary: oklch(0.25 0.02 260);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.96 0.005 250);
-  --sidebar-accent-foreground: oklch(0.2 0.02 260);
-  --sidebar-border: oklch(0.9 0.008 250);
-  --sidebar-ring: oklch(0.7 0.15 195);
+  --sidebar-foreground: oklch(0.145 0.01 260);
+  --sidebar-primary: oklch(0.22 0.015 260);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.955 0.005 250);
+  --sidebar-accent-foreground: oklch(0.2 0.015 260);
+  --sidebar-border: oklch(0.91 0.008 250);
+  --sidebar-ring: oklch(0.72 0.17 195);
 }
 
+/* ============================================================
+   BASE LAYER
+   ============================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Custom scrollbar */
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: oklch(0.8 0.01 250); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: oklch(0.82 0.01 250); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: oklch(0.65 0.02 250); }
 
-/* Mega menu animation */
-.mega-menu-enter { animation: megaMenuIn 200ms ease-out; }
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+/* Mega menu dropdown */
+.mega-menu-enter {
+  animation: megaMenuIn 180ms ease-out;
+}
 @keyframes megaMenuIn {
   from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Product card hover */
-.product-card { transition: box-shadow 200ms ease, transform 200ms ease; }
-.product-card:hover { box-shadow: 0 8px 25px -5px oklch(0.25 0.02 260 / 0.1); transform: translateY(-2px); }
+/* Product card hover — subtle lift */
+.product-card {
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.product-card:hover {
+  box-shadow: 0 8px 30px -8px oklch(0.22 0.02 260 / 0.1), 0 2px 8px -2px oklch(0.22 0.02 260 / 0.06);
+  transform: translateY(-2px);
+}
+
+/* Fade-in for sections */
+.fade-in-up {
+  animation: fadeInUp 400ms ease-out both;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Skeleton shimmer */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .product-card:hover { transform: none; }
+}
+
+/* ============================================================
+   TYPOGRAPHY UTILITY CLASSES
+   ============================================================ */
+.text-balance { text-wrap: balance; }
+.text-pretty  { text-wrap: pretty; }
+
+/* Price styling */
+.price-display {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ============================================================
+   GAMING SECTION SURFACE
+   ============================================================ */
+.gaming-surface {
+  background: oklch(0.16 0.02 280);
+  color: oklch(0.93 0.01 260);
+}
+.gaming-surface * {
+  --accent: oklch(0.7 0.2 305);
+}
