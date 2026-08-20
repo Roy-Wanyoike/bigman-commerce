@@ -1,0 +1,1018 @@
+[
+  {
+    "id": "cmt194eu40000qryh7s84u44g",
+    "productId": "cmt01zaen00asrpypl4meibos",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/13032174a579.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194eu40001qryh7munwrte",
+    "productId": "cmt01zaen00asrpypl4meibos",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9ae4cc5c282b.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194eu40002qryh8pb1w00b",
+    "productId": "cmt01zaen00asrpypl4meibos",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6307a1959f23.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194eu40003qryhiryebwmt",
+    "productId": "cmt01zaen00asrpypl4meibos",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6e7e47d203e9.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194eud0004qryh0rthntmu",
+    "productId": "cmt01zaeo00aurpyp2cti09zo",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/13032174a579.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194eud0005qryhzt4xukqe",
+    "productId": "cmt01zaeo00aurpyp2cti09zo",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9ae4cc5c282b.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194eud0006qryh13fw3q7w",
+    "productId": "cmt01zaeo00aurpyp2cti09zo",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6307a1959f23.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194eud0007qryhhqdsxm2m",
+    "productId": "cmt01zaeo00aurpyp2cti09zo",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6e7e47d203e9.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194euh0008qryhl1jsvr26",
+    "productId": "cmt01zaeq00awrpyphe0n1e8o",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6f71e7ecea35.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194euh0009qryhgwnrk6tc",
+    "productId": "cmt01zaeq00awrpyphe0n1e8o",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d94604f02b82.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194euh000aqryhdcjdzto7",
+    "productId": "cmt01zaeq00awrpyphe0n1e8o",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/adcd327cc930.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194euh000bqryhod2vpnxs",
+    "productId": "cmt01zaeq00awrpyphe0n1e8o",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a45885be6045.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194euj000cqryh4f8md192",
+    "productId": "cmt01zaes00ayrpypreaaujfz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1ab3d39c838c.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194euj000dqryhfu7zdswe",
+    "productId": "cmt01zaes00ayrpypreaaujfz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2a5118d0be94.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194euj000eqryhbw21uw9n",
+    "productId": "cmt01zaes00ayrpypreaaujfz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b61cd7d2d396.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194euj000fqryhyv1mjw8w",
+    "productId": "cmt01zaes00ayrpypreaaujfz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b2a2249bfe18.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194eul000gqryh4z9uv3ye",
+    "productId": "cmt01zaet00b0rpypw8u4k05o",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1ab3d39c838c.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194eul000hqryhig72wrp0",
+    "productId": "cmt01zaet00b0rpypw8u4k05o",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2a5118d0be94.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194eul000iqryhws6c896p",
+    "productId": "cmt01zaet00b0rpypw8u4k05o",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b61cd7d2d396.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194eun000jqryhygsk3mtx",
+    "productId": "cmt01zaeu00b2rpypvufaoauq",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/13032174a579.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194eun000kqryhvevn7ke2",
+    "productId": "cmt01zaeu00b2rpypvufaoauq",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9ae4cc5c282b.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194eun000lqryh6c5h22ta",
+    "productId": "cmt01zaeu00b2rpypvufaoauq",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6307a1959f23.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194euo000mqryhvbcgzrre",
+    "productId": "cmt01zaew00b4rpyp4zo43ep4",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6f71e7ecea35.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194euo000nqryhxvwjzbza",
+    "productId": "cmt01zaew00b4rpyp4zo43ep4",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d94604f02b82.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194euo000oqryhhazupuwd",
+    "productId": "cmt01zaew00b4rpyp4zo43ep4",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/adcd327cc930.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194euq000pqryhl3ib2d8q",
+    "productId": "cmt01zaex00b6rpypphj17qyp",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/13032174a579.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194euq000qqryhbqh2kv68",
+    "productId": "cmt01zaex00b6rpypphj17qyp",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9ae4cc5c282b.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194euq000rqryhrenwjrdu",
+    "productId": "cmt01zaex00b6rpypphj17qyp",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6307a1959f23.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194eut000sqryh3fs8qdn7",
+    "productId": "cmt01zaez00b8rpypzo3wnp7v",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/13032174a579.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194eut000tqryh59reodzy",
+    "productId": "cmt01zaez00b8rpypzo3wnp7v",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9ae4cc5c282b.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194eut000uqryha87pue8n",
+    "productId": "cmt01zaez00b8rpypzo3wnp7v",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6307a1959f23.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194euv000vqryhrhh67sw2",
+    "productId": "cmt01zaf100barpypuaeskm5d",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4d6c03547b5f.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194euv000wqryhyo3nvlxn",
+    "productId": "cmt01zaf100barpypuaeskm5d",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/129618699cda.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194euv000xqryhlgig6z0g",
+    "productId": "cmt01zaf100barpypuaeskm5d",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4366f030c479.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194euv000yqryhh0gu1wdi",
+    "productId": "cmt01zaf100barpypuaeskm5d",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2dac6fd53381.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194euy000zqryhqmgw73q5",
+    "productId": "cmt01zaf300bcrpyppu96hr85",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4d6c03547b5f.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194euy0010qryhlfpw3uka",
+    "productId": "cmt01zaf300bcrpyppu96hr85",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/129618699cda.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194euy0011qryhett2333a",
+    "productId": "cmt01zaf300bcrpyppu96hr85",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4366f030c479.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194euy0012qryhu3b8antw",
+    "productId": "cmt01zaf300bcrpyppu96hr85",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2dac6fd53381.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194euy0013qryheo1677vu",
+    "productId": "cmt01zaf300bcrpyppu96hr85",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/69da2752c097.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "CLOSEUP"
+  },
+  {
+    "id": "cmt194ev70014qryhmh65qrxr",
+    "productId": "cmt01zafn00berpypzj595xi6",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4d6c03547b5f.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194ev70015qryhcjeybco9",
+    "productId": "cmt01zafn00berpypzj595xi6",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/129618699cda.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194ev70016qryhl5a8v1f2",
+    "productId": "cmt01zafn00berpypzj595xi6",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4366f030c479.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194ev70017qryhheumfa6o",
+    "productId": "cmt01zafn00berpypzj595xi6",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2dac6fd53381.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194ev70018qryh27nmu884",
+    "productId": "cmt01zafn00berpypzj595xi6",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/69da2752c097.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "CLOSEUP"
+  },
+  {
+    "id": "cmt194evb0019qryhu7sv97j1",
+    "productId": "cmt01zafr00bgrpypakde6k4n",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6335f2a48f76.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194evb001aqryhn417wqb4",
+    "productId": "cmt01zafr00bgrpypakde6k4n",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/aa06d76e2160.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194evb001bqryhu0wtt1rq",
+    "productId": "cmt01zafr00bgrpypakde6k4n",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ac19421d4a79.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194evb001cqryhvdyfl16k",
+    "productId": "cmt01zafr00bgrpypakde6k4n",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a34469698fec.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194evg001dqryhu0lenc6i",
+    "productId": "cmt01zaft00birpyp2gnarlgz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6335f2a48f76.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194evg001eqryheknd9mej",
+    "productId": "cmt01zaft00birpyp2gnarlgz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/aa06d76e2160.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194evg001fqryhft5cywqq",
+    "productId": "cmt01zaft00birpyp2gnarlgz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ac19421d4a79.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194evg001gqryhpconfcvo",
+    "productId": "cmt01zaft00birpyp2gnarlgz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a34469698fec.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194evg001hqryhn7ps01gs",
+    "productId": "cmt01zaft00birpyp2gnarlgz",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c18e26cecc16.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "CLOSEUP"
+  },
+  {
+    "id": "cmt194evo001iqryhavj8a68f",
+    "productId": "cmt01zafu00bkrpyp0hr42718",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/13032174a579.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194evo001jqryhnikk5m7l",
+    "productId": "cmt01zafu00bkrpyp0hr42718",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9ae4cc5c282b.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194evo001kqryhmztue3s1",
+    "productId": "cmt01zafu00bkrpyp0hr42718",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6307a1959f23.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194evo001lqryh6n3m9w1s",
+    "productId": "cmt01zafu00bkrpyp0hr42718",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6e7e47d203e9.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194evv001mqryherjueca1",
+    "productId": "cmt01zafw00bmrpypoh1ha967",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6f71e7ecea35.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194evv001nqryh51zxn3yi",
+    "productId": "cmt01zafw00bmrpypoh1ha967",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d94604f02b82.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194evv001oqryhto1jmg9s",
+    "productId": "cmt01zafw00bmrpypoh1ha967",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/adcd327cc930.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194evv001pqryh4jshoh44",
+    "productId": "cmt01zafw00bmrpypoh1ha967",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a45885be6045.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194ew0001qqryhur9qztcn",
+    "productId": "cmt01zafy00borpypn2sgqa5m",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/13032174a579.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194ew0001rqryhqk1i4i6u",
+    "productId": "cmt01zafy00borpypn2sgqa5m",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9ae4cc5c282b.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194ew0001sqryhrg24t9cz",
+    "productId": "cmt01zafy00borpypn2sgqa5m",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6307a1959f23.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194ewf001tqryhzgkr41sq",
+    "productId": "cmt01zag200bqrpypyd2rmqc5",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/50323d0c55d6.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194ewf001uqryhuuvuyfdn",
+    "productId": "cmt01zag200bqrpypyd2rmqc5",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a359edef0f1a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194ewf001vqryhmq6i6e5s",
+    "productId": "cmt01zag200bqrpypyd2rmqc5",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a28bf92dfe6a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194ewf001wqryhu5valgek",
+    "productId": "cmt01zag200bqrpypyd2rmqc5",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5a14c6f784a2.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194ewq001xqryhg7tus5xe",
+    "productId": "cmt01zag400bsrpyplxee183m",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/50323d0c55d6.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194ewq001yqryhva8injyr",
+    "productId": "cmt01zag400bsrpyplxee183m",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a359edef0f1a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194ewq001zqryh05oy4g3h",
+    "productId": "cmt01zag400bsrpyplxee183m",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a28bf92dfe6a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194ewq0020qryhaxi8iz2f",
+    "productId": "cmt01zag400bsrpyplxee183m",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5a14c6f784a2.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194ewu0021qryhzhq3mn60",
+    "productId": "cmt01zag600burpypz4raex9g",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/50323d0c55d6.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194ewu0022qryhnfnbykmm",
+    "productId": "cmt01zag600burpypz4raex9g",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a359edef0f1a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194ewu0023qryhe95i1ipi",
+    "productId": "cmt01zag600burpypz4raex9g",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a28bf92dfe6a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194ewu0024qryhlbmxzxnq",
+    "productId": "cmt01zag600burpypz4raex9g",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5a14c6f784a2.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194ewx0025qryhrzfun5yz",
+    "productId": "cmt01zag800bwrpypr1zel6v8",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/acba419290a4.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194ewx0026qryh29fzwzac",
+    "productId": "cmt01zag800bwrpypr1zel6v8",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/62cb981024d7.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194ewx0027qryhl85rl5qy",
+    "productId": "cmt01zag800bwrpypr1zel6v8",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/06c7f2fe0972.jpeg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194ex60028qryh2pig03wl",
+    "productId": "cmt01zaga00byrpypetxr90wb",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/acba419290a4.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194ex60029qryhbgyz6qj3",
+    "productId": "cmt01zaga00byrpypetxr90wb",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/62cb981024d7.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194ex6002aqryhelzouqwc",
+    "productId": "cmt01zaga00byrpypetxr90wb",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/06c7f2fe0972.jpeg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194ex9002bqryhlbwyprne",
+    "productId": "cmt01zagc00c0rpyp8a7gak4z",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/64e99410a7e6.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194ex9002cqryhcgvisk5i",
+    "productId": "cmt01zagc00c0rpyp8a7gak4z",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/66d0feeb5fe4.webp",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194ex9002dqryhbk9fhcgi",
+    "productId": "cmt01zagc00c0rpyp8a7gak4z",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/db1843940d1a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exa002eqryh4mk6vplp",
+    "productId": "cmt01zage00c2rpypnwhrh6hq",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/436e66232af0.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exa002fqryh7bywefu7",
+    "productId": "cmt01zage00c2rpypnwhrh6hq",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8e0bf342ed2a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exa002gqryhhlxbgx4q",
+    "productId": "cmt01zage00c2rpypnwhrh6hq",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/50725d4f5437.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exa002hqryhrzp1lq9q",
+    "productId": "cmt01zage00c2rpypnwhrh6hq",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8ce53acb5d0f.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194exd002iqryh0jhvbbj4",
+    "productId": "cmt01zagh00c4rpyp8z4ndynp",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c778c43e2e9e.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exd002jqryhbhbu9ulf",
+    "productId": "cmt01zagh00c4rpyp8z4ndynp",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/bb17699b47d2.jpeg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exd002kqryh3o8p0vo9",
+    "productId": "cmt01zagh00c4rpyp8z4ndynp",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/f4f295530b35.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exd002lqryh9togpu89",
+    "productId": "cmt01zagh00c4rpyp8z4ndynp",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/43cf180dc02b.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194exf002mqryhh44cmmiy",
+    "productId": "cmt01zagr00c6rpypd6jhq7c1",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b8eca24ef794.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exf002nqryhdrwbppi2",
+    "productId": "cmt01zagr00c6rpypd6jhq7c1",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/124ef0815b58.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exf002oqryhh25vvym5",
+    "productId": "cmt01zagr00c6rpypd6jhq7c1",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c48e13e79843.jpeg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exf002pqryha33spntp",
+    "productId": "cmt01zagr00c6rpypd6jhq7c1",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/745f553f146c.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194exh002qqryh0j1fa8og",
+    "productId": "cmt01zagv00c8rpypo25lhpl1",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b8eca24ef794.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exh002rqryhgjup5i22",
+    "productId": "cmt01zagv00c8rpypo25lhpl1",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/124ef0815b58.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exh002sqryhbvj4eala",
+    "productId": "cmt01zagv00c8rpypo25lhpl1",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c48e13e79843.jpeg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exh002tqryhfji5vovf",
+    "productId": "cmt01zagv00c8rpypo25lhpl1",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/745f553f146c.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194exi002uqryhb4mxkgi3",
+    "productId": "cmt01zagy00carpypo4a3lzz4",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/44ba7c012d19.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exi002vqryh3myoderu",
+    "productId": "cmt01zagy00carpypo4a3lzz4",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/09e9bc86fd34.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exi002wqryh6py5fyi2",
+    "productId": "cmt01zagy00carpypo4a3lzz4",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/404e9dcb4737.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exi002xqryhca9x0qd3",
+    "productId": "cmt01zagy00carpypo4a3lzz4",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a7e9beb34a84.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "OPEN"
+  },
+  {
+    "id": "cmt194exk002yqryhmwj9qb17",
+    "productId": "cmt01zah000ccrpypuqp6ntva",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/f7f708a1ab25.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exk002zqryhldquelsh",
+    "productId": "cmt01zah000ccrpypuqp6ntva",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3f4245c816a9.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exk0030qryhf2sacbjf",
+    "productId": "cmt01zah000ccrpypuqp6ntva",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/744e569d1564.png",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exm0031qryh0zqvh584",
+    "productId": "cmt01zah300cerpypgdtg31yv",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/64e99410a7e6.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exm0032qryhma222y8j",
+    "productId": "cmt01zah300cerpypgdtg31yv",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/66d0feeb5fe4.webp",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exm0033qryhqmsfhdub",
+    "productId": "cmt01zah300cerpypgdtg31yv",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/db1843940d1a.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exn0034qryhc9969zh6",
+    "productId": "cmt01zahb00cgrpypagljyrbw",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a61b614a1d36.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exn0035qryhl27bqsvb",
+    "productId": "cmt01zahb00cgrpypagljyrbw",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/00b0333c092d.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exn0036qryhpyc3xn7o",
+    "productId": "cmt01zahb00cgrpypagljyrbw",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/751f42608b41.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exq0037qryh3sdl1eg8",
+    "productId": "cmt01zahd00cirpypoeyfmh1k",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1a90d2ec61bb.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exq0038qryhayr0t44p",
+    "productId": "cmt01zahd00cirpypoeyfmh1k",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/bbeb64a5abfc.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exq0039qryhrxi54rm0",
+    "productId": "cmt01zahd00cirpypoeyfmh1k",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/28c742a0749e.jpeg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exr003aqryh449mx4nc",
+    "productId": "cmt01zahi00ckrpypxp302l01",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1b96f2dba87b.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exr003bqryhr3ppr8po",
+    "productId": "cmt01zahi00ckrpypxp302l01",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d3f22965b8b8.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exr003cqryhli9rlt6u",
+    "productId": "cmt01zahi00ckrpypxp302l01",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4b8ddde67880.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exu003dqryhfd02z8q8",
+    "productId": "cmt01zahj00cmrpypy9wpoid2",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2d7dcee08a30.jpg",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exu003eqryhpcsz9voe",
+    "productId": "cmt01zahj00cmrpypy9wpoid2",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e92b25dd2b1d.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exu003fqryh9b4m8ds6",
+    "productId": "cmt01zahj00cmrpypy9wpoid2",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b35aefa70fab.webp",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  },
+  {
+    "id": "cmt194exx003gqryhmwzrexa5",
+    "productId": "cmt01zahl00corpypbomwvtqe",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/81acdff9e9a7.png",
+    "status": "APPROVED",
+    "isPrimary": true,
+    "imageType": "FRONT"
+  },
+  {
+    "id": "cmt194exx003hqryh419bgt79",
+    "productId": "cmt01zahl00corpypbomwvtqe",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b540937ea82f.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "BACK"
+  },
+  {
+    "id": "cmt194exx003iqryh13bz9je1",
+    "productId": "cmt01zahl00corpypbomwvtqe",
+    "url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3dec56d0b534.jpg",
+    "status": "APPROVED",
+    "isPrimary": false,
+    "imageType": "SIDE"
+  }
+]
