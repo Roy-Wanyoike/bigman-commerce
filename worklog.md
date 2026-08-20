@@ -283,3 +283,38 @@ Stage Summary:
 - 11 products now have real product images from web search
 - Storefront product cards display real images with next/image optimization
 - Remote image patterns configured for CDN-hosted images
+
+---
+Task ID: 14
+Agent: Main
+Task: Product image carousel with multiple images per product
+
+Work Log:
+- Added sfile.chatglm.cn, images.unsplash.com, picsum.photos to next.config.ts remotePatterns
+- Searched 100+ product images via z-ai image-search across 20 categories (HP, Dell, Lenovo, gaming, Apple, desktop, monitor, keyboard, mouse, RAM, SSD, HDD, printer, charger, router, USB, bag, headset, webcam, screen, software)
+- Created /scripts/seed-images.ts: maps 35 products to category image pools, creates 3-5 ProductImage records per product with imageType labels (FRONT, BACK, SIDE, OPEN, CLOSEUP, etc.), source/metadata, quality scores
+- Ran seed: 127 approved ProductImage records across 35 products, also set thumbnail on each product
+- Enhanced ProductGallery component:
+  - Added shimmer loading animation per image (animate-shimmer)
+  - Added image type badge overlay (e.g. "Front", "Back", "Side")
+  - Added keyboard navigation (ArrowLeft/Right, Escape in fullscreen)
+  - Added desktop arrow buttons (hover-to-reveal, with scale animation)
+  - Added backdrop blur on mobile nav buttons and fullscreen nav
+  - Added crossfade animation in fullscreen modal (key-based remount with fadeIn)
+  - Added fullscreen dots navigation alongside counter
+  - Added fullscreen caption badge (image type)
+  - Improved thumbnail strip: larger 72px, hover scale, scrollbar-thin, active scale
+  - Added focus-visible ring on main image for keyboard accessibility
+  - Added aria-labels and aria-current for screen readers
+  - Updated mobile dots with smooth width transition
+- Updated gatherImages() in product page to pass caption (imageType) to gallery
+- Updated JSON-LD to include all product images (not just primary)
+- Updated cross-sell query to include primary image for ProductCard rendering
+- Installed embla-carousel-autoplay (later removed due to SSR stability; carousel works with manual swipe/click)
+
+Stage Summary:
+- 35 products now have 3-5 images each (127 total), viewable in carousel
+- Enhanced carousel: keyboard nav, shimmer loading, image type badges, hover arrows, fullscreen dots
+- Build passes cleanly, product page returns 200 with image data
+- Desktop: main image + zoom + thumbnail strip + hover arrows
+- Mobile: Embla swipe carousel + nav arrows + animated dots + image type label

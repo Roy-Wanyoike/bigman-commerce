@@ -14,6 +14,19 @@ const nextConfig: NextConfig = {
         hostname: 'z-cdn.chatglm.cn',
         pathname: '/image-search-mcp/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'sfile.chatglm.cn',
+        pathname: '/images-ppt/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
     ],
   },
 };

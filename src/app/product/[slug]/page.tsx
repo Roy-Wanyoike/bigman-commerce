@@ -47,8 +47,8 @@ function toTitleCase(str: string): string {
 }
 
 /** Gather product images: approved ProductImage table rows first, then fallback to JSON images field */
-function gatherImages(product: any): { url: string; altText?: string }[] {
-  const images: { url: string; altText?: string }[] = []
+function gatherImages(product: any): { url: string; altText?: string; caption?: string }[] {
+  const images: { url: string; altText?: string; caption?: string }[] = []
 
   // 1. Approved product images from ProductImage table (non-unit-specific)
   if (product.productImages?.length) {
@@ -56,7 +56,7 @@ function gatherImages(product: any): { url: string; altText?: string }[] {
       .filter((pi: any) => pi.status === 'APPROVED' && !pi.inventoryUnitId)
       .sort((a: any, b: any) => (a.isPrimary ? -1 : b.isPrimary ? 1 : a.sortOrder - b.sortOrder))
     for (const pi of approved) {
-      images.push({ url: pi.url, altText: pi.altText || undefined })
+      images.push({ url: pi.url, altText: pi.altText || undefined, caption: pi.imageType || undefined })
     }
   }
 
@@ -69,7 +69,7 @@ function gatherImages(product: any): { url: string; altText?: string }[] {
           if (typeof item === 'string') {
             images.push({ url: item })
           } else if (item?.url) {
-            images.push({ url: item.url, altText: item.altText })
+            images.push({ url: item.url, altText: item.altText, caption: item.caption })
           }
         }
       }
@@ -181,7 +181,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           status: { in: ['ACTIVE', 'PUBLISHED'] },
           categories: { some: { categoryId: { in: crossSellCatIds } } },
         },
-        include: { brand: true, categories: { include: { category: true } } },
+        include: { brand: true, categories: { include: { category: true } }, productImages: { where: { status: 'APPROVED', inventoryUnitId: null, isPrimary: true }, select: { url: true }, take: 1 } },
         take: 8,
         orderBy: { sortOrder: 'asc' },
       })
@@ -208,12 +208,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   // JSON-LD structured data
   const imageUrl = images[0]?.url || ''
+  const allImageUrls = images.map(i => i.url)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
     description: product.shortDescription || '',
-    image: imageUrl,
+    image: allImageUrls.length > 0 ? allImageUrls : imageUrl,
     sku: product.sku || product.partNumber || '',
     brand: product.brand ? { '@type': 'Brand', name: product.brand.name } : undefined,
     offers: {
