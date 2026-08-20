@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { useStore } from '@/lib/store'
 import { formatPrice } from '@/lib/prices'
+import { generateOrderNumber } from '@/lib/security'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
 import OrderSummary from '@/components/bigman/OrderSummary'
@@ -73,10 +74,7 @@ function clearCheckoutData() {
   }
 }
 
-function generateOrderNumber(): string {
-  const num = Math.floor(10000 + Math.random() * 90000)
-  return `BM-${num}`
-}
+// generateOrderNumber imported from @/lib/security.ts
 
 function getInitialState(): Partial<CheckoutData> {
   return loadCheckoutData()

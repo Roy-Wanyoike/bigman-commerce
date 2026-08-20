@@ -408,6 +408,7 @@ model ProductComparison {
 model PriceAlert {
   id            String   @id @default(cuid())
   productId     String
+  userId        String?
   customerEmail String?
   customerPhone String?
   targetPrice   Float?
@@ -417,9 +418,11 @@ model PriceAlert {
   triggeredAt   DateTime?
 
   product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user          User?    @relation("UserPriceAlerts", fields: [userId], references: [id])
 
   @@index([productId])
   @@index([status])
+  @@index([userId])
 }
 
 // ============================================================
@@ -429,6 +432,7 @@ model PriceAlert {
 model StockAlert {
   id            String   @id @default(cuid())
   productId     String
+  userId        String?
   customerEmail String?
   customerPhone String?
   status        String   @default("WAITING") // WAITING, TRIGGERED, CANCELLED
@@ -436,9 +440,11 @@ model StockAlert {
   triggeredAt   DateTime?
 
   product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user          User?    @relation("UserStockAlerts", fields: [userId], references: [id])
 
   @@index([productId])
   @@index([status])
+  @@index([userId])
 }
 
 // ============================================================
@@ -478,6 +484,7 @@ model SearchSynonym {
 model Review {
   id          String   @id @default(cuid())
   productId   String
+  userId      String?
   rating      Int      // 1-5
   title       String?
   body        String?
@@ -488,9 +495,12 @@ model Review {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  user        User?    @relation(fields: [userId], references: [id])
+
   @@index([productId])
   @@index([rating])
   @@index([isPublished])
+  @@index([userId])
 }
 
 // ============================================================
@@ -577,4 +587,166 @@ model Promotion {
 
   @@index([isActive])
   @@index([startDate])
+}
+
+// ============================================================
+// USER - Customer and admin accounts
+// ============================================================
+
+model User {
+  id            String   @id @default(cuid())
+  name          String?
+  email         String   @unique
+  emailVerified DateTime?
+  phone         String?
+  password      String?  // hashed password for credentials provider
+  image         String?
+  role          String   @default("CUSTOMER") // CUSTOMER, STAFF, ADMIN, SUPER_ADMIN
+
+  // Business/B2B fields
+  businessName  String?
+  businessType  String?  // SOLE_PROPRIETOR, LIMITED, PARTNERSHIP, CORPORATE, NGO, GOVERNMENT
+  krapin        String?  // Kenya Revenue Authority PIN
+  isVerifiedBusiness Boolean @default(false)
+
+  // Preferences
+  county        String?
+  address       String?
+
+  // Session tracking
+  lastLoginAt   DateTime?
+  isActive      Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  orders        Order[]
+  priceAlerts   PriceAlert[] @relation("UserPriceAlerts")
+  stockAlerts   StockAlert[] @relation("UserStockAlerts")
+  reviews       Review[]
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String  // credentials, google, facebook, etc.
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier])
+}
+
+// ============================================================
+// ORDER - Full order tracking
+// ============================================================
+
+model Order {
+  id              String   @id @default(cuid())
+  orderNumber     String   @unique  // human-readable e.g. "BMC-20260820-001"
+  userId          String?
+
+  // Customer info (denormalized for query performance)
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+
+  // Delivery
+  deliveryMethod  String   @default("pickup") // pickup, courier
+  deliveryCounty  String?
+  deliveryAddress String?
+  courierPhone    String?
+  deliveryStatus  String   @default("PENDING") // PENDING, PROCESSING, DISPATCHED, IN_TRANSIT, DELIVERED, PICKED_UP
+  trackingNumber  String?
+  dispatchedAt    DateTime?
+  deliveredAt     DateTime?
+
+  // Payment
+  paymentMethod   String   @default("mpesa") // mpesa, bank_transfer, cash
+  paymentStatus   String   @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  mpesaPhone      String?
+  mpesaTransactionRef String?
+  paidAt          DateTime?
+
+  // Pricing
+  subtotal        Float
+  deliveryFee     Float    @default(0)
+  discountAmount  Float    @default(0)
+  taxAmount       Float    @default(0)
+  totalAmount     Float
+  currency        String   @default("KES")
+
+  // B2B
+  isB2B           Boolean  @default(false)
+  businessName    String?
+  krapin          String?
+  quotationRef    String?  // links to a quotation
+
+  // Status
+  status          String   @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User?    @relation(fields: [userId], references: [id])
+  orderItems      OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([deliveryStatus])
+  @@index([createdAt])
+  @@index([orderNumber])
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  orderId         String
+  productId       String?
+  productName     String
+  productSlug     String?
+  brandName       String?
+  condition       String?
+  unitPrice       Float
+  quantity        Int
+  totalPrice      Float
+
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
 }
