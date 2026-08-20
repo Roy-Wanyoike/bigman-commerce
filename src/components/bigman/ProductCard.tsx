@@ -41,7 +41,7 @@ export default function ProductCard({ product }: Props) {
 
   const handleCompare = () => {
     addToCompare({
-      productId: product.id, name: product.name, price: effectivePrice,
+      productId: product.id, slug: product.slug, name: product.name, price: effectivePrice,
       brand: product.brand?.name, specs,
     })
   }

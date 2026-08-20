@@ -255,7 +255,7 @@ export function FullCatalog({ products, categories, brands }: { products: Produc
 
         {/* Product grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-          {filtered.slice(0, 16).map(p => <ProductCard key={p.id} product={p} />)}
+          {filtered.map(p => <ProductCard key={p.id} product={p} />)}
         </div>
 
         {filtered.length === 0 && (

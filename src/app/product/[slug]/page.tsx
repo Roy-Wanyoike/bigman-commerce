@@ -16,6 +16,8 @@ import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { ShieldCheck, Truck, RotateCcw, ChevronRight } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import Header from '@/components/bigman/Header'
+import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
 
 // ============================================================
 // HELPERS
@@ -147,6 +149,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
+  // Fetch categories for Header/Footer
+  const allCategories = await db.category.findMany({
+    where: { isActive: true, showInNav: true, parentId: null },
+    include: { children: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } } },
+    orderBy: { sortOrder: 'asc' },
+  })
+  function buildTree(parentId: string | null = null): any[] {
+    return allCategories.filter(c => c.parentId === parentId).map(c => ({
+      ...c, children: buildTree(c.id),
+    }))
+  }
+  const categoryTree = buildTree()
+
   const product = await db.product.findUnique({
     where: { slug },
     include: {
@@ -229,14 +244,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }
 
   return (
-    <main className="min-h-screen">
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+    <div className="min-h-screen flex flex-col">
+      <Header categories={categoryTree} />
+      <main className="flex-1">
+        {/* JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
 
-      <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
+        <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
         {/* ===== BREADCRUMBS ===== */}
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
@@ -470,6 +487,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </section>
         )}
       </div>
-    </main>
+      </main>
+      <BigmanFooter categories={categoryTree} />
+      <MobileBottomNav />
+      <div className="lg:hidden h-14" />
+    </div>
   )
 }

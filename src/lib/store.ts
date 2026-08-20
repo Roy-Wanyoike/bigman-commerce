@@ -12,6 +12,7 @@ export interface CartItem {
 
 export interface CompareItem {
   productId: string
+  slug?: string
   name: string
   price: number
   brand?: string
