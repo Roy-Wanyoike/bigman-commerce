@@ -1,0 +1,1519 @@
+     1→'use client'
+     2→
+     3→import React, { useEffect, useState, useCallback } from 'react'
+     4→import { useParams, useRouter } from 'next/navigation'
+     5→import { Button } from '@/components/ui/button'
+     6→import { Input } from '@/components/ui/input'
+     7→import { Label } from '@/components/ui/label'
+     8→import { Textarea } from '@/components/ui/textarea'
+     9→import { Badge } from '@/components/ui/badge'
+    10→import { Switch } from '@/components/ui/switch'
+    11→import { Separator } from '@/components/ui/separator'
+    12→import {
+    13→  Select,
+    14→  SelectContent,
+    15→  SelectItem,
+    16→  SelectTrigger,
+    17→  SelectValue,
+    18→} from '@/components/ui/select'
+    19→import {
+    20→  Table,
+    21→  TableBody,
+    22→  TableCell,
+    23→  TableHead,
+    24→  TableHeader,
+    25→  TableRow,
+    26→} from '@/components/ui/table'
+    27→import {
+    28→  Dialog,
+    29→  DialogContent,
+    30→  DialogDescription,
+    31→  DialogFooter,
+    32→  DialogHeader,
+    33→  DialogTitle,
+    34→} from '@/components/ui/dialog'
+    35→import {
+    36→  Card,
+    37→  CardContent,
+    38→  CardHeader,
+    39→  CardTitle,
+    40→} from '@/components/ui/card'
+    41→import {
+    42→  ArrowLeft,
+    43→  Save,
+    44→  Loader2,
+    45→  Send,
+    46→  CheckCircle2,
+    47→  Globe,
+    48→  Ban,
+    49→  Archive,
+    50→  Plus,
+    51→  Trash2,
+    52→  Check,
+    53→  X,
+    54→  ImageIcon,
+    55→  Tag,
+    56→  Package,
+    57→  AlertTriangle,
+    58→  Star,
+    59→  Upload,
+    60→  Search,
+    61→  Eye,
+    62→  StarOff,
+    63→  Pencil,
+    64→} from 'lucide-react'
+    65→import { formatPrice } from '@/lib/prices'
+    66→
+    67→const statusColor: Record<string, string> = {
+    68→  DRAFT: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    69→  PUBLISHED: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    70→  UNDER_REVIEW: 'bg-sky-100 text-sky-800 border-sky-200',
+    71→  APPROVED: 'bg-violet-100 text-violet-800 border-violet-200',
+    72→  UNPUBLISHED: 'bg-orange-100 text-orange-800 border-orange-200',
+    73→  ARCHIVED: 'bg-gray-100 text-gray-600 border-gray-200',
+    74→  IMPORTED: 'bg-slate-100 text-slate-600 border-slate-200',
+    75→}
+    76→
+    77→const statusLabel: Record<string, string> = {
+    78→  IMPORTED: 'Imported',
+    79→  DRAFT: 'Draft',
+    80→  UNDER_REVIEW: 'Under Review',
+    81→  APPROVED: 'Approved',
+    82→  PUBLISHED: 'Published',
+    83→  UNPUBLISHED: 'Unpublished',
+    84→  ARCHIVED: 'Archived',
+    85→}
+    86→
+    87→const conditionLabels: Record<string, string> = {
+    88→  NEW: 'New',
+    89→  REFURBISHED: 'Refurbished',
+    90→  USED: 'Used',
+    91→  OPEN_BOX: 'Open Box',
+    92→  CLEARANCE: 'Clearance',
+    93→}
+    94→
+    95→const gradeLabels: Record<string, string> = {
+    96→  A_PLUS: 'A+',
+    97→  A: 'A',
+    98→  B_PLUS: 'B+',
+    99→  B: 'B',
+   100→  C: 'C',
+   101→}
+   102→
+   103→// Publish flow: DRAFT → UNDER_REVIEW → APPROVED → PUBLISHED
+   104→const publishFlow: Record<string, string> = {
+   105→  IMPORTED: 'DRAFT',
+   106→  DRAFT: 'UNDER_REVIEW',
+   107→  UNDER_REVIEW: 'APPROVED',
+   108→  APPROVED: 'PUBLISHED',
+   109→}
+   110→
+   111→interface Brand {
+   112→  id: string
+   113→  name: string
+   114→}
+   115→
+   116→interface Category {
+   117→  id: string
+   118→  name: string
+   119→  slug: string
+   120→}
+   121→
+   122→interface ProductImage {
+   123→  id: string
+   124→  url: string
+   125→  originalUrl: string | null
+   126→  thumbnailUrl: string | null
+   127→  altText: string | null
+   128→  caption: string | null
+   129→  imageType: string | null
+   130→  status: string
+   131→  isPrimary: boolean
+   132→  sortOrder: number
+   133→  source: string | null
+   134→  sourceUrl: string | null
+   135→  licenseStatus: string | null
+   136→  width: number | null
+   137→  height: number | null
+   138→  mimeType: string | null
+   139→  fileSize: number | null
+   140→  qualityScore: number | null
+   141→  rejectionReason: string | null
+   142→  reviewedBy: string | null
+   143→  reviewedAt: string | null
+   144→}
+   145→
+   146→interface PriceHistoryEntry {
+   147→  id: string
+   148→  previousPrice: number | null
+   149→  newPrice: number
+   150→  priceField: string
+   151→  reason: string | null
+   152→  createdAt: string
+   153→}
+   154→
+   155→interface ProductData {
+   156→  id: string
+   157→  name: string
+   158→  slug: string
+   159→  shortDescription: string | null
+   160→  description: string | null
+   161→  brandId: string | null
+   162→  businessUnitId: string | null
+   163→  condition: string
+   164→  conditionGrade: string | null
+   165→  conditionNote: string | null
+   166→  basePrice: number
+   167→  salePrice: number | null
+   168→  costPrice: number | null
+   169→  compareAtPrice: number | null
+   170→  wholesalePrice: number | null
+   171→  corporatePrice: number | null
+   172→  bundlePrice: number | null
+   173→  currency: string
+   174→  productType: string
+   175→  specifications: string | null
+   176→  thumbnail: string | null
+   177→  videoUrl: string | null
+   178→  trackInventory: boolean
+   179→  stockCount: number
+   180→  lowStockThreshold: number
+   181→  warrantyMonths: number | null
+   182→  warrantyInfo: string | null
+   183→  status: string
+   184→  isFeatured: boolean
+   185→  isDeal: boolean
+   186→  isGaming: boolean
+   187→  dealLabel: string | null
+   188→  compatibleModels: string | null
+   189→  sku: string | null
+   190→  partNumber: string | null
+   191→  upc: string | null
+   192→  lastVerifiedAt: string | null
+   193→  verifiedBy: string | null
+   194→  verifiedPrice: number | null
+   195→  seoTitle: string | null
+   196→  seoDescription: string | null
+   197→  metaKeywords: string | null
+   198→  brand: Brand | null
+   199→  categories: { categoryId: string; category: Category }[]
+   200→  productImages: ProductImage[]
+   201→  priceHistory: PriceHistoryEntry[]
+   202→  createdAt: string
+   203→  updatedAt: string
+   204→  publishedAt: string | null
+   205→}
+   206→
+   207→// Flat list of all categories for multi-select
+   208→interface FlatCategory {
+   209→  id: string
+   210→  name: string
+   211→  slug: string
+   212→  parentId: string | null
+   213→  level: number
+   214→  children?: FlatCategory[]
+   215→}
+   216→
+   217→function flattenCategories(nodes: FlatCategory[], prefix = ''): { id: string; name: string }[] {
+   218→  const result: { id: string; name: string }[] = []
+   219→  for (const node of nodes) {
+   220→    const label = prefix ? `${prefix} > ${node.name}` : node.name
+   221→    result.push({ id: node.id, name: label })
+   222→    if (node.children?.length) {
+   223→      result.push(...flattenCategories(node.children, label))
+   224→    }
+   225→  }
+   226→  return result
+   227→}
+   228→
+   229→function getStockInfo(stockCount: number, lowStockThreshold: number, trackInventory: boolean) {
+   230→  if (!trackInventory) return { label: 'Not Tracked', color: 'text-muted-foreground', bg: 'bg-gray-50' }
+   231→  if (stockCount <= 0) return { label: 'Out of Stock', color: 'text-red-700', bg: 'bg-red-50' }
+   232→  if (stockCount <= lowStockThreshold) return { label: 'Low Stock', color: 'text-amber-700', bg: 'bg-amber-50' }
+   233→  return { label: 'In Stock', color: 'text-emerald-700', bg: 'bg-emerald-50' }
+   234→}
+   235→
+   236→export default function AdminProductDetailPage() {
+   237→  const params = useParams()
+   238→  const router = useRouter()
+   239→  const id = params.id as string
+   240→
+   241→  const [product, setProduct] = useState<ProductData | null>(null)
+   242→  const [loading, setLoading] = useState(true)
+   243→  const [saving, setSaving] = useState(false)
+   244→  const [statusLoading, setStatusLoading] = useState(false)
+   245→  const [archiving, setArchiving] = useState(false)
+   246→
+   247→  // All categories for selector
+   248→  const [allCategories, setAllCategories] = useState<FlatCategory[]>([])
+   249→  const [allBrands, setAllBrands] = useState<Brand[]>([])
+   250→
+   251→  // Form state
+   252→  const [form, setForm] = useState<Record<string, unknown>>({})
+   253→  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+   254→  const [specs, setSpecs] = useState<{ key: string; value: string }[]>([])
+   255→
+   256→  // Category search
+   257→  const [catSearch, setCatSearch] = useState('')
+   258→
+   259→  // Delete/Archive dialog
+   260→  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
+   261→
+   262→  // Image dialog
+   263→  const [imageDialogOpen, setImageDialogOpen] = useState(false)
+   264→  const [newImageUrl, setNewImageUrl] = useState('')
+   265→  const [newImageAlt, setNewImageAlt] = useState('')
+   266→  const [newImageType, setNewImageType] = useState('OTHER')
+   267→
+   268→  // Upload states
+   269→  const [uploading, setUploading] = useState(false)
+   270→  const fileInputRef = React.useRef<HTMLInputElement>(null)
+   271→
+   272→  // Image preview dialog
+   273→  const [previewImage, setPreviewImage] = useState<ProductImage | null>(null)
+   274→
+   275→  // Editing alt text
+   276→  const [editingAltId, setEditingAltId] = useState<string | null>(null)
+   277→  const [editingAltText, setEditingAltText] = useState('')
+   278→
+   279→  useEffect(() => {
+   280→    async function load() {
+   281→      try {
+   282→        const [prodRes, catsRes, brandsRes] = await Promise.all([
+   283→          fetch(`/api/admin/products/${id}`).then((r) => r.json()),
+   284→          fetch('/api/admin/categories').then((r) => r.json()),
+   285→          fetch('/api/admin/products?pageSize=1').then((r) => r.json()),
+   286→        ])
+   287→
+   288→        const p = prodRes.product
+   289→        if (!p) {
+   290→          setLoading(false)
+   291→          return
+   292→        }
+   293→        setProduct(p)
+   294→
+   295→        // Initialize form
+   296→        setForm({
+   297→          name: p.name,
+   298→          slug: p.slug,
+   299→          shortDescription: p.shortDescription || '',
+   300→          description: p.description || '',
+   301→          brandId: p.brandId || '',
+   302→          condition: p.condition,
+   303→          conditionGrade: p.conditionGrade || '',
+   304→          conditionNote: p.conditionNote || '',
+   305→          basePrice: p.basePrice,
+   306→          salePrice: p.salePrice || '',
+   307→          costPrice: p.costPrice || '',
+   308→          compareAtPrice: p.compareAtPrice || '',
+   309→          wholesalePrice: p.wholesalePrice || '',
+   310→          corporatePrice: p.corporatePrice || '',
+   311→          bundlePrice: p.bundlePrice || '',
+   312→          trackInventory: p.trackInventory,
+   313→          stockCount: p.stockCount,
+   314→          lowStockThreshold: p.lowStockThreshold,
+   315→          warrantyMonths: p.warrantyMonths || '',
+   316→          warrantyInfo: p.warrantyInfo || '',
+   317→          isFeatured: p.isFeatured,
+   318→          isDeal: p.isDeal,
+   319→          isGaming: p.isGaming,
+   320→          dealLabel: p.dealLabel || '',
+   321→          sku: p.sku || '',
+   322→          partNumber: p.partNumber || '',
+   323→          compatibleModels: p.compatibleModels || '',
+   324→          seoTitle: p.seoTitle || '',
+   325→          seoDescription: p.seoDescription || '',
+   326→          metaKeywords: p.metaKeywords || '',
+   327→        })
+   328→
+   329→        setSelectedCategories(p.categories.map((c: { categoryId: string }) => c.categoryId))
+   330→
+   331→        // Parse specs
+   332→        try {
+   333→          const parsed = p.specifications ? JSON.parse(p.specifications) : {}
+   334→          setSpecs(Object.entries(parsed).map(([key, value]) => ({ key, value: String(value) })))
+   335→        } catch {
+   336→          setSpecs([])
+   337→        }
+   338→
+   339→        // Set categories & brands
+   340→        setAllCategories(catsRes.categories || [])
+   341→
+   342→        // Extract unique brands from the products list or use the product's brand
+   343→        const brandsData = brandsRes.products || []
+   344→        const brandSet = new Map<string, Brand>()
+   345→        if (p.brand) brandSet.set(p.brand.id, p.brand)
+   346→        brandsData.forEach((bp: { brand?: Brand | null }) => {
+   347→          if (bp.brand) brandSet.set(bp.brand.id, bp.brand)
+   348→        })
+   349→        setAllBrands(Array.from(brandSet.values()).sort((a, b) => a.name.localeCompare(b.name)))
+   350→      } catch (e) {
+   351→        console.error(e)
+   352→      } finally {
+   353→        setLoading(false)
+   354→      }
+   355→    }
+   356→    load()
+   357→  }, [id])
+   358→
+   359→  const updateField = useCallback((field: string, value: unknown) => {
+   360→    setForm((prev) => ({ ...prev, [field]: value }))
+   361→  }, [])
+   362→
+   363→  async function handleSave() {
+   364→    if (!product) return
+   365→    setSaving(true)
+   366→    try {
+   367→      const specsObj: Record<string, string> = {}
+   368→      specs.forEach((s) => {
+   369→        if (s.key.trim()) specsObj[s.key.trim()] = s.value
+   370→      })
+   371→
+   372→      const body = {
+   373→        ...form,
+   374→        basePrice: form.basePrice,
+   375→        salePrice: form.salePrice || null,
+   376→        costPrice: form.costPrice || null,
+   377→        compareAtPrice: form.compareAtPrice || null,
+   378→        wholesalePrice: form.wholesalePrice || null,
+   379→        corporatePrice: form.corporatePrice || null,
+   380→        bundlePrice: form.bundlePrice || null,
+   381→        warrantyMonths: form.warrantyMonths || null,
+   382→        dealLabel: form.dealLabel || null,
+   383→        categoryIds: selectedCategories,
+   384→        specifications: Object.keys(specsObj).length > 0 ? specsObj : null,
+   385→      }
+   386→
+   387→      const res = await fetch(`/api/admin/products/${id}`, {
+   388→        method: 'PUT',
+   389→        headers: { 'Content-Type': 'application/json' },
+   390→        body: JSON.stringify(body),
+   391→      })
+   392→
+   393→      if (!res.ok) {
+   394→        const err = await res.json()
+   395→        alert(err.error || 'Failed to save product')
+   396→        return
+   397→      }
+   398→
+   399→      const data = await res.json()
+   400→      setProduct(data.product)
+   401→    } catch (e) {
+   402→      console.error(e)
+   403→    } finally {
+   404→      setSaving(false)
+   405→    }
+   406→  }
+   407→
+   408→  async function handleStatusAction(action: string) {
+   409→    setStatusLoading(true)
+   410→    try {
+   411→      const res = await fetch(`/api/admin/products/${id}`, {
+   412→        method: 'PATCH',
+   413→        headers: { 'Content-Type': 'application/json' },
+   414→        body: JSON.stringify({ action }),
+   415→      })
+   416→      if (!res.ok) {
+   417→        const err = await res.json()
+   418→        alert(err.error || 'Failed to update status')
+   419→        return
+   420→      }
+   421→      const data = await res.json()
+   422→      setProduct((prev) => prev ? { ...prev, status: data.product.status } : prev)
+   423→    } catch (e) {
+   424→      console.error(e)
+   425→    } finally {
+   426→      setStatusLoading(false)
+   427→    }
+   428→  }
+   429→
+   430→  // Quick publish flow: advance one step
+   431→  async function handleQuickPublish() {
+   432→    if (!product) return
+   433→    const nextStatus = publishFlow[product.status]
+   434→    if (!nextStatus) {
+   435→      alert('This product is already published or cannot be advanced further.')
+   436→      return
+   437→    }
+   438→    const actionMap: Record<string, string> = {
+   439→      DRAFT: 'review',
+   440→      UNDER_REVIEW: 'approve',
+   441→      APPROVED: 'publish',
+   442→    }
+   443→    const action = actionMap[product.status]
+   444→    if (action) {
+   445→      await handleStatusAction(action)
+   446→    }
+   447→  }
+   448→
+   449→  async function handleArchive() {
+   450→    if (!product) return
+   451→    setArchiving(true)
+   452→    try {
+   453→      const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+   454→      if (!res.ok) {
+   455→        const err = await res.json()
+   456→        alert(err.error || 'Failed to archive product')
+   457→        return
+   458→      }
+   459→      setArchiveDialogOpen(false)
+   460→      const data = await res.json()
+   461→      setProduct((prev) => prev ? { ...prev, status: data.product.status } : prev)
+   462→    } catch (e) {
+   463→      console.error(e)
+   464→    } finally {
+   465→      setArchiving(false)
+   466→    }
+   467→  }
+   468→
+   469→  async function handleAddImage() {
+   470→    if (!newImageUrl.trim()) return
+   471→    try {
+   472→      const res = await fetch(`/api/admin/products/${id}/images`, {
+   473→        method: 'POST',
+   474→        headers: { 'Content-Type': 'application/json' },
+   475→        body: JSON.stringify({
+   476→          url: newImageUrl.trim(),
+   477→          altText: newImageAlt.trim() || null,
+   478→          imageType: newImageType || 'OTHER',
+   479→        }),
+   480→      })
+   481→      if (!res.ok) {
+   482→        const err = await res.json()
+   483→        alert(err.error || 'Failed to add image')
+   484→        return
+   485→      }
+   486→      // Reload product
+   487→      const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
+   488→      if (prodRes.product) setProduct(prodRes.product)
+   489→      setNewImageUrl('')
+   490→      setNewImageAlt('')
+   491→      setImageDialogOpen(false)
+   492→    } catch (e) {
+   493→      console.error(e)
+   494→    }
+   495→  }
+   496→
+   497→  async function handleImageAction(imageId: string, action: 'approve' | 'reject') {
+   498→    try {
+   499→      const res = await fetch(`/api/admin/products/${id}/images/${imageId}`, {
+   500→        method: 'PATCH',
+   501→        headers: { 'Content-Type': 'application/json' },
+   502→        body: JSON.stringify({ action }),
+   503→      })
+   504→      if (!res.ok) {
+   505→        const err = await res.json()
+   506→        alert(err.error || 'Failed to update image')
+   507→        return
+   508→      }
+   509→      const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
+   510→      if (prodRes.product) setProduct(prodRes.product)
+   511→    } catch (e) {
+   512→      console.error(e)
+   513→    }
+   514→  }
+   515→
+   516→  async function handleSetPrimary(imageId: string) {
+   517→    try {
+   518→      const res = await fetch(`/api/admin/products/${id}/images/${imageId}`, {
+   519→        method: 'PATCH',
+   520→        headers: { 'Content-Type': 'application/json' },
+   521→        body: JSON.stringify({ action: 'set-primary' }),
+   522→      })
+   523→      if (!res.ok) {
+   524→        const err = await res.json()
+   525→        alert(err.error || 'Failed to set primary image')
+   526→        return
+   527→      }
+   528→      const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
+   529→      if (prodRes.product) setProduct(prodRes.product)
+   530→    } catch (e) {
+   531→      console.error(e)
+   532→    }
+   533→  }
+   534→
+   535→  async function handleDeleteImage(imageId: string) {
+   536→    if (!confirm('Delete this image? This cannot be undone.')) return
+   537→    try {
+   538→      const res = await fetch(`/api/admin/products/${id}/images/${imageId}`, {
+   539→        method: 'DELETE',
+   540→      })
+   541→      if (!res.ok) {
+   542→        const err = await res.json()
+   543→        alert(err.error || 'Failed to delete image')
+   544→        return
+   545→      }
+   546→      const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
+   547→      if (prodRes.product) setProduct(prodRes.product)
+   548→    } catch (e) {
+   549→      console.error(e)
+   550→    }
+   551→  }
+   552→
+   553→  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+   554→    const files = e.target.files
+   555→    if (!files || files.length === 0) return
+   556→
+   557→    const imageCount = product?.productImages?.length || 0
+   558→    const remaining = 5 - imageCount
+   559→    const filesToUpload = Array.from(files).slice(0, remaining)
+   560→
+   561→    if (files.length > remaining) {
+   562→      alert(`Only ${remaining} more image(s) can be uploaded. ${files.length - remaining} file(s) skipped.`)
+   563→    }
+   564→
+   565→    setUploading(true)
+   566→    for (const file of filesToUpload) {
+   567→      const formData = new FormData()
+   568→      formData.append('file', file)
+   569→      formData.append('productId', id)
+   570→      formData.append('imageType', 'FRONT')
+   571→      formData.append('altText', product?.name || '')
+   572→      formData.append('isPrimary', String(imageCount === 0))
+   573→
+   574→      try {
+   575→        const res = await fetch('/api/admin/images/upload', {
+   576→          method: 'POST',
+   577→          body: formData,
+   578→        })
+   579→        if (!res.ok) {
+   580→          const err = await res.json()
+   581→          alert(`Upload failed for ${file.name}: ${err.error}`)
+   582→          break
+   583→        }
+   584→      } catch {
+   585→        alert(`Upload failed for ${file.name}`)
+   586→        break
+   587→      }
+   588→    }
+   589→    setUploading(false)
+   590→
+   591→    // Reset file input
+   592→    if (fileInputRef.current) fileInputRef.current.value = ''
+   593→
+   594→    // Reload product
+   595→    const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
+   596→    if (prodRes.product) setProduct(prodRes.product)
+   597→  }
+   598→
+   599→  async function handleSaveAltText(imageId: string) {
+   600→    try {
+   601→      await fetch(`/api/admin/products/${id}/images/${imageId}`, {
+   602→        method: 'PATCH',
+   603→        headers: { 'Content-Type': 'application/json' },
+   604→        body: JSON.stringify({ action: 'update-alt', altText: editingAltText }),
+   605→      })
+   606→      const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
+   607→      if (prodRes.product) setProduct(prodRes.product)
+   608→    } catch (e) {
+   609→      console.error(e)
+   610→    }
+   611→    setEditingAltId(null)
+   612→  }
+   613→
+   614→  function formatFileSize(bytes: number | null) {
+   615→    if (!bytes) return '—'
+   616→    if (bytes < 1024) return `${bytes} B`
+   617→    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+   618→    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+   619→  }
+   620→
+   621→  if (loading) {
+   622→    return (
+   623→      <div className="flex items-center justify-center py-20">
+   624→        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+   625→      </div>
+   626→    )
+   627→  }
+   628→
+   629→  if (!product) {
+   630→    return (
+   631→      <div className="text-center py-20">
+   632→        <p className="text-muted-foreground">Product not found.</p>
+   633→        <Button variant="outline" className="mt-4" onClick={() => router.push('/admin/products')}>
+   634→          <ArrowLeft className="size-4 mr-1" /> Back to Products
+   635→        </Button>
+   636→      </div>
+   637→    )
+   638→  }
+   639→
+   640→  const flatCategories = flattenCategories(allCategories)
+   641→  const canAdvance = !!publishFlow[product.status]
+   642→  const nextStatusLabel = publishFlow[product.status]
+   643→
+   644→  // Discount calculation
+   645→  const salePriceVal = form.salePrice ? parseFloat(form.salePrice as string) : null
+   646→  const basePriceVal = typeof form.basePrice === 'number' ? form.basePrice : parseFloat(form.basePrice as string) || 0
+   647→  const compareAtVal = form.compareAtPrice ? parseFloat(form.compareAtPrice as string) : null
+   648→  const discountPct = salePriceVal && salePriceVal > 0 && salePriceVal < basePriceVal
+   649→    ? Math.round(((basePriceVal - salePriceVal) / basePriceVal) * 100)
+   650→    : compareAtVal && compareAtVal > basePriceVal
+   651→      ? Math.round(((compareAtVal - basePriceVal) / compareAtVal) * 100)
+   652→      : null
+   653→
+   654→  // Stock info
+   655→  const stockInfo = getStockInfo(
+   656→    form.stockCount as number,
+   657→    form.lowStockThreshold as number,
+   658→    form.trackInventory as boolean,
+   659→  )
+   660→
+   661→  // Filter categories for search
+   662→  const filteredCats = flatCategories.filter((c) =>
+   663→    c.name.toLowerCase().includes(catSearch.toLowerCase()) &&
+   664→    !selectedCategories.includes(c.id)
+   665→  )
+   666→
+   667→  return (
+   668→    <div className="space-y-6">
+   669→      {/* Quick Actions Bar */}
+   670→      <div className="sticky top-0 z-10 bg-background border-b pb-4 -mt-6 pt-6">
+   671→        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+   672→          <div className="flex items-center gap-3">
+   673→            <Button variant="ghost" size="icon" onClick={() => router.push('/admin/products')}>
+   674→              <ArrowLeft className="size-4" />
+   675→            </Button>
+   676→            <div>
+   677→              <div className="flex items-center gap-2">
+   678→                <h1 className="text-2xl font-bold tracking-tight">{product.name}</h1>
+   679→                <Badge variant="outline" className={statusColor[product.status] || ''}>
+   680→                  {statusLabel[product.status] || product.status}
+   681→                </Badge>
+   682→              </div>
+   683→              <p className="text-sm text-muted-foreground">/{product.slug}</p>
+   684→            </div>
+   685→          </div>
+   686→          <div className="flex items-center gap-2 flex-wrap">
+   687→            <Button size="sm" variant="outline" onClick={handleSave} disabled={saving}>
+   688→              {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+   689→              Save
+   690→            </Button>
+   691→            {canAdvance && (
+   692→              <Button size="sm" onClick={handleQuickPublish} disabled={statusLoading}>
+   693→                {statusLoading ? <Loader2 className="size-4 animate-spin" /> : <Globe className="size-4" />}
+   694→                Publish → {statusLabel[nextStatusLabel || '']}
+   695→              </Button>
+   696→            )}
+   697→            {product.status === 'PUBLISHED' && (
+   698→              <Button size="sm" variant="outline" onClick={() => handleStatusAction('unpublish')} disabled={statusLoading}>
+   699→                <Ban className="size-4" /> Unpublish
+   700→              </Button>
+   701→            )}
+   702→            {product.status !== 'ARCHIVED' && (
+   703→              <Button
+   704→                size="sm"
+   705→                variant="outline"
+   706→                className="text-amber-700 border-amber-300 hover:bg-amber-50"
+   707→                onClick={() => handleStatusAction('archive')}
+   708→                disabled={statusLoading}
+   709→              >
+   710→                <Archive className="size-4" /> Archive
+   711→              </Button>
+   712→            )}
+   713→            {product.status !== 'ARCHIVED' && (
+   714→              <Button
+   715→                size="sm"
+   716→                variant="destructive"
+   717→                onClick={() => setArchiveDialogOpen(true)}
+   718→              >
+   719→                <Trash2 className="size-4" /> Delete
+   720→              </Button>
+   721→            )}
+   722→          </div>
+   723→        </div>
+   724→      </div>
+   725→
+   726→      <div className="grid gap-6 lg:grid-cols-3">
+   727→        {/* Main form - 2 cols */}
+   728→        <div className="lg:col-span-2 space-y-6">
+   729→          {/* Basic Info */}
+   730→          <Card>
+   731→            <CardHeader><CardTitle className="text-base">Basic Information</CardTitle></CardHeader>
+   732→            <CardContent className="space-y-4">
+   733→              <div className="grid gap-4 sm:grid-cols-2">
+   734→                <div className="space-y-2">
+   735→                  <Label htmlFor="name">Product Name</Label>
+   736→                  <Input id="name" value={(form.name as string) || ''} onChange={(e) => updateField('name', e.target.value)} />
+   737→                </div>
+   738→                <div className="space-y-2">
+   739→                  <Label htmlFor="slug">Slug</Label>
+   740→                  <Input id="slug" value={(form.slug as string) || ''} onChange={(e) => updateField('slug', e.target.value)} />
+   741→                </div>
+   742→              </div>
+   743→              <div className="grid gap-4 sm:grid-cols-3">
+   744→                <div className="space-y-2">
+   745→                  <Label>Brand</Label>
+   746→                  <Select value={(form.brandId as string) || '_none'} onValueChange={(v) => updateField('brandId', v === '_none' ? '' : v)}>
+   747→                    <SelectTrigger className="w-full"><SelectValue placeholder="Select brand" /></SelectTrigger>
+   748→                    <SelectContent>
+   749→                      <SelectItem value="_none">No Brand</SelectItem>
+   750→                      {allBrands.map((b) => (
+   751→                        <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+   752→                      ))}
+   753→                    </SelectContent>
+   754→                  </Select>
+   755→                </div>
+   756→                <div className="space-y-2">
+   757→                  <Label>Condition</Label>
+   758→                  <Select value={(form.condition as string) || 'NEW'} onValueChange={(v) => updateField('condition', v)}>
+   759→                    <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+   760→                    <SelectContent>
+   761→                      {Object.entries(conditionLabels).map(([k, v]) => (
+   762→                        <SelectItem key={k} value={k}>{v}</SelectItem>
+   763→                      ))}
+   764→                    </SelectContent>
+   765→                  </Select>
+   766→                </div>
+   767→                <div className="space-y-2">
+   768→                  <Label>Condition Grade</Label>
+   769→                  <Select value={(form.conditionGrade as string) || '_none'} onValueChange={(v) => updateField('conditionGrade', v === '_none' ? '' : v)}>
+   770→                    <SelectTrigger className="w-full"><SelectValue placeholder="None" /></SelectTrigger>
+   771→                    <SelectContent>
+   772→                      <SelectItem value="_none">None</SelectItem>
+   773→                      {Object.entries(gradeLabels).map(([k, v]) => (
+   774→                        <SelectItem key={k} value={k}>{v}</SelectItem>
+   775→                      ))}
+   776→                    </SelectContent>
+   777→                  </Select>
+   778→                </div>
+   779→              </div>
+   780→              <div className="space-y-2">
+   781→                <Label>Condition Note</Label>
+   782→                <Input value={(form.conditionNote as string) || ''} onChange={(e) => updateField('conditionNote', e.target.value)} placeholder="e.g. Minor scratches on lid" />
+   783→              </div>
+   784→              <div className="space-y-2">
+   785→                <Label>Short Description</Label>
+   786→                <Textarea value={(form.shortDescription as string) || ''} onChange={(e) => updateField('shortDescription', e.target.value)} rows={2} />
+   787→              </div>
+   788→              <div className="space-y-2">
+   789→                <Label>Full Description</Label>
+   790→                <Textarea value={(form.description as string) || ''} onChange={(e) => updateField('description', e.target.value)} rows={5} />
+   791→              </div>
+   792→              <div className="grid gap-4 sm:grid-cols-3">
+   793→                <div className="space-y-2">
+   794→                  <Label>SKU</Label>
+   795→                  <Input value={(form.sku as string) || ''} onChange={(e) => updateField('sku', e.target.value)} />
+   796→                </div>
+   797→                <div className="space-y-2">
+   798→                  <Label>Part Number</Label>
+   799→                  <Input value={(form.partNumber as string) || ''} onChange={(e) => updateField('partNumber', e.target.value)} />
+   800→                </div>
+   801→                <div className="space-y-2">
+   802→                  <Label>Compatible Models</Label>
+   803→                  <Input value={(form.compatibleModels as string) || ''} onChange={(e) => updateField('compatibleModels', e.target.value)} placeholder="Comma-separated slugs" />
+   804→                </div>
+   805→              </div>
+   806→            </CardContent>
+   807→          </Card>
+   808→
+   809→          {/* Pricing */}
+   810→          <Card>
+   811→            <CardHeader><CardTitle className="text-base">Pricing (KSh)</CardTitle></CardHeader>
+   812→            <CardContent className="space-y-4">
+   813→              <div className="grid gap-4 sm:grid-cols-3">
+   814→                <div className="space-y-2">
+   815→                  <Label>Base Price *</Label>
+   816→                  <Input type="number" step="0.01" value={form.basePrice as number || ''} onChange={(e) => updateField('basePrice', parseFloat(e.target.value) || 0)} />
+   817→                </div>
+   818→                <div className="space-y-2">
+   819→                  <Label>Sale Price</Label>
+   820→                  <Input type="number" step="0.01" value={form.salePrice as string || ''} onChange={(e) => updateField('salePrice', e.target.value)} placeholder="Optional" />
+   821→                </div>
+   822→                <div className="space-y-2">
+   823→                  <Label>Cost Price</Label>
+   824→                  <Input type="number" step="0.01" value={form.costPrice as string || ''} onChange={(e) => updateField('costPrice', e.target.value)} placeholder="Hidden from customers" />
+   825→                </div>
+   826→              </div>
+   827→              <div className="grid gap-4 sm:grid-cols-3">
+   828→                <div className="space-y-2">
+   829→                  <Label>Compare At Price</Label>
+   830→                  <Input type="number" step="0.01" value={form.compareAtPrice as string || ''} onChange={(e) => updateField('compareAtPrice', e.target.value)} placeholder={'"Was" price'} />
+   831→                </div>
+   832→                <div className="space-y-2">
+   833→                  <Label>Wholesale Price</Label>
+   834→                  <Input type="number" step="0.01" value={form.wholesalePrice as string || ''} onChange={(e) => updateField('wholesalePrice', e.target.value)} />
+   835→                </div>
+   836→                <div className="space-y-2">
+   837→                  <Label>Corporate Price</Label>
+   838→                  <Input type="number" step="0.01" value={form.corporatePrice as string || ''} onChange={(e) => updateField('corporatePrice', e.target.value)} />
+   839→                </div>
+   840→              </div>
+   841→              {/* Discount indicator */}
+   842→              {discountPct !== null && discountPct > 0 && (
+   843→                <div className="rounded-lg border bg-emerald-50 p-3 flex items-center gap-3">
+   844→                  <Tag className="size-5 text-emerald-600" />
+   845→                  <div>
+   846→                    <p className="text-sm font-medium text-emerald-800">{discountPct}% Discount</p>
+   847→                    <p className="text-xs text-emerald-600">
+   848→                      {salePriceVal
+   849→                        ? `Sale ${formatPrice(salePriceVal)} vs Base ${formatPrice(basePriceVal)}`
+   850→                        : compareAtVal
+   851→                          ? `Now ${formatPrice(basePriceVal)} vs Was ${formatPrice(compareAtVal)}`
+   852→                          : ''}
+   853→                    </p>
+   854→                  </div>
+   855→                </div>
+   856→              )}
+   857→              {/* Verification info */}
+   858→              {product.lastVerifiedAt && (
+   859→                <div className="rounded-lg border bg-muted/30 p-3">
+   860→                  <p className="text-xs font-medium text-muted-foreground mb-1">Price Verification</p>
+   861→                  <p className="text-sm">Verified: {new Date(product.lastVerifiedAt).toLocaleString()}</p>
+   862→                  {product.verifiedBy && <p className="text-sm text-muted-foreground">By: {product.verifiedBy}</p>}
+   863→                  {product.verifiedPrice && <p className="text-sm">Confirmed Price: {formatPrice(product.verifiedPrice)}</p>}
+   864→                </div>
+   865→              )}
+   866→            </CardContent>
+   867→          </Card>
+   868→
+   869→          {/* Discount / Offer Section */}
+   870→          <Card>
+   871→            <CardHeader>
+   872→              <CardTitle className="text-base flex items-center gap-2">
+   873→                <Tag className="size-4" /> Discounts & Offers
+   874→              </CardTitle>
+   875→            </CardHeader>
+   876→            <CardContent className="space-y-4">
+   877→              <div className="grid gap-4 sm:grid-cols-3">
+   878→                <div className="flex items-center justify-between rounded-lg border p-3">
+   879→                  <Label htmlFor="edit-featured" className="cursor-pointer">Featured</Label>
+   880→                  <Switch id="edit-featured" checked={form.isFeatured as boolean} onCheckedChange={(v) => updateField('isFeatured', v)} />
+   881→                </div>
+   882→                <div className="flex items-center justify-between rounded-lg border p-3">
+   883→                  <Label htmlFor="edit-deal" className="cursor-pointer">Deal</Label>
+   884→                  <Switch id="edit-deal" checked={form.isDeal as boolean} onCheckedChange={(v) => updateField('isDeal', v)} />
+   885→                </div>
+   886→                <div className="flex items-center justify-between rounded-lg border p-3">
+   887→                  <Label htmlFor="edit-gaming" className="cursor-pointer">Gaming</Label>
+   888→                  <Switch id="edit-gaming" checked={form.isGaming as boolean} onCheckedChange={(v) => updateField('isGaming', v)} />
+   889→                </div>
+   890→              </div>
+   891→              {form.isDeal && (
+   892→                <div className="space-y-2">
+   893→                  <Label>Deal Label</Label>
+   894→                  <div className="flex gap-2">
+   895→                    <Select
+   896→                      value={(form.dealLabel as string) || '_custom'}
+   897→                      onValueChange={(v) => {
+   898→                        if (v !== '_custom') updateField('dealLabel', v)
+   899→                      }}
+   900→                    >
+   901→                      <SelectTrigger className="w-[200px]">
+   902→                        <SelectValue placeholder="Select preset..." />
+   903→                      </SelectTrigger>
+   904→                      <SelectContent>
+   905→                        <SelectItem value="_custom">Custom...</SelectItem>
+   906→                        <SelectItem value="Flash Sale">Flash Sale</SelectItem>
+   907→                        <SelectItem value="Clearance">Clearance</SelectItem>
+   908→                        <SelectItem value="Holiday Deal">Holiday Deal</SelectItem>
+   909→                        <SelectItem value="Weekend Special">Weekend Special</SelectItem>
+   910→                        <SelectItem value="Best Seller">Best Seller</SelectItem>
+   911→                        <SelectItem value="New Arrival">New Arrival</SelectItem>
+   912→                        <SelectItem value="Limited Stock">Limited Stock</SelectItem>
+   913→                      </SelectContent>
+   914→                    </Select>
+   915→                    <Input
+   916→                      value={(form.dealLabel as string) || ''}
+   917→                      onChange={(e) => updateField('dealLabel', e.target.value)}
+   918→                      placeholder="Custom label (e.g. Flash Sale)"
+   919→                      className="flex-1"
+   920→                    />
+   921→                  </div>
+   922→                </div>
+   923→              )}
+   924→              <div className="grid gap-4 sm:grid-cols-2">
+   925→                <div className="space-y-2">
+   926→                  <Label>Sale Price (discounted)</Label>
+   927→                  <Input
+   928→                    type="number"
+   929→                    step="0.01"
+   930→                    value={form.salePrice as string || ''}
+   931→                    onChange={(e) => updateField('salePrice', e.target.value)}
+   932→                    placeholder="Leave empty for no sale"
+   933→                  />
+   934→                </div>
+   935→                <div className="space-y-2">
+   936→                  <Label>Compare At Price (&quot;Was&quot;)</Label>
+   937→                  <Input
+   938→                    type="number"
+   939→                    step="0.01"
+   940→                    value={form.compareAtPrice as string || ''}
+   941→                    onChange={(e) => updateField('compareAtPrice', e.target.value)}
+   942→                    placeholder="Original price for display"
+   943→                  />
+   944→                </div>
+   945→              </div>
+   946→            </CardContent>
+   947→          </Card>
+   948→
+   949→          {/* Categories - Enhanced with search */}
+   950→          <Card>
+   951→            <CardHeader><CardTitle className="text-base">Categories</CardTitle></CardHeader>
+   952→            <CardContent className="space-y-3">
+   953→              <div className="flex flex-wrap gap-2">
+   954→                {selectedCategories.map((catId) => {
+   955→                  const cat = flatCategories.find((c) => c.id === catId)
+   956→                  if (!cat) return null
+   957→                  return (
+   958→                    <Badge key={catId} variant="secondary" className="gap-1">
+   959→                      {cat.name}
+   960→                      <button
+   961→                        type="button"
+   962→                        onClick={() => setSelectedCategories((prev) => prev.filter((c) => c !== catId))}
+   963→                        className="ml-1 rounded-full hover:bg-muted-foreground/20 p-0.5"
+   964→                      >
+   965→                        <X className="size-3" />
+   966→                      </button>
+   967→                    </Badge>
+   968→                  )
+   969→                })}
+   970→                {selectedCategories.length === 0 && (
+   971→                  <p className="text-sm text-muted-foreground">No categories assigned.</p>
+   972→                )}
+   973→              </div>
+   974→              <div className="space-y-2">
+   975→                <div className="relative">
+   976→                  <Input
+   977→                    placeholder="Search categories..."
+   978→                    value={catSearch}
+   979→                    onChange={(e) => setCatSearch(e.target.value)}
+   980→                    className="pr-4"
+   981→                  />
+   982→                </div>
+   983→                <Select onValueChange={(v) => {
+   984→                  if (v && !selectedCategories.includes(v)) {
+   985→                    setSelectedCategories((prev) => [...prev, v])
+   986→                  }
+   987→                  setCatSearch('')
+   988→                }}>
+   989→                  <SelectTrigger className="w-full sm:w-[300px]">
+   990→                    <SelectValue placeholder="Add category..." />
+   991→                  </SelectTrigger>
+   992→                  <SelectContent>
+   993→                    {filteredCats.length > 0 ? (
+   994→                      filteredCats.map((cat) => (
+   995→                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+   996→                      ))
+   997→                    ) : (
+   998→                      <SelectItem value="_none" disabled>No matching categories</SelectItem>
+   999→                    )}
+  1000→                  </SelectContent>
+  1001→                </Select>
+  1002→              </div>
+  1003→            </CardContent>
+  1004→          </Card>
+  1005→
+  1006→          {/* Specifications */}
+  1007→          <Card>
+  1008→            <CardHeader>
+  1009→              <div className="flex items-center justify-between">
+  1010→                <CardTitle className="text-base">Specifications</CardTitle>
+  1011→                <Button
+  1012→                  type="button"
+  1013→                  variant="outline"
+  1014→                  size="sm"
+  1015→                  onClick={() => setSpecs((prev) => [...prev, { key: '', value: '' }])}
+  1016→                >
+  1017→                  <Plus className="size-3 mr-1" /> Add Spec
+  1018→                </Button>
+  1019→              </div>
+  1020→            </CardHeader>
+  1021→            <CardContent className="space-y-3">
+  1022→              {specs.length === 0 && (
+  1023→                <p className="text-sm text-muted-foreground">No specifications added yet.</p>
+  1024→              )}
+  1025→              {specs.map((spec, idx) => (
+  1026→                <div key={idx} className="flex items-center gap-2">
+  1027→                  <Input
+  1028→                    placeholder="Key (e.g. Processor)"
+  1029→                    value={spec.key}
+  1030→                    onChange={(e) => setSpecs((prev) => prev.map((s, i) => i === idx ? { ...s, key: e.target.value } : s))}
+  1031→                    className="flex-1"
+  1032→                  />
+  1033→                  <Input
+  1034→                    placeholder="Value"
+  1035→                    value={spec.value}
+  1036→                    onChange={(e) => setSpecs((prev) => prev.map((s, i) => i === idx ? { ...s, value: e.target.value } : s))}
+  1037→                    className="flex-1"
+  1038→                  />
+  1039→                  <Button
+  1040→                    type="button"
+  1041→                    variant="ghost"
+  1042→                    size="icon"
+  1043→                    className="size-8 shrink-0"
+  1044→                    onClick={() => setSpecs((prev) => prev.filter((_, i) => i !== idx))}
+  1045→                  >
+  1046→                    <Trash2 className="size-4 text-destructive" />
+  1047→                  </Button>
+  1048→                </div>
+  1049→              ))}
+  1050→            </CardContent>
+  1051→          </Card>
+  1052→
+  1053→          {/* Images */}
+  1054→          <Card>
+  1055→            <CardHeader>
+  1056→              <div className="flex items-center justify-between">
+  1057→                <div className="flex items-center gap-2">
+  1058→                  <CardTitle className="text-base">Images</CardTitle>
+  1059→                  <Badge variant="outline" className="text-xs">
+  1060→                    {product.productImages.length}/5 images
+  1061→                  </Badge>
+  1062→                </div>
+  1063→                <div className="flex items-center gap-2">
+  1064→                  <Button
+  1065→                    type="button"
+  1066→                    variant="outline"
+  1067→                    size="sm"
+  1068→                    onClick={() => {
+  1069→                      /* placeholder for future web search */
+  1070→                    }}
+  1071→                  >
+  1072→                    <Search className="size-3 mr-1" /> Search Web
+  1073→                  </Button>
+  1074→                  <Button
+  1075→                    type="button"
+  1076→                    variant="outline"
+  1077→                    size="sm"
+  1078→                    onClick={() => setImageDialogOpen(true)}
+  1079→                  >
+  1080→                    <Plus className="size-3 mr-1" /> Add URL
+  1081→                  </Button>
+  1082→                  <Button
+  1083→                    type="button"
+  1084→                    size="sm"
+  1085→                    onClick={() => fileInputRef.current?.click()}
+  1086→                    disabled={uploading || product.productImages.length >= 5}
+  1087→                  >
+  1088→                    {uploading ? <Loader2 className="size-3 mr-1 animate-spin" /> : <Upload className="size-3 mr-1" />}
+  1089→                    Upload File
+  1090→                  </Button>
+  1091→                  <input
+  1092→                    ref={fileInputRef}
+  1093→                    type="file"
+  1094→                    accept="image/jpeg,image/png,image/webp"
+  1095→                    multiple
+  1096→                    className="hidden"
+  1097→                    onChange={handleFileUpload}
+  1098→                  />
+  1099→                </div>
+  1100→              </div>
+  1101→            </CardHeader>
+  1102→            <CardContent>
+  1103→              {product.productImages.length === 0 ? (
+  1104→                <div className="text-center py-8">
+  1105→                  <ImageIcon className="size-10 text-muted-foreground/40 mx-auto mb-2" />
+  1106→                  <p className="text-sm text-muted-foreground">No images yet. Upload files or add image URLs.</p>
+  1107→                </div>
+  1108→              ) : (
+  1109→                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  1110→                  {product.productImages.map((img) => (
+  1111→                    <div key={img.id} className="relative rounded-lg border overflow-hidden group bg-card">
+  1112→                      {/* Thumbnail */}
+  1113→                      <div
+  1114→                        className="aspect-square bg-muted/50 flex items-center justify-center cursor-pointer relative"
+  1115→                        onClick={() => setPreviewImage(img)}
+  1116→                      >
+  1117→                        {img.thumbnailUrl || img.url ? (
+  1118→                          <img
+  1119→                            src={img.thumbnailUrl || img.url}
+  1120→                            alt={img.altText || ''}
+  1121→                            className="size-full object-cover"
+  1122→                          />
+  1123→                        ) : (
+  1124→                          <ImageIcon className="size-8 text-muted-foreground" />
+  1125→                        )}
+  1126→                        {/* Primary star overlay */}
+  1127→                        {img.isPrimary && (
+  1128→                          <div className="absolute top-2 left-2">
+  1129→                            <Badge className="bg-amber-500 text-white border-0 text-[10px] gap-0.5">
+  1130→                              <Star className="size-2.5 fill-current" /> Primary
+  1131→                            </Badge>
+  1132→                          </div>
+  1133→                        )}
+  1134→                        {/* Image type badge */}
+  1135→                        {img.imageType && img.imageType !== 'OTHER' && (
+  1136→                          <div className="absolute top-2 right-2">
+  1137→                            <Badge variant="secondary" className="text-[10px] bg-black/60 text-white border-0">
+  1138→                              {img.imageType}
+  1139→                            </Badge>
+  1140→                          </div>
+  1141→                        )}
+  1142→                        {/* Hover overlay with actions */}
+  1143→                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+  1144→                          <Button
+  1145→                            size="icon"
+  1146→                            variant="secondary"
+  1147→                            className="h-8 w-8 rounded-full"
+  1148→                            onClick={(e) => { e.stopPropagation(); setPreviewImage(img) }}
+  1149→                            aria-label="Preview"
+  1150→                          >
+  1151→                            <Eye className="size-3.5" />
+  1152→                          </Button>
+  1153→                          {!img.isPrimary && img.status === 'APPROVED' && (
+  1154→                            <Button
+  1155→                              size="icon"
+  1156→                              variant="secondary"
+  1157→                              className="h-8 w-8 rounded-full"
+  1158→                              onClick={(e) => { e.stopPropagation(); handleSetPrimary(img.id) }}
+  1159→                              aria-label="Set as primary"
+  1160→                            >
+  1161→                              <Star className="size-3.5" />
+  1162→                            </Button>
+  1163→                          )}
+  1164→                          <Button
+  1165→                            size="icon"
+  1166→                            variant="secondary"
+  1167→                            className="h-8 w-8 rounded-full text-destructive hover:text-destructive"
+  1168→                            onClick={(e) => { e.stopPropagation(); handleDeleteImage(img.id) }}
+  1169→                            aria-label="Delete image"
+  1170→                          >
+  1171→                            <Trash2 className="size-3.5" />
+  1172→                          </Button>
+  1173→                        </div>
+  1174→                      </div>
+  1175→
+  1176→                      {/* Info section */}
+  1177→                      <div className="p-2.5 space-y-1.5">
+  1178→                        <div className="flex items-center justify-between gap-1">
+  1179→                          <Badge
+  1180→                            variant="outline"
+  1181→                            className={
+  1182→                              img.status === 'APPROVED'
+  1183→                                ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+  1184→                                : img.status === 'REJECTED'
+  1185→                                  ? 'bg-red-100 text-red-700 border-red-200'
+  1186→                                  : 'bg-yellow-100 text-yellow-700 border-yellow-200'
+  1187→                            }
+  1188→                          >
+  1189→                            {img.status}
+  1190→                          </Badge>
+  1191→                          {img.source && (
+  1192→                            <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">
+  1193→                              {img.source.replace(/_/g, ' ')}
+  1194→                            </span>
+  1195→                          )}
+  1196→                        </div>
+  1197→
+  1198→                        {/* Alt text - editable */}
+  1199→                        <div className="flex items-center gap-1">
+  1200→                          {editingAltId === img.id ? (
+  1201→                            <div className="flex items-center gap-1 flex-1">
+  1202→                              <Input
+  1203→                                className="h-6 text-xs"
+  1204→                                value={editingAltText}
+  1205→                                onChange={(e) => setEditingAltText(e.target.value)}
+  1206→                                onKeyDown={(e) => e.key === 'Enter' && handleSaveAltText(img.id)}
+  1207→                                autoFocus
+  1208→                              />
+  1209→                              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleSaveAltText(img.id)}>
+  1210→                                <Check className="size-3" />
+  1211→                              </Button>
+  1212→                            </div>
+  1213→                          ) : (
+  1214→                            <p
+  1215→                              className="text-xs text-muted-foreground truncate flex-1 cursor-pointer hover:text-foreground"
+  1216→                              onClick={() => { setEditingAltId(img.id); setEditingAltText(img.altText || '') }}
+  1217→                              title="Click to edit alt text"
+  1218→                            >
+  1219→                              {img.altText || 'No alt text'}
+  1220→                            </p>
+  1221→                          )}
+  1222→                          <Button
+  1223→                            size="icon"
+  1224→                            variant="ghost"
+  1225→                            className="h-5 w-5 shrink-0"
+  1226→                            onClick={() => { setEditingAltId(img.id); setEditingAltText(img.altText || '') }}
+  1227→                          >
+  1228→                            <Pencil className="size-2.5" />
+  1229→                          </Button>
+  1230→                        </div>
+  1231→
+  1232→                        {/* Dimensions & file size */}
+  1233→                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+  1234→                          {img.width && img.height && <span>{img.width}x{img.height}</span>}
+  1235→                          {img.fileSize && <span>{formatFileSize(img.fileSize)}</span>}
+  1236→                        </div>
+  1237→
+  1238→                        {/* Status actions for PENDING */}
+  1239→                        {img.status === 'PENDING' && (
+  1240→                          <div className="flex gap-1 pt-0.5">
+  1241→                            <Button
+  1242→                              size="sm"
+  1243→                              variant="outline"
+  1244→                              className="h-6 text-[11px] flex-1"
+  1245→                              onClick={() => handleImageAction(img.id, 'approve')}
+  1246→                            >
+  1247→                              <Check className="size-2.5 mr-1" /> Approve
+  1248→                            </Button>
+  1249→                            <Button
+  1250→                              size="sm"
+  1251→                              variant="outline"
+  1252→                              className="h-6 text-[11px] flex-1 text-destructive hover:text-destructive"
+  1253→                              onClick={() => handleImageAction(img.id, 'reject')}
+  1254→                            >
+  1255→                              <X className="size-2.5 mr-1" /> Reject
+  1256→                            </Button>
+  1257→                          </div>
+  1258→                        )}
+  1259→
+  1260→                        {/* Set as primary button for non-primary approved images */}
+  1261→                        {!img.isPrimary && img.status === 'APPROVED' && (
+  1262→                          <Button
+  1263→                            size="sm"
+  1264→                            variant="ghost"
+  1265→                            className="h-6 text-[11px] w-full"
+  1266→                            onClick={() => handleSetPrimary(img.id)}
+  1267→                          >
+  1268→                            <StarOff className="size-2.5 mr-1" /> Set as Primary
+  1269→                          </Button>
+  1270→                        )}
+  1271→
+  1272→                        {img.rejectionReason && (
+  1273→                          <p className="text-[10px] text-destructive">Rejected: {img.rejectionReason}</p>
+  1274→                        )}
+  1275→                      </div>
+  1276→                    </div>
+  1277→                  ))}
+  1278→                </div>
+  1279→              )}
+  1280→            </CardContent>
+  1281→          </Card>
+  1282→
+  1283→          {/* Price History */}
+  1284→          <Card>
+  1285→            <CardHeader><CardTitle className="text-base">Price History</CardTitle></CardHeader>
+  1286→            <CardContent className="p-0">
+  1287→              <Table>
+  1288→                <TableHeader>
+  1289→                  <TableRow>
+  1290→                    <TableHead>Field</TableHead>
+  1291→                    <TableHead>Previous</TableHead>
+  1292→                    <TableHead>New</TableHead>
+  1293→                    <TableHead>Reason</TableHead>
+  1294→                    <TableHead className="hidden sm:table-cell">Date</TableHead>
+  1295→                  </TableRow>
+  1296→                </TableHeader>
+  1297→                <TableBody>
+  1298→                  {product.priceHistory.length === 0 ? (
+  1299→                    <TableRow>
+  1300→                      <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">No price changes recorded.</TableCell>
+  1301→                    </TableRow>
+  1302→                  ) : (
+  1303→                    product.priceHistory.map((h) => (
+  1304→                      <TableRow key={h.id}>
+  1305→                        <TableCell className="font-medium text-sm">{h.priceField}</TableCell>
+  1306→                        <TableCell className="text-sm">{h.previousPrice != null ? formatPrice(h.previousPrice) : '—'}</TableCell>
+  1307→                        <TableCell className="text-sm">{formatPrice(h.newPrice)}</TableCell>
+  1308→                        <TableCell className="text-sm text-muted-foreground">{h.reason || '—'}</TableCell>
+  1309→                        <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">{new Date(h.createdAt).toLocaleDateString()}</TableCell>
+  1310→                      </TableRow>
+  1311→                    ))
+  1312→                  )}
+  1313→                </TableBody>
+  1314→              </Table>
+  1315→            </CardContent>
+  1316→          </Card>
+  1317→        </div>
+  1318→
+  1319→        {/* Sidebar - 1 col */}
+  1320→        <div className="space-y-6">
+  1321→          {/* Status */}
+  1322→          <Card>
+  1323→            <CardHeader><CardTitle className="text-base">Status</CardTitle></CardHeader>
+  1324→            <CardContent className="space-y-2">
+  1325→              <Badge variant="outline" className={statusColor[product.status] || ''}>
+  1326→                {statusLabel[product.status] || product.status}
+  1327→              </Badge>
+  1328→              {canAdvance && (
+  1329→                <p className="text-xs text-muted-foreground">
+  1330→                  Next: {statusLabel[nextStatusLabel || '']}
+  1331→                </p>
+  1332→              )}
+  1333→            </CardContent>
+  1334→          </Card>
+  1335→
+  1336→          {/* Stock Management Section */}
+  1337→          <Card>
+  1338→            <CardHeader>
+  1339→              <CardTitle className="text-base flex items-center gap-2">
+  1340→                <Package className="size-4" /> Stock Management
+  1341→              </CardTitle>
+  1342→            </CardHeader>
+  1343→            <CardContent className="space-y-4">
+  1344→              {/* Stock status indicator */}
+  1345→              <div className={`rounded-lg border p-3 ${stockInfo.bg}`}>
+  1346→                <p className={`text-sm font-medium ${stockInfo.color}`}>{stockInfo.label}</p>
+  1347→                {form.trackInventory && (
+  1348→                  <p className="text-xs text-muted-foreground mt-1">
+  1349→                    {form.stockCount as number} units in stock
+  1350→                    {(form.lowStockThreshold as number) > 0 && ` · Threshold: ${form.lowStockThreshold as number}`}
+  1351→                  </p>
+  1352→                )}
+  1353→              </div>
+  1354→
+  1355→              <div className="flex items-center justify-between">
+  1356→                <Label htmlFor="edit-trackInventory">Track Inventory</Label>
+  1357→                <Switch
+  1358→                  id="edit-trackInventory"
+  1359→                  checked={form.trackInventory as boolean}
+  1360→                  onCheckedChange={(v) => updateField('trackInventory', v)}
+  1361→                />
+  1362→              </div>
+  1363→              {form.trackInventory && (
+  1364→                <>
+  1365→                  <div className="space-y-2">
+  1366→                    <Label htmlFor="edit-stockCount">Stock Count</Label>
+  1367→                    <Input
+  1368→                      id="edit-stockCount"
+  1369→                      type="number"
+  1370→                      value={form.stockCount as number}
+  1371→                      onChange={(e) => updateField('stockCount', parseInt(e.target.value) || 0)}
+  1372→                    />
+  1373→                  </div>
+  1374→                  <div className="space-y-2">
+  1375→                    <Label htmlFor="edit-lowStockThreshold">Low Stock Threshold</Label>
+  1376→                    <Input
+  1377→                      id="edit-lowStockThreshold"
+  1378→                      type="number"
+  1379→                      value={form.lowStockThreshold as number}
+  1380→                      onChange={(e) => updateField('lowStockThreshold', parseInt(e.target.value) || 5)}
+  1381→                    />
+  1382→                    <p className="text-xs text-muted-foreground">Product shows &quot;Low Stock&quot; when count is at or below this value.</p>
+  1383→                  </div>
+  1384→                </>
+  1385→              )}
+  1386→              <Separator />
+  1387→              <div className="grid gap-4 grid-cols-2">
+  1388→                <div className="space-y-2">
+  1389→                  <Label>Warranty (months)</Label>
+  1390→                  <Input type="number" value={form.warrantyMonths as string || ''} onChange={(e) => updateField('warrantyMonths', e.target.value)} placeholder="e.g. 12" />
+  1391→                </div>
+  1392→                <div className="space-y-2">
+  1393→                  <Label>Warranty Info</Label>
+  1394→                  <Input value={form.warrantyInfo as string || ''} onChange={(e) => updateField('warrantyInfo', e.target.value)} />
+  1395→                </div>
+  1396→              </div>
+  1397→            </CardContent>
+  1398→          </Card>
+  1399→
+  1400→          {/* SEO */}
+  1401→          <Card>
+  1402→            <CardHeader><CardTitle className="text-base">SEO</CardTitle></CardHeader>
+  1403→            <CardContent className="space-y-4">
+  1404→              <div className="space-y-2">
+  1405→                <Label>SEO Title</Label>
+  1406→                <Input value={(form.seoTitle as string) || ''} onChange={(e) => updateField('seoTitle', e.target.value)} />
+  1407→              </div>
+  1408→              <div className="space-y-2">
+  1409→                <Label>SEO Description</Label>
+  1410→                <Textarea value={(form.seoDescription as string) || ''} onChange={(e) => updateField('seoDescription', e.target.value)} rows={3} />
+  1411→              </div>
+  1412→              <div className="space-y-2">
+  1413→                <Label>Meta Keywords</Label>
+  1414→                <Input value={(form.metaKeywords as string) || ''} onChange={(e) => updateField('metaKeywords', e.target.value)} />
+  1415→              </div>
+  1416→            </CardContent>
+  1417→          </Card>
+  1418→
+  1419→          {/* Metadata */}
+  1420→          <Card>
+  1421→            <CardHeader><CardTitle className="text-base">Metadata</CardTitle></CardHeader>
+  1422→            <CardContent className="space-y-2 text-sm text-muted-foreground">
+  1423→              <p><span className="font-medium text-foreground">ID:</span> {product.id}</p>
+  1424→              <p><span className="font-medium text-foreground">Created:</span> {new Date(product.createdAt).toLocaleString()}</p>
+  1425→              <p><span className="font-medium text-foreground">Updated:</span> {new Date(product.updatedAt).toLocaleString()}</p>
+  1426→              {product.publishedAt && <p><span className="font-medium text-foreground">Published:</span> {new Date(product.publishedAt).toLocaleString()}</p>}
+  1427→              <p><span className="font-medium text-foreground">Currency:</span> {product.currency}</p>
+  1428→              <p><span className="font-medium text-foreground">Type:</span> {product.productType}</p>
+  1429→            </CardContent>
+  1430→          </Card>
+  1431→        </div>
+  1432→      </div>
+  1433→
+  1434→      {/* Delete/Archive Confirmation Dialog */}
+  1435→      <Dialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
+  1436→        <DialogContent>
+  1437→          <DialogHeader>
+  1438→            <DialogTitle className="flex items-center gap-2">
+  1439→              <AlertTriangle className="size-5 text-destructive" />
+  1440→              Delete Product
+  1441→            </DialogTitle>
+  1442→            <DialogDescription>
+  1443→              Are you sure you want to archive &quot;{product.name}&quot;? This will change the
+  1444→              product status to Archived. The product will no longer be visible on the storefront.
+  1445→            </DialogDescription>
+  1446→          </DialogHeader>
+  1447→          <DialogFooter>
+  1448→            <Button variant="outline" onClick={() => setArchiveDialogOpen(false)}>Cancel</Button>
+  1449→            <Button variant="destructive" onClick={handleArchive} disabled={archiving}>
+  1450→              {archiving ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+  1451→              Archive Product
+  1452→            </Button>
+  1453→          </DialogFooter>
+  1454→        </DialogContent>
+  1455→      </Dialog>
+  1456→
+  1457→      {/* Image Preview Dialog */}
+  1458→      <Dialog open={!!previewImage} onOpenChange={(open) => !open && setPreviewImage(null)}>
+  1459→        <DialogContent className="max-w-3xl">
+  1460→          <DialogHeader>
+  1461→            <DialogTitle>Image Preview</DialogTitle>
+  1462→            {previewImage && (
+  1463→              <DialogDescription className="flex items-center gap-3 text-xs text-muted-foreground">
+  1464→                {previewImage.altText || 'No alt text'}
+  1465→                {previewImage.width && previewImage.height && `· ${previewImage.width}x${previewImage.height}`}
+  1466→                {previewImage.source && `· ${previewImage.source.replace(/_/g, ' ')}`}
+  1467→              </DialogDescription>
+  1468→            )}
+  1469→          </DialogHeader>
+  1470→          {previewImage && (
+  1471→            <div className="rounded-lg overflow-hidden bg-muted/30">
+  1472→              <img
+  1473→                src={previewImage.url}
+  1474→                alt={previewImage.altText || ''}
+  1475→                className="w-full h-auto max-h-[60vh] object-contain"
+  1476→              />
+  1477→            </div>
+  1478→          )}
+  1479→        </DialogContent>
+  1480→      </Dialog>
+  1481→
+  1482→      {/* Add Image Dialog */}
+  1483→      <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
+  1484→        <DialogContent>
+  1485→          <DialogHeader>
+  1486→            <DialogTitle>Add Image from URL</DialogTitle>
+  1487→            <DialogDescription>Enter the image URL and metadata. The image will be added with PENDING status.</DialogDescription>
+  1488→          </DialogHeader>
+  1489→          <div className="space-y-4">
+  1490→            <div className="space-y-2">
+  1491→              <Label>Image URL *</Label>
+  1492→              <Input value={newImageUrl} onChange={(e) => setNewImageUrl(e.target.value)} placeholder="https://..." />
+  1493→            </div>
+  1494→            <div className="space-y-2">
+  1495→              <Label>Alt Text</Label>
+  1496→              <Input value={newImageAlt} onChange={(e) => setNewImageAlt(e.target.value)} placeholder="Description for accessibility" />
+  1497→            </div>
+  1498→            <div className="space-y-2">
+  1499→              <Label>Image Type</Label>
+  1500→              <Select value={newImageType} onValueChange={setNewImageType}>
+  1501→                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+  1502→                <SelectContent>
+  1503→                  {['FRONT', 'BACK', 'SIDE', 'PORTS', 'PACKAGING', 'ACCESSORIES', 'CLOSEUP', 'LIFESTYLE', 'KEYBOARD', 'DISPLAY', 'BOTTOM', 'CHARGER', 'SCREEN', 'OTHER'].map((t) => (
+  1504→                    <SelectItem key={t} value={t}>{t.charAt() + t.slice(1).toLowerCase()}</SelectItem>
+  1505→                  ))}
+  1506→                </SelectContent>
+  1507→              </Select>
+  1508→            </div>
+  1509→          </div>
+  1510→          <DialogFooter>
+  1511→            <Button variant="outline" onClick={() => setImageDialogOpen(false)}>Cancel</Button>
+  1512→            <Button onClick={handleAddImage} disabled={!newImageUrl.trim()}>Add Image</Button>
+  1513→          </DialogFooter>
+  1514→        </DialogContent>
+  1515→      </Dialog>
+  1516→    </div>
+  1517→  )
+  1518→}
+  1519→

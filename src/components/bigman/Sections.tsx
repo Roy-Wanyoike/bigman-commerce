@@ -358,7 +358,7 @@ export function BudgetSection({ products }: { products: Product[] }) {
 // BRAND SHOWCASE
 // ============================================================
 export function BrandSection({ brands }: { brands: Brand[] }) {
-  const active = brands.filter(b => b._count.products > 0)
+  const active = brands.filter(b => (b._count?.products ?? 0) > 0)
   if (active.length === 0) return null
   return (
     <section className="py-10 md:py-14">
@@ -377,7 +377,7 @@ export function BrandSection({ brands }: { brands: Brand[] }) {
                   <div className="h-10 flex items-center justify-center">
                     <span className="text-base font-bold text-muted-foreground group-hover:text-foreground transition-colors tracking-tight">{b.name}</span>
                   </div>
-                  <div className="text-[10px] text-muted-foreground mt-1">{b._count.products} items</div>
+                  <div className="text-[10px] text-muted-foreground mt-1">{(b._count?.products ?? 0)} items</div>
                 </CardContent>
               </Card>
             </Link>

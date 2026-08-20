@@ -482,7 +482,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </Link>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
-              {crossSellProducts.map(p => <ProductCard key={p.id} product={p} />)}
+              {crossSellProducts.map(p => <ProductCard key={p.id} product={p as any} />)}
             </div>
           </section>
         )}

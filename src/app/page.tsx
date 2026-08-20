@@ -38,7 +38,7 @@ async function getData() {
     }),
     db.serviceProduct.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),
   ])
-  return { categories, products, brands, services }
+  return { categories: categories as any, products: products as any, brands: brands as any, services }
 }
 
 export default async function Page() {

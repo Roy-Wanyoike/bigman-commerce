@@ -1,0 +1,2818 @@
+fix the UIs for each user they should see different data. Do research. Also, admin for a DCP, manager and loan officer they should see different view.
+For this platform, I would structure the product into **four distinct experiences**:
+
+1. **Super Admin Portal** — platform owner/operator
+2. **DCP Admin Portal** — lender organization management
+3. **DCP Staff Portal** — daily lending operations
+4. **Customer Portal/App** — borrower self-service
+
+The key is that **Super Admin controls the platform**, while each DCP controls its own lending business.
+
+---
+
+# 1. Super Admin Portal
+
+This is the **Digital Lending OS control plane**. It should not look like another lender dashboard.
+
+### A. Platform Dashboard
+
+Give the platform owner a real-time view of the entire ecosystem:
+
+* Total DCPs
+* Active DCPs
+* Pending DCP approvals
+* Total customers
+* Active loans
+* Total loan book
+* Total disbursed
+* Total repayments
+* Total outstanding
+* PAR 7 / PAR 30 / PAR 90
+* Default rate
+* Platform revenue
+* Transaction volume
+* Payment success rate
+* KYC success rate
+* System health
+* Provider health
+* Failed workflows
+* Failed payments
+* Suspended accounts
+
+Example:
+
+```text
+PLATFORM OVERVIEW
+
+DCPs                 252
+Customers            4.8M
+Active Loans         1.7M
+Loan Book            KSh 42.8B
+
+Disbursed Today      KSh 183M
+Repayments Today     KSh 97M
+
+PAR30                4.8%
+Default Rate         2.1%
+
+Platform Revenue     KSh 14.2M
+```
+
+---
+
+## B. DCP Management
+
+Super Admin should be able to:
+
+* Create DCP
+* Approve DCP
+* Reject DCP
+* Suspend DCP
+* Reactivate DCP
+* Verify DCP
+* View DCP profile
+* View DCP performance
+* Configure DCP limits
+* Configure DCP pricing
+* Configure subscription
+* Configure platform fees
+* Configure API limits
+* Configure integrations
+* View DCP users
+* Impersonate/support DCP users with strict audit logging
+
+### DCP profile
+
+```text
+DCP
+├── Organization
+├── Regulatory information
+├── Directors
+├── Contacts
+├── Documents
+├── Users
+├── Products
+├── Customers
+├── Loans
+├── Collections
+├── Payments
+├── Integrations
+├── API keys
+├── Billing
+└── Audit logs
+```
+
+---
+
+# 2. Platform Configuration
+
+This is where your platform becomes powerful.
+
+Super Admin can configure:
+
+### Loan products
+
+* Product types
+* Maximum loan amount
+* Minimum loan amount
+* Interest rate
+* Interest calculation method
+* Processing fees
+* Penalties
+* Grace periods
+* Repayment frequency
+* Loan duration
+* Eligibility rules
+
+### Global configuration
+
+* Currencies
+* Countries
+* Languages
+* Payment providers
+* KYC providers
+* CRB providers
+* SMS providers
+* Email providers
+* WhatsApp providers
+* Notification templates
+
+---
+
+# 3. Provider Management
+
+This should be a major module.
+
+```text
+Integrations
+
+Payments
+├── M-Pesa
+├── Banks
+├── Pesalink
+└── Payment gateways
+
+KYC
+├── Identity verification
+├── Document verification
+└── Biometrics
+
+Credit
+├── CRB A
+├── CRB B
+└── Alternative credit data
+
+Communication
+├── SMS
+├── Email
+└── WhatsApp
+```
+
+Super Admin should see:
+
+* Provider uptime
+* API latency
+* Success rate
+* Failure rate
+* Current incidents
+* Request volume
+* Cost
+* Error rates
+
+Then you can eventually build a **Provider Health Engine**.
+
+For example:
+
+```text
+M-PESA
+
+Status: HEALTHY
+Success Rate: 99.94%
+Latency: 420ms
+Requests: 1.8M
+```
+
+---
+
+# 4. Financial Platform Administration
+
+Super Admin needs visibility into the **platform-level financial ledger**.
+
+Features:
+
+* Platform ledger
+* DCP balances
+* Platform fees
+* Transaction fees
+* Subscription billing
+* Revenue
+* Refunds
+* Reversals
+* Chargebacks
+* Settlement
+* Reconciliation
+* Financial reports
+
+And critically:
+
+### Immutable audit trail
+
+Every financial action should have:
+
+```text
+Who
+What
+When
+Tenant
+Previous state
+New state
+Reference
+IP/device
+Workflow ID
+Transaction ID
+```
+
+---
+
+# 5. Risk & Fraud Administration
+
+Super Admin should manage the platform's risk engine.
+
+Features:
+
+* Global risk rules
+* Fraud rules
+* Velocity rules
+* Device rules
+* IP rules
+* Blacklists
+* Watchlists
+* Suspicious activity
+* Risk scoring
+* Rule versions
+* Model versions
+
+Eventually:
+
+```text
+Risk Engine
+
+Application
+     ↓
+Identity
+     ↓
+Device
+     ↓
+Transaction history
+     ↓
+Credit bureau
+     ↓
+Behavior
+     ↓
+AI/ML model
+     ↓
+Risk score
+```
+
+---
+
+# 6. Workflow Administration
+
+Since you're using Temporal, expose operational workflows.
+
+Super Admin should see:
+
+```text
+Workflows
+
+Running       18,421
+Completed     8.2M
+Failed        342
+Retrying      129
+Timed out     12
+```
+
+Allow authorized operators to:
+
+* Inspect workflow
+* Retry
+* Pause
+* Resume
+* Cancel
+* Replay
+* View execution history
+
+**But never allow arbitrary editing of financial state from this screen.**
+
+---
+
+# 7. System Administration
+
+Super Admin:
+
+* Users
+* Roles
+* Permissions
+* API keys
+* Service accounts
+* Sessions
+* Security events
+* Feature flags
+* System settings
+* Maintenance mode
+* Audit logs
+
+---
+
+# 8. DCP Admin Portal
+
+This is where each lender manages **their own organization**.
+
+They should never see another DCP.
+
+### Dashboard
+
+```text
+My Lending Business
+
+Customers           84,231
+Active Loans        31,842
+
+Loan Book           KSh 2.4B
+Disbursed           KSh 3.8B
+Outstanding         KSh 1.7B
+
+Today's Collections KSh 8.2M
+Today's Disbursement KSh 12.4M
+
+PAR30               5.1%
+```
+
+---
+
+# 9. Customer Management
+
+DCP Admin:
+
+* Customer list
+* Search
+* Customer profile
+* KYC status
+* Documents
+* Credit profile
+* Loan history
+* Repayment history
+* Communication history
+* Risk score
+* Devices
+* Accounts
+* Blacklist/suspension
+* Customer notes
+
+Customer profile:
+
+```text
+John Doe
+
+KYC             VERIFIED
+Risk            LOW
+Credit Score    742
+
+Loans           4
+Active          1
+Completed       3
+
+Total Borrowed  KSh 180,000
+Repaid          KSh 143,000
+Outstanding     KSh 37,000
+```
+
+---
+
+# 10. Loan Management
+
+DCP staff need:
+
+* Applications
+* Pending applications
+* Approved loans
+* Rejected loans
+* Active loans
+* Completed loans
+* Defaulted loans
+* Restructured loans
+* Written-off loans
+
+Loan details:
+
+```text
+Loan
+├── Customer
+├── Product
+├── Principal
+├── Interest
+├── Fees
+├── Penalties
+├── Repayment schedule
+├── Payments
+├── Documents
+├── Approval history
+├── Risk assessment
+├── Collections
+└── Audit history
+```
+
+---
+
+# 11. Loan Application Management
+
+This is one of the most important screens.
+
+```text
+Application #LA-82931
+
+Customer
+KYC
+Credit
+Risk
+Income
+Existing loans
+Affordability
+Documents
+
+        ↓
+
+Risk Assessment
+
+Score: 742
+Recommendation: APPROVE
+
+        ↓
+
+Approval
+
+[Approve] [Reject] [Request Review]
+```
+
+Use a **maker-checker workflow** for higher-risk/high-value decisions.
+
+---
+
+# 12. Credit & Risk
+
+DCP Admin should configure:
+
+* Credit policies
+* Eligibility rules
+* Risk rules
+* Loan limits
+* Score thresholds
+* Affordability rules
+* Blacklists
+* Fraud rules
+* Manual review rules
+
+Example:
+
+```text
+IF
+
+Credit Score > 650
+AND
+Debt-to-income < 40%
+AND
+KYC = VERIFIED
+AND
+No active default
+
+THEN
+
+Eligible = TRUE
+```
+
+---
+
+# 13. Collections
+
+This deserves its own major module.
+
+Features:
+
+* Collection dashboard
+* Overdue loans
+* Aging buckets
+* Collection queues
+* Promise-to-pay
+* Collection agents
+* Call history
+* SMS campaigns
+* WhatsApp campaigns
+* Payment reminders
+* Escalations
+* Restructuring
+* Recovery
+* Write-offs
+
+Dashboard:
+
+```text
+Collections
+
+Due Today             KSh 42M
+Collected              KSh 31M
+Overdue                KSh 11M
+
+PAR1                   2.4%
+PAR7                   3.1%
+PAR30                  5.2%
+PAR90                  2.1%
+```
+
+---
+
+# 14. DCP Financial Management
+
+DCP Admin should have:
+
+* Wallet/account
+* Disbursement account
+* Collections account
+* Ledger
+* Transactions
+* Settlements
+* Reconciliation
+* Statements
+* Fees
+* Reports
+
+---
+
+# 15. Reports & Analytics
+
+Give DCPs:
+
+### Portfolio
+
+* Loan book
+* Disbursement
+* Repayment
+* PAR
+* Defaults
+* Recovery
+
+### Customer
+
+* Customer growth
+* Repeat borrowers
+* Customer segmentation
+
+### Financial
+
+* Revenue
+* Interest
+* Fees
+* Penalties
+* Collections
+
+### Operational
+
+* Approval rate
+* Rejection rate
+* Average processing time
+* KYC failures
+* Payment failures
+
+---
+
+# 16. DCP Staff Portal
+
+Don't give every employee admin privileges.
+
+Create role-based workspaces.
+
+### Loan Officer
+
+Can:
+
+* View applications
+* Review customers
+* Recommend approval
+* Contact customers
+* View assigned loans
+
+### Credit Officer
+
+Can:
+
+* Review credit
+* Run risk assessment
+* Approve/reject within limits
+
+### Collections Officer
+
+Can:
+
+* View assigned overdue accounts
+* Contact customers
+* Record promises
+* Record payments
+
+### Finance Officer
+
+Can:
+
+* Reconciliation
+* Transactions
+* Settlements
+* Statements
+
+### Compliance Officer
+
+Can:
+
+* KYC
+* AML
+* Suspicious activity
+* Audit
+
+### Support Agent
+
+Can:
+
+* Customer lookup
+* Tickets
+* Communication
+* Limited account information
+
+---
+
+# 17. Customer Account
+
+The customer experience should be **much simpler**.
+
+Think:
+
+> "I need to know how much I can borrow, how much I owe, and how I pay."
+
+### Home
+
+```text
+Good afternoon, John
+
+Available to Borrow
+KSh 50,000
+
+Outstanding
+KSh 18,400
+
+Next Payment
+KSh 4,200
+Due Aug 28
+
+[Apply for Loan]
+[Make Payment]
+```
+
+---
+
+# 18. Customer Loan Application
+
+A simple guided flow:
+
+```text
+1. Personal Information
+        ↓
+2. Employment / Income
+        ↓
+3. Loan Request
+        ↓
+4. KYC
+        ↓
+5. Consent
+        ↓
+6. Assessment
+        ↓
+7. Decision
+        ↓
+8. Disbursement
+```
+
+Show progress throughout.
+
+---
+
+# 19. Customer Loan Management
+
+Customer can see:
+
+* Current loan
+* Principal
+* Interest
+* Fees
+* Outstanding amount
+* Repayment schedule
+* Due dates
+* Payment history
+* Loan status
+* Loan agreement
+* Statements
+
+---
+
+# 20. Customer Payments
+
+Allow:
+
+* M-Pesa
+* Bank
+* Card where supported
+* Other configured payment methods
+
+Features:
+
+* Make payment
+* Payment history
+* Receipts
+* Automatic payments where supported
+* Payment reminders
+* Failed payment recovery
+
+---
+
+# 21. Customer Notifications
+
+Central notification center:
+
+```text
+Notifications
+
+Loan approved
+Payment received
+Payment due tomorrow
+Payment overdue
+Loan disbursed
+Statement available
+KYC verification required
+```
+
+Channels:
+
+* Push
+* SMS
+* Email
+* WhatsApp
+
+---
+
+# 22. Customer Profile
+
+Customer controls:
+
+* Personal information
+* Contact information
+* Employment
+* Bank/payment accounts
+* KYC documents
+* Security
+* Devices
+* Notifications
+* Privacy/consent
+
+---
+
+# 23. Customer Support
+
+Give customers:
+
+* Help center
+* FAQs
+* Support tickets
+* Chat
+* Contact lender
+* Complaint submission
+* Dispute payment
+* Request statement
+
+---
+
+# The RBAC structure I'd use
+
+This is extremely important.
+
+```text
+SUPER ADMIN
+│
+├── Platform Admin
+├── Finance Admin
+├── Risk Admin
+├── Compliance Admin
+├── Support Admin
+└── Operations Admin
+
+
+DCP
+│
+├── DCP OWNER
+│
+├── DCP ADMIN
+│
+├── CREDIT MANAGER
+├── CREDIT OFFICER
+├── LOAN OFFICER
+├── COLLECTIONS MANAGER
+├── COLLECTIONS OFFICER
+├── FINANCE OFFICER
+├── COMPLIANCE OFFICER
+└── SUPPORT AGENT
+
+
+CUSTOMER
+└── CUSTOMER
+```
+
+But don't stop at roles.
+
+Use **RBAC + ABAC**.
+
+For example:
+
+```text
+Credit Officer
+
+Can approve loans
+BUT
+
+loan.amount <= officer.approval_limit
+AND
+loan.tenant_id = officer.tenant_id
+```
+
+That becomes much safer.
+
+---
+
+# One architecture decision I'd strongly recommend
+
+Don't think of these as four completely separate applications.
+
+Think of them as **four surfaces on one Digital Lending OS**:
+
+```text
+                  LENDING OS
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+   SUPER ADMIN       DCP              CUSTOMER
+      PORTAL        PORTAL              APP
+                       │
+                 DCP STAFF
+                  WORKSPACE
+                       │
+                       ▼
+                  CORE ENGINE
+                       │
+       ┌───────────────┼────────────────┐
+       ▼               ▼                ▼
+     Loans          Payments           Risk
+       │               │                │
+       └───────────────┼────────────────┘
+                       ▼
+                 Temporal/NATS
+                       │
+       ┌───────────────┼───────────────┐
+       ▼               ▼               ▼
+    KYC/CRB         M-Pesa          Messaging
+```
+
+### The killer feature
+
+I would make the **Super Admin portal an actual platform operating system**, not just another dashboard.
+
+It should answer:
+
+> **"What is happening across every lender, every loan, every payment, every workflow and every external provider right now?"**
+
+And the DCP portal should answer:
+
+> **"What is happening inside my lending business?"**
+
+While the customer portal answers:
+
+> **"What do I owe, what can I borrow, and what do I need to do next?"**
+
+That separation will make the product much easier to scale to many DCPs while keeping the UX clean.
+Yes. I researched this from **Kenyan DCP regulatory requirements, lending/credit operations, collections roles, and established loan-management dashboard patterns**. The biggest correction I would make to the earlier design is:
+
+> **Do not give every DCP employee the same dashboard with different buttons. Build different workspaces around what each role is accountable for.**
+
+CBK's DCP framework specifically covers licensing/governance, credit operations, consumer protection, credit information sharing and AML/CFT. It also requires transaction receipts/statements and a complaints-redress mechanism, while placing restrictions on abusive collection practices. ([Central Bank of Kenya][1])
+
+Oracle's lending platform documentation also explicitly separates dashboards for **Loan Officer, Loan Authorizer, Loan Supervisor, Branch Manager and Relationship Manager**, which supports using role-specific workspaces rather than one generic dashboard. ([Oracle Docs][2])
+
+---
+
+# 1. The platform should have 5 UI layers
+
+I would actually expand your original four into **five**:
+
+| Portal                      | User                             | Primary purpose                          |
+| --------------------------- | -------------------------------- | ---------------------------------------- |
+| **Platform Control Center** | Super Admin                      | Operate the entire lending platform      |
+| **DCP Administration**      | DCP Admin                        | Configure and govern one DCP             |
+| **Management Workspace**    | DCP Manager                      | Monitor teams, portfolio and performance |
+| **Operations Workspace**    | Loan/Credit/Collections Officers | Execute daily lending work               |
+| **Customer App/Portal**     | Borrower                         | Apply, borrow, repay and get support     |
+
+This distinction is important.
+
+A **DCP Admin** should not see the same thing as a **Loan Manager**, and a **Loan Manager** shouldn't see the same thing as a **Loan Officer**.
+
+---
+
+# 2. SUPER ADMIN — Platform Control Center
+
+The Super Admin is **not managing individual loans all day**.
+
+Their question is:
+
+> "Is the entire lending platform healthy, compliant and generating business?"
+
+## Main navigation
+
+```text
+Overview
+DCPs
+Customers
+Loan Portfolio
+Risk & Credit
+Payments
+Collections
+Providers
+Workflows
+Financials
+Compliance
+Support
+Analytics
+System
+Security
+Audit Logs
+```
+
+---
+
+## Overview
+
+### What they see
+
+```text
+PLATFORM HEALTH
+
+DCPs
+252 Active
+
+Customers
+4.82M
+
+Active Loans
+1.73M
+
+Outstanding Portfolio
+KSh 42.8B
+```
+
+Then:
+
+```text
+TODAY
+
+Disbursed       KSh 183M
+Repayments      KSh 97M
+Applications    84,321
+Approvals       51,209
+Defaults        2,841
+```
+
+Then platform health:
+
+```text
+PAYMENTS
+99.94% success
+
+KYC
+98.7% success
+
+CRB
+99.1% success
+
+SMS
+99.98% delivery
+
+TEMPORAL
+0 critical failures
+
+NATS
+HEALTHY
+```
+
+### Super Admin should NOT see
+
+Don't flood the dashboard with:
+
+* Individual loan applications
+* Individual customers
+* Loan officer task queues
+* Every collection call
+* Individual repayment schedules
+
+Those belong deeper in the platform.
+
+---
+
+# 3. SUPER ADMIN → DCP MANAGEMENT
+
+This is essentially the **tenant control center**.
+
+### DCP list
+
+Columns:
+
+```text
+DCP
+Status
+License
+Customers
+Active Loans
+Portfolio
+PAR30
+Default Rate
+Revenue
+Health
+```
+
+Clicking a DCP:
+
+```text
+DCP Overview
+├── Business Profile
+├── Regulatory
+├── Users
+├── Products
+├── Customers
+├── Loans
+├── Collections
+├── Payments
+├── Risk
+├── Integrations
+├── Financials
+├── Billing
+├── Support
+└── Audit
+```
+
+---
+
+# 4. SUPER ADMIN → PROVIDER HEALTH
+
+This is a major differentiator for your platform.
+
+```text
+Payment Providers
+
+M-Pesa       ● Healthy
+Bank API     ● Healthy
+PesaLink     ● Degraded
+Provider X   ● Down
+```
+
+Click:
+
+```text
+M-Pesa
+
+Requests                 1,820,332
+Success                   99.94%
+Average latency            420ms
+Failed                      1,093
+Timeouts                      218
+
+Last incident
+14:32 UTC
+```
+
+Because your architecture uses Temporal, you can connect this to workflow health:
+
+```text
+Provider failure
+      ↓
+Affected workflows
+      ↓
+Automatic retries
+      ↓
+Recovered
+```
+
+---
+
+# 5. SUPER ADMIN → PLATFORM RISK
+
+Show **aggregated risk**, not operational loan-review screens.
+
+```text
+Risk Overview
+
+High Risk Applications     8,291
+Fraud Alerts               1,923
+Suspicious Transactions      382
+DCPs With Rising PAR30       17
+DCPs With Rising Defaults     9
+```
+
+Then:
+
+* Risk model performance
+* Fraud trends
+* Portfolio risk by DCP
+* Geographic risk
+* Product risk
+* Provider risk
+* Model drift
+* Rule performance
+
+---
+
+# 6. SUPER ADMIN → COMPLIANCE
+
+This should be a first-class module.
+
+```text
+Compliance
+
+DCP Licensing
+AML/CFT
+KYC
+Consumer Protection
+Complaints
+Data Privacy
+Credit Information
+Collections Compliance
+Regulatory Reports
+Audit
+```
+
+The platform should maintain an auditable complaint record because the DCP regulations require a complaints-redress mechanism and record of complaints/outcomes. ([Central Bank of Kenya][1])
+
+---
+
+# 7. DCP ADMIN — Organization Control Center
+
+Now we enter the **actual lender**.
+
+The DCP Admin's question is:
+
+> "Is my lending company configured correctly and operating properly?"
+
+---
+
+## DCP Admin navigation
+
+```text
+Dashboard
+
+Organization
+Users & Roles
+Loan Products
+Customers
+Applications
+Loans
+Credit
+Collections
+Payments
+Finance
+Reports
+Compliance
+Integrations
+Notifications
+Documents
+Audit Logs
+Settings
+```
+
+---
+
+# 8. DCP ADMIN DASHBOARD
+
+Don't show the same dashboard as Super Admin.
+
+### DCP Admin sees:
+
+```text
+MY DCP
+
+Customers             84,231
+Active Loans          31,842
+Loan Book             KSh 2.4B
+Outstanding            KSh 1.7B
+```
+
+Operational:
+
+```text
+Applications Today       3,842
+Pending Review            621
+Approved                  2,104
+Rejected                  1,117
+```
+
+Portfolio:
+
+```text
+PAR 1       2.1%
+PAR 7       3.4%
+PAR 30      5.1%
+PAR 90      2.2%
+```
+
+Financial:
+
+```text
+Disbursed Today      KSh 12.4M
+Collected Today       KSh 8.2M
+Revenue Today         KSh 1.1M
+```
+
+Alerts:
+
+```text
+⚠ 32 applications stuck in KYC
+⚠ Payment provider degraded
+⚠ PAR30 increased 0.8%
+⚠ 14 complaints approaching SLA
+```
+
+---
+
+# 9. DCP ADMIN → USERS & ORGANIZATION
+
+This is where DCP Admin differs significantly from Manager.
+
+Admin can manage:
+
+* Employees
+* Departments
+* Roles
+* Permissions
+* Branches/regions
+* Teams
+* Approval limits
+* User status
+* Sessions
+* Security
+* API credentials
+
+Example:
+
+```text
+Organization
+
+Head Office
+│
+├── Credit
+│   ├── Credit Manager
+│   └── Credit Officers
+│
+├── Lending
+│   ├── Loan Manager
+│   └── Loan Officers
+│
+├── Collections
+│   ├── Collections Manager
+│   └── Collections Officers
+│
+├── Finance
+│
+├── Compliance
+│
+└── Customer Support
+```
+
+---
+
+# 10. DCP ADMIN → LOAN PRODUCTS
+
+Admin manages configuration.
+
+```text
+Loan Products
+
+Salary Advance
+Business Loan
+Emergency Loan
+SME Loan
+Asset Finance
+```
+
+Product configuration:
+
+* Amount limits
+* Duration
+* Interest
+* Fees
+* Penalties
+* Repayment frequency
+* Eligibility
+* Risk rules
+* Approval limits
+* Required documents
+* KYC requirements
+* Notifications
+
+CBK's banking-sector guidance emphasizes transparent disclosure of product type, costs, target clientele, risks, rights and obligations, which should influence how your product-management UI exposes these settings. ([Central Bank of Kenya][3])
+
+---
+
+# 11. DCP MANAGER
+
+This is where I would make a **major UI distinction**.
+
+The manager doesn't configure the system.
+
+Their question is:
+
+> **"How is my team performing, and where do I need to intervene?"**
+
+---
+
+## Manager navigation
+
+```text
+Dashboard
+My Team
+Applications
+Approvals
+Portfolio
+Collections
+Customers
+Performance
+Reports
+Exceptions
+Tasks
+```
+
+---
+
+# 12. MANAGER DASHBOARD
+
+### Team performance
+
+```text
+TEAM PERFORMANCE
+
+Loan Officers       24
+
+Applications
+Today                842
+
+Approved             521
+
+Avg Processing
+18 minutes
+
+Collection Rate
+93.2%
+```
+
+### Individual performance
+
+```text
+Loan Officer       Applications    Approval    Portfolio
+
+John                 82              64%       KSh 18M
+Mary                 74              71%       KSh 21M
+Peter                91              59%       KSh 15M
+```
+
+### Manager alerts
+
+```text
+⚠ John has 32 pending applications
+⚠ Team PAR30 increased 1.2%
+⚠ 8 loans awaiting approval
+⚠ 14 overdue accounts have no recent action
+```
+
+---
+
+# 13. MANAGER → APPROVAL QUEUE
+
+Managers need a **decision queue**, not a giant loan database.
+
+```text
+Approval Queue
+
+Application
+Customer
+Amount
+Risk
+Officer
+Age
+Action
+
+LA-92831
+Jane Doe
+50K
+LOW
+John
+12m
+Review
+
+LA-92832
+Peter K
+150K
+MEDIUM
+Mary
+21m
+Review
+```
+
+The manager's screen should emphasize:
+
+**exceptions and decisions.**
+
+---
+
+# 14. MANAGER → PORTFOLIO
+
+The manager sees their team's portfolio.
+
+```text
+TEAM PORTFOLIO
+
+Performing        KSh 480M
+Watchlist          KSh 42M
+PAR1               KSh 18M
+PAR7               KSh 11M
+PAR30              KSh 21M
+NPL                KSh 9M
+```
+
+Then drill down:
+
+```text
+Portfolio
+   ↓
+Officer
+   ↓
+Customer
+   ↓
+Loan
+```
+
+This hierarchy is much more useful than showing everything at once.
+
+---
+
+# 15. LOAN OFFICER
+
+Now the UI changes dramatically.
+
+The Loan Officer's question is:
+
+> **"What do I need to do today?"**
+
+Not:
+
+> "What is the company's total loan book?"
+
+---
+
+# 16. LOAN OFFICER DASHBOARD
+
+I would make this **task-oriented**.
+
+```text
+GOOD MORNING, JOHN
+
+Your Work Today
+
+New Applications          18
+Pending Documents          7
+Reviews Required           5
+Customer Follow-ups       12
+Due Today                  9
+
+──────────────────────────
+
+Priority Tasks
+
+🔴 3 applications waiting > 2h
+🟠 4 customers missing KYC
+🟡 5 follow-ups due today
+
+[Open My Queue]
+```
+
+This is much better UX than giving the officer:
+
+```text
+Total DCP Customers
+Total DCP Portfolio
+Total DCP Revenue
+```
+
+Those numbers aren't necessary for their daily job.
+
+---
+
+# 17. LOAN OFFICER → MY APPLICATIONS
+
+```text
+My Applications
+
+New
+Under Review
+Missing Information
+Submitted
+Approved
+Rejected
+```
+
+Each application:
+
+```text
+Jane Doe
+Loan: KSh 50,000
+
+KYC       ✓
+Credit    ✓
+Income    ✓
+Documents ⚠
+
+Risk: LOW
+
+Next Action:
+Request document
+```
+
+---
+
+# 18. LOAN OFFICER → CUSTOMER
+
+The officer should see the **minimum information needed to perform their job**.
+
+```text
+Customer
+
+Jane Doe
+Customer ID: C-92831
+
+KYC       VERIFIED
+Risk      LOW
+Score     742
+
+Active Loans
+1
+
+Outstanding
+KSh 18,400
+
+Repayment
+Good
+```
+
+Then:
+
+```text
+Timeline
+
+Application
+KYC
+Credit Check
+Approval
+Disbursement
+Repayment
+```
+
+This is where a timeline UI is extremely useful.
+
+---
+
+# 19. CREDIT OFFICER
+
+I recommend separating **Loan Officer** from **Credit Officer** where the DCP's operating model supports it.
+
+Credit Officer's question:
+
+> **"Should this customer receive credit, under what terms, and why?"**
+
+Dashboard:
+
+```text
+Credit Review Queue
+
+Pending Reviews       84
+High Risk             12
+Manual Review          8
+Escalations            4
+
+Average Review Time
+14 min
+```
+
+Application screen:
+
+```text
+Credit Assessment
+
+Customer
+Income
+Expenses
+Existing Debt
+CRB
+Repayment History
+Affordability
+Risk Score
+Fraud Signals
+Documents
+
+AI Recommendation
+       ↓
+
+APPROVE
+DECLINE
+REFER
+```
+
+Modern credit roles increasingly involve validating automated/AI-generated risk assessments against supporting data rather than blindly accepting the model output. ([Tsenta][4])
+
+---
+
+# 20. COLLECTIONS OFFICER
+
+Their UI should be completely different again.
+
+Their question:
+
+> **"Who needs to be contacted and what action should happen next?"**
+
+---
+
+## Collections dashboard
+
+```text
+MY COLLECTIONS
+
+Due Today             KSh 1.8M
+Collected             KSh 1.2M
+Overdue               KSh 620K
+
+Accounts Assigned
+184
+
+Promises Due Today
+31
+
+High Priority
+12
+```
+
+---
+
+# 21. COLLECTIONS QUEUE
+
+Use an **action queue**:
+
+```text
+Customer     Days Late    Amount     Priority    Next Action
+
+Jane Doe         2        4,200      Medium      Contact
+John K           7        18,400     High        Follow-up
+Mary W          31        72,000     Critical    Escalate
+```
+
+Click customer:
+
+```text
+Customer
+
+Outstanding
+KSh 72,000
+
+Days Past Due
+31
+
+Previous Contact
+Aug 18
+
+Promise to Pay
+Aug 22
+
+Next Action
+Follow-up
+```
+
+Collections should have strong compliance guardrails. Kenya's DCP rules prohibit abusive practices such as threats, shaming and unauthorized contact with a customer's contacts. ([Central Bank of Kenya][1])
+
+So the UI should actually **guide the agent toward compliant communication**, rather than simply giving them a free-form "contact everyone" tool.
+
+---
+
+# 22. COLLECTIONS MANAGER
+
+Collections Manager sees:
+
+```text
+Collections Dashboard
+
+Portfolio at Risk
+KSh 84M
+
+PAR30
+5.2%
+
+PAR90
+2.1%
+
+Today's Target
+KSh 8M
+
+Collected
+KSh 6.4M
+```
+
+Then:
+
+```text
+Officer Performance
+
+Officer       Assigned    Collected    Rate
+
+John            82          1.2M       91%
+Mary            74          980K       94%
+Peter           93          870K       82%
+```
+
+And:
+
+* Aging
+* PAR buckets
+* Recovery
+* Roll rates
+* Promise-to-pay
+* Broken promises
+* Escalations
+* Agency accounts
+* Write-offs
+
+Digital-loan collections roles commonly focus on delinquency buckets, rehabilitation/recovery, PAR/NPL and preventing accounts from rolling into worse buckets. ([Corporate Staffing Services][5])
+
+---
+
+# 23. FINANCE OFFICER
+
+Finance should not get the same dashboard as Credit.
+
+Their world is:
+
+```text
+Finance
+
+Transactions
+Ledger
+Reconciliation
+Disbursements
+Collections
+Settlements
+Refunds
+Reversals
+Statements
+Fees
+Reports
+```
+
+Dashboard:
+
+```text
+Today's Financials
+
+Disbursements      KSh 42M
+Collections        KSh 31M
+
+Successful         98.7%
+Failed              1.3%
+
+Unreconciled
+KSh 182K
+```
+
+Then:
+
+```text
+RECONCILIATION
+
+M-Pesa
+Expected       8,421
+Received       8,419
+Difference         2
+```
+
+---
+
+# 24. COMPLIANCE OFFICER
+
+Separate workspace.
+
+```text
+Compliance
+
+KYC
+AML/CFT
+CRB
+Complaints
+Data Privacy
+Suspicious Activity
+Regulatory Reports
+Audit
+```
+
+Dashboard:
+
+```text
+Compliance Health
+
+KYC Exceptions          182
+AML Alerts                21
+Open Complaints           34
+Overdue Complaints         3
+CRB Exceptions             7
+```
+
+This is important because CBK's DCP framework explicitly includes AML/CFT, credit-information sharing and consumer protection. ([Central Bank of Kenya][6])
+
+---
+
+# 25. CUSTOMER PORTAL
+
+Customer gets **none of the internal operational complexity**.
+
+Their navigation:
+
+```text
+Home
+My Loans
+Apply
+Payments
+Statements
+Notifications
+Help
+Profile
+```
+
+---
+
+## Customer Home
+
+```text
+Hello Jane 👋
+
+AVAILABLE CREDIT
+
+KSh 50,000
+
+CURRENT LOAN
+
+Outstanding
+KSh 18,400
+
+Next Payment
+KSh 4,200
+
+Due
+28 Aug
+
+[Pay Now]
+```
+
+Then:
+
+```text
+Recent Activity
+
+✓ Payment received
+✓ Loan disbursed
+✓ Statement generated
+```
+
+---
+
+# 26. Customer → Apply
+
+Make it a guided experience:
+
+```text
+Loan Amount
+      ↓
+Purpose
+      ↓
+Personal Details
+      ↓
+Income
+      ↓
+KYC
+      ↓
+Review
+      ↓
+Decision
+```
+
+Do not expose:
+
+* Risk rules
+* Internal scoring rules
+* Fraud flags
+* Internal notes
+* Staff notes
+* Collection strategies
+* Internal approval comments
+
+---
+
+# 27. Customer → My Loan
+
+```text
+Loan #LN-92831
+
+Original Amount
+KSh 50,000
+
+Outstanding
+KSh 18,400
+
+Next Payment
+KSh 4,200
+
+Due
+28 Aug
+
+Progress
+████████░░ 72%
+```
+
+Then:
+
+```text
+Repayment Schedule
+
+Aug 28     KSh 4,200
+Sep 28     KSh 4,200
+Oct 28     KSh 4,200
+Nov 28     KSh 5,800
+```
+
+And:
+
+**Download statement**
+
+CBK's DCP regulations specifically require transaction receipts and comprehensive transaction statements upon customer request, so this should be a real product feature rather than an afterthought. ([Central Bank of Kenya][1])
+
+---
+
+# 28. The UI should use "data visibility by responsibility"
+
+This is the most important change I'd make to your architecture.
+
+Think of permissions as:
+
+```text
+              SEE       ACT       APPROVE       CONFIGURE
+```
+
+For example:
+
+| Role                | See               | Act         | Approve          | Configure |
+| ------------------- | ----------------- | ----------- | ---------------- | --------- |
+| Super Admin         | Platform          | Platform    | Platform         | Platform  |
+| DCP Admin           | DCP               | DCP         | Limited          | DCP       |
+| Manager             | Team              | Team        | Within limit     | No        |
+| Loan Officer        | Assigned          | Assigned    | Recommend        | No        |
+| Credit Officer      | Credit queue      | Review      | Within limit     | No        |
+| Collections Officer | Assigned accounts | Collect     | No               | No        |
+| Finance Officer     | Financial         | Reconcile   | Financial limits | No        |
+| Compliance          | Compliance        | Investigate | Escalate         | Policies  |
+| Customer            | Own data          | Own account | No               | Profile   |
+
+---
+
+# 29. Don't just use RBAC — use scope
+
+This is critical.
+
+A Loan Officer should not have:
+
+```text
+customers:read
+```
+
+They should have something closer to:
+
+```text
+customers:read
+scope:assigned
+```
+
+Manager:
+
+```text
+customers:read
+scope:team
+```
+
+DCP Admin:
+
+```text
+customers:read
+scope:tenant
+```
+
+Super Admin:
+
+```text
+customers:read
+scope:platform
+```
+
+That gives you:
+
+```text
+SUPER ADMIN
+    │
+    │ platform
+    ▼
+DCP ADMIN
+    │
+    │ tenant
+    ▼
+MANAGER
+    │
+    │ team
+    ▼
+LOAN OFFICER
+    │
+    │ assigned
+    ▼
+CUSTOMER
+    │
+    │ self
+```
+
+This is the correct foundation for a multi-tenant lending OS.
+
+---
+
+# 30. Department structure I'd recommend
+
+Based on the lending roles researched, I'd model the DCP organization approximately like this:
+
+```text
+DCP
+│
+├── Executive / Administration
+│
+├── Lending / Sales
+│   ├── Lending Manager
+│   └── Loan Officers
+│
+├── Credit
+│   ├── Credit Manager
+│   └── Credit Officers
+│
+├── Collections
+│   ├── Collections Manager
+│   └── Collections Officers
+│
+├── Finance
+│   ├── Finance Manager
+│   └── Finance Officers
+│
+├── Risk
+│   └── Risk Officers
+│
+├── Compliance
+│   └── Compliance Officers
+│
+├── Customer Support
+│   └── Support Agents
+│
+└── Technology / Operations
+```
+
+A Kenyan lending-sector example describes loan officers as handling customer onboarding, appraisal, processing, post-disbursement follow-up and collections, while credit officers are responsible for appraisal/approval processes and monitoring loans. ([LinkedIn][7])
+
+---
+
+# 31. The most important UI principle
+
+I'd design the platform around **work queues**, not menus.
+
+### Super Admin
+
+**"What is happening to my platform?"**
+
+### DCP Admin
+
+**"What is happening to my company?"**
+
+### Manager
+
+**"What is happening to my team?"**
+
+### Loan Officer
+
+**"What do I need to do today?"**
+
+### Credit Officer
+
+**"Which applications require a credit decision?"**
+
+### Collections Officer
+
+**"Who needs action today?"**
+
+### Finance Officer
+
+**"What money doesn't reconcile?"**
+
+### Compliance Officer
+
+**"What creates regulatory or consumer risk?"**
+
+### Customer
+
+**"What can I borrow, what do I owe, and what do I need to do?"**
+
+That gives each user a **different information architecture, different dashboard, different navigation and different data scope** rather than simply hiding a few menu items.
+
+### Recommended next step
+
+For the SRS, I would now define a **complete role × module × permission matrix** and then turn that into the actual **Next.js route structure + sidebar navigation + dashboard widgets + database permissions**. That will prevent the staff engineers from building a generic dashboard and trying to retrofit RBAC later.
+
+[1]: https://www.centralbank.go.ke/wp-content/uploads/2022/03/L-.N.-No.-46-Central-Bank-of-Kenya-Digital-Credit-Providers-Regulations-2022.pdf?utm_source=chatgpt.com "SPECIAL ISSUE"
+[2]: https://docs.oracle.com/cd/F56608_01/PDF/OTHERS/Dashboard.pdf?utm_source=chatgpt.com "Dashboard User Guide"
+[3]: https://www.centralbank.go.ke/uploads/banking_circulars/113414645_Kenya%20Banking%20Sector%20Charter-2019.pdf?utm_source=chatgpt.com "KENYA BANKING SECTOR CHARTER"
+[4]: https://tsenta.com/jobs/delta40-credit-officer-f2e6e64f-de3e-4edb-89a4-e83a16c8bb7d?utm_source=chatgpt.com "Credit Officer — Delta40 · Nairobi,… | Tsenta"
+[5]: https://www.corporatestaffing.co.ke/job/digital-loans-collections-job-sidian-bank/?utm_source=chatgpt.com "Digital Loans Collections Job Sidian Bank - Corporate Staffing Services"
+[6]: https://www.centralbank.go.ke/uploads/financial_sector_stability/1710270688_FSR%20July%202022_revised%20for%20printing.pdf?utm_source=chatgpt.com "Published by the Financial Sector Regulators, July 2022, Issue No. 13"
+[7]: https://ke.linkedin.com/jobs/view/internship-loan-officer-collection-officer-at-magna-credit-kenya-limited-4213594518?utm_source=chatgpt.com "MagnaCredit hiring Internship - Loan Officer | Collection Officer in Kilimani division, Nairobi County, Kenya | LinkedIn"
+Yes — **but I would not model it as a normal consumer wallet**.
+
+For the lending platform we're designing, I would build a **DCP Wallet / Settlement Account layer** inside the system, backed by real external bank/payment accounts. The internal wallet is primarily a **ledger and orchestration layer**, not a place where the platform casually holds customer deposits.
+
+CBK's DCP regulations require transaction receipts/acknowledgements and customer transaction statements, which fits naturally with an internal transaction ledger. ([Central Bank of Kenya][1])
+
+## The money flow
+
+Think of the system like this:
+
+```text
+                    DCP's REAL MONEY
+                         │
+              Bank / M-Pesa / PSP
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ DCP FUNDING     │
+                │ ACCOUNT         │
+                └────────┬────────┘
+                         │
+                         ▼
+                 LENDING PLATFORM
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+             ▼                       ▼
+       Loan Disbursement       Collections
+             │                       │
+             ▼                       ▼
+        Customer                DCP Account
+```
+
+The platform records everything through its **internal ledger**.
+
+---
+
+# 1. DCP Wallet
+
+Each DCP should have a wallet/financial account inside the platform.
+
+Example:
+
+```text
+DCP WALLET
+
+Available Balance
+KSh 18,420,000
+
+Reserved
+KSh 4,800,000
+
+Available for Lending
+KSh 13,620,000
+
+Pending Settlement
+KSh 820,000
+```
+
+But I'd actually call it something like:
+
+> **DCP Settlement Account**
+
+rather than simply "Wallet".
+
+That avoids creating the impression that your platform itself is taking deposits.
+
+---
+
+# 2. Where does the money actually come from?
+
+Suppose DCP A wants to lend **KSh 10 million**.
+
+They fund their lending account through:
+
+```text
+DCP Bank Account
+       │
+       │ KSh 10M
+       ▼
+Payment/Bank Integration
+       │
+       ▼
+Platform Ledger
+       │
+       ▼
+DCP Available Lending Balance
+```
+
+Now:
+
+```text
+DCP Available
+KSh 10,000,000
+```
+
+The platform knows:
+
+> This DCP has KSh 10M available to fund loans.
+
+The actual money remains with the relevant regulated financial/payment institution according to the DCP's setup.
+
+---
+
+# 3. Loan approval does NOT immediately mean money moves
+
+This is an important distinction.
+
+Suppose:
+
+```text
+Jane applies
+       ↓
+KSh 50,000
+       ↓
+Credit approved
+```
+
+The platform checks:
+
+```text
+DCP available lending balance
+        │
+        ▼
+KSh 10,000,000
+```
+
+Then:
+
+```text
+Reserve KSh 50,000
+```
+
+Wallet becomes:
+
+```text
+Available
+KSh 9,950,000
+
+Reserved
+KSh 50,000
+```
+
+Then the Temporal disbursement workflow starts.
+
+---
+
+# 4. Disbursement workflow
+
+```text
+Loan Approved
+      │
+      ▼
+Reserve Funds
+      │
+      ▼
+Create Disbursement
+      │
+      ▼
+Payment Provider
+      │
+      ▼
+Customer M-Pesa/Bank
+      │
+      ▼
+Provider Callback
+      │
+      ▼
+Verify Transaction
+      │
+      ▼
+Post Ledger Entries
+      │
+      ▼
+Loan = ACTIVE
+```
+
+If the payment provider fails:
+
+```text
+Provider failure
+      ↓
+Temporal retry
+      ↓
+retry
+      ↓
+retry
+      ↓
+successful
+```
+
+This is one of the places where your Temporal architecture becomes extremely valuable.
+
+---
+
+# 5. The internal wallet should actually have multiple balances
+
+I wouldn't have one number called:
+
+> Wallet Balance
+
+Instead:
+
+```text
+DCP FINANCIAL POSITION
+
+Total Balance
+KSh 20,000,000
+
+Available
+KSh 13,620,000
+
+Reserved
+KSh 4,800,000
+
+Pending
+KSh 820,000
+
+Settled
+KSh 19,180,000
+```
+
+And potentially:
+
+```text
+Collections Pending Settlement
+KSh 1,200,000
+
+Refunds Pending
+KSh 120,000
+
+Fees
+KSh 80,000
+```
+
+---
+
+# 6. Customer money should be separate
+
+I would **not** give the customer a generic wallet containing loan money.
+
+Instead the customer sees:
+
+```text
+MY ACCOUNT
+
+Available Credit
+KSh 50,000
+
+Current Loan
+KSh 18,400 outstanding
+
+Next Payment
+KSh 4,200
+
+Payment History
+...
+```
+
+When they make a repayment:
+
+```text
+Customer
+   │
+   ▼
+M-Pesa / Bank
+   │
+   ▼
+Payment Provider
+   │
+   ▼
+Platform
+   │
+   ▼
+DCP Collection Account
+```
+
+The platform records the transaction.
+
+---
+
+# 7. The ledger is more important than the wallet
+
+This is where I'd make the architecture significantly stronger.
+
+Don't implement:
+
+```text
+wallet.balance += 50000
+```
+
+as your financial source of truth.
+
+Instead:
+
+```text
+Ledger
+```
+
+Example loan disbursement:
+
+```text
+Debit
+Loan Receivable       50,000
+
+Credit
+DCP Funding Account   50,000
+```
+
+Customer repayment:
+
+```text
+Debit
+DCP Collection Account  4,200
+
+Credit
+Loan Principal          3,500
+
+Credit
+Interest                  500
+
+Credit
+Fees                      200
+```
+
+Then the wallet balance is **derived from ledger entries**.
+
+That gives you:
+
+* Auditability
+* Reconciliation
+* Transaction history
+* Reversals
+* Refunds
+* Financial reporting
+* Fraud investigation
+* Accurate balances
+
+---
+
+# 8. DCP wallet screen
+
+I'd make this one of the most important screens for the DCP Admin/Finance team.
+
+```text
+┌─────────────────────────────────────────────┐
+│ DCP SETTLEMENT ACCOUNT                      │
+│                                             │
+│ Available                                  │
+│ KSh 13,620,000                              │
+│                                             │
+│ ─────────────────────────────────────────── │
+│                                             │
+│ Reserved             KSh 4,800,000          │
+│ Pending              KSh 820,000            │
+│ Today's Inflow       KSh 8,400,000          │
+│ Today's Outflow      KSh 12,200,000         │
+│                                             │
+│ [Fund Account] [Withdraw/Settle] [History] │
+└─────────────────────────────────────────────┘
+```
+
+Below:
+
+```text
+TRANSACTIONS
+
+Time       Type          Reference       Amount
+
+10:42      Funding       FND-82931       +5M
+10:31      Disbursement  LN-28381        -50K
+10:27      Repayment     RP-88321        +4.2K
+10:14      Disbursement  LN-28380        -80K
+```
+
+---
+
+# 9. Super Admin sees a different wallet view
+
+Super Admin shouldn't be able to casually move DCP money.
+
+They should see:
+
+```text
+PLATFORM FINANCIAL OVERVIEW
+
+DCP Funds
+KSh 42.8B
+
+Today's Disbursements
+KSh 183M
+
+Today's Collections
+KSh 97M
+
+Pending Settlement
+KSh 4.2M
+
+Unreconciled
+KSh 182K
+```
+
+Then drill into a DCP.
+
+Super Admin actions should generally be **administrative/support actions**, with strong authorization and audit trails—not unrestricted money movement.
+
+---
+
+# 10. Finance Officer gets the operational wallet
+
+Finance Officer sees:
+
+```text
+FINANCE
+
+Settlement Account
+Transactions
+Reconciliation
+Disbursements
+Collections
+Refunds
+Reversals
+Settlements
+Statements
+Ledger
+```
+
+Their primary screen:
+
+```text
+TODAY'S RECONCILIATION
+
+M-Pesa
+
+Expected             KSh 8,420,000
+Provider             KSh 8,419,500
+
+Difference           KSh 500
+
+[Investigate]
+```
+
+This is much more useful to them than a generic wallet dashboard.
+
+---
+
+# 11. Manager doesn't need the wallet
+
+A Loan Manager might only see:
+
+```text
+Portfolio
+KSh 2.4B
+
+Disbursed Today
+KSh 12.4M
+
+Collections Today
+KSh 8.2M
+
+Available Lending Capacity
+KSh 18M
+```
+
+They don't need:
+
+* Bank credentials
+* Settlement controls
+* Ledger posting
+* Reconciliation
+* Withdrawal controls
+
+---
+
+# 12. Loan Officer sees almost none of it
+
+Loan Officer:
+
+```text
+Application
+KSh 50,000
+
+Customer eligible
+✓
+
+DCP funding available
+✓
+
+Submit for approval
+```
+
+They don't need to see:
+
+```text
+DCP bank balance
+DCP settlement balance
+Revenue
+Cash position
+Other customers' repayments
+```
+
+That's both good UX and good security.
+
+---
+
+# 13. Customer sees payment status, not DCP wallet
+
+Customer:
+
+```text
+LOAN
+
+KSh 50,000
+
+Disbursement
+✓ Completed
+
+Received
+KSh 50,000
+
+Repayment
+KSh 4,200 due Aug 28
+```
+
+When they pay:
+
+```text
+PAYMENT
+
+Amount
+KSh 4,200
+
+Method
+M-Pesa
+
+Status
+✓ Successful
+
+Receipt
+RCT-928381
+```
+
+CBK regulations require DCPs to provide transaction receipts/acknowledgements and comprehensive transaction statements on request, so these should be native features of the customer account. ([Central Bank of Kenya][1])
+
+---
+
+# 14. I'd introduce a proper money architecture
+
+Your platform should have:
+
+```text
+                 FINANCIAL PLATFORM
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+       Funding       Lending       Collections
+       Accounts      Accounts       Accounts
+          │             │             │
+          └─────────────┼─────────────┘
+                        ▼
+                 DOUBLE-ENTRY
+                    LEDGER
+                        │
+          ┌─────────────┼──────────────┐
+          ▼             ▼              ▼
+       Wallet       Reconciliation   Reporting
+```
+
+And every transaction gets:
+
+```text
+transaction_id
+tenant_id
+ledger_entry_id
+external_reference
+provider_reference
+workflow_id
+customer_id
+loan_id
+amount
+currency
+type
+status
+created_at
+```
+
+---
+
+# 15. One more thing: don't let the "wallet" become a hidden bank
+
+This is especially important for a Kenyan lending platform.
+
+I'd architect it so the platform is primarily providing:
+
+**loan management + payment orchestration + ledger + reconciliation + workflow infrastructure**
+
+while actual money movement happens through appropriately configured external financial/payment accounts and providers.
+
+CBK's current regulatory framework for DCPs is centered on licensing, governance, lending practices, consumer protection, credit information sharing and AML/CFT; the 2025 draft non-deposit-taking credit-provider regulations also emphasize maintaining accurate financial records and customer transaction information. ([Central Bank of Kenya][2])
+
+So I'd make the internal "wallet" a **controlled ledger/settlement representation**, not an assumption that your platform itself is a deposit-taking institution.
+
+### The resulting money flow
+
+```text
+                 DCP BANK / FUNDING SOURCE
+                           │
+                           ▼
+                    FUNDING PROVIDER
+                           │
+                           ▼
+                ┌────────────────────┐
+                │ DCP SETTLEMENT     │
+                │ ACCOUNT / LEDGER   │
+                └─────────┬──────────┘
+                          │
+                    Reserve Funds
+                          │
+                          ▼
+                     LOAN ENGINE
+                          │
+                    Temporal Workflow
+                          │
+                          ▼
+                 M-PESA / BANK / PSP
+                          │
+                          ▼
+                       CUSTOMER
+
+
+CUSTOMER
+   │
+   │ repayment
+   ▼
+M-PESA / BANK / PSP
+   │
+   ▼
+DCP COLLECTION ACCOUNT
+   │
+   ▼
+PLATFORM LEDGER
+   │
+   ├── Principal
+   ├── Interest
+   ├── Fees
+   └── Other permitted allocations
+```
+
+**So yes: build the wallet/account experience—but make the underlying primitive a proper multi-tenant double-entry ledger + settlement-account abstraction.** That will give you a much stronger foundation than a simple `wallet_balance` field.
+
+[1]: https://www.centralbank.go.ke/wp-content/uploads/2022/03/L-.N.-No.-46-Central-Bank-of-Kenya-Digital-Credit-Providers-Regulations-2022.pdf?utm_source=chatgpt.com "SPECIAL ISSUE"
+[2]: https://www.centralbank.go.ke/uploads/press_releases/2119450187_Press%20Release%20-%20Publication%20of%20Regulations%20for%20Digital%20Credit%20Providers%20and%20Commencement%20of%20their%20Supervision.pdf?utm_source=chatgpt.com "PRESS RELEASE"
+Fix the account profiles. Optimize the site

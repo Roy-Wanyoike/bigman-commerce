@@ -15,9 +15,7 @@ const quoteRequestSchema = z.object({
   email: z.string().email('Valid email is required'),
   phone: z.string().min(8, 'Valid phone number is required'),
   krapin: z.string().optional(),
-  businessType: z.enum(['SOLE_PROPRIETOR', 'LIMITED', 'PARTNERSHIP', 'CORPORATE', 'NGO', 'GOVERNMENT'], {
-    required_error: 'Business type is required',
-  }),
+  businessType: z.enum(['SOLE_PROPRIETOR', 'LIMITED', 'PARTNERSHIP', 'CORPORATE', 'NGO', 'GOVERNMENT']),
   items: z.array(quoteItemSchema).min(1, 'At least one item is required').max(50, 'Maximum 50 items per request'),
   deliveryCounty: z.string().min(2, 'Delivery county is required'),
   deliveryAddress: z.string().min(5, 'Delivery address is required'),

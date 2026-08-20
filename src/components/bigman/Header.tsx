@@ -72,7 +72,7 @@ export default function Header({ categories }: HeaderProps) {
   const [searchQ, setSearchQ] = useState('')
   const [searchResults, setSearchResults] = useState<any>(null)
   const [searching, setSearching] = useState(false)
-  const megaTimeout = useRef<NodeJS.Timeout>()
+  const megaTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
   const searchRef = useRef<HTMLDivElement>(null)
   const { cartCount, wishlist, mobileMenuOpen, setMobileMenuOpen, searchOpen, setSearchOpen } = useStore()
 

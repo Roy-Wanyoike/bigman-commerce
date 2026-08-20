@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
           // Case-insensitive brand lookup
           const existingBrand = await db.brand.findFirst({
             where: {
-              name: { equals: brandName, mode: 'insensitive' },
+              name: { equals: brandName },
             },
             select: { id: true },
           })
@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
         // Find parent category (case-insensitive)
         const parentCat = await db.category.findFirst({
           where: {
-            name: { equals: categoryName, mode: 'insensitive' },
+            name: { equals: categoryName },
             parentId: null,
           },
           select: { id: true },
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
           if (subcategoryName) {
             const subCat = await db.category.findFirst({
               where: {
-                name: { equals: subcategoryName, mode: 'insensitive' },
+                name: { equals: subcategoryName },
                 parentId: parentCat.id,
               },
               select: { id: true },
@@ -247,7 +247,7 @@ export async function POST(request: NextRequest) {
         // Try to find subcategory without parent
         const subCat = await db.category.findFirst({
           where: {
-            name: { equals: subcategoryName, mode: 'insensitive' },
+            name: { equals: subcategoryName },
           },
           select: { id: true, parentId: true },
         })

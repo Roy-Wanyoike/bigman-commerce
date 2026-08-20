@@ -22,7 +22,7 @@ export interface Brand {
   logo: string | null
   description: string | null
   isActive: boolean
-  _count: { products: number }
+  _count?: { products: number }
 }
 
 export interface Product {
@@ -55,6 +55,7 @@ export interface Product {
   isFeatured: boolean
   isDeal: boolean
   isGaming: boolean
+  publishedAt: Date | null
   compatibleModels: string | null
   sku: string | null
   partNumber: string | null

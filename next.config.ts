@@ -2,11 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  /* config options here */
+  serverExternalPackages: ['bcryptjs', 'next-auth'],
+  typedRoutes: false,
+  reactStrictMode: false,
   typescript: {
     ignoreBuildErrors: true,
   },
-  reactStrictMode: false,
   images: {
     remotePatterns: [
       {

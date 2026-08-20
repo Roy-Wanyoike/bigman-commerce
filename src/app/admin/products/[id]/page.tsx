@@ -888,7 +888,7 @@ export default function AdminProductDetailPage() {
                   <Switch id="edit-gaming" checked={form.isGaming as boolean} onCheckedChange={(v) => updateField('isGaming', v)} />
                 </div>
               </div>
-              {form.isDeal && (
+              {!!form.isDeal && (
                 <div className="space-y-2">
                   <Label>Deal Label</Label>
                   <div className="flex gap-2">
@@ -1344,7 +1344,7 @@ export default function AdminProductDetailPage() {
               {/* Stock status indicator */}
               <div className={`rounded-lg border p-3 ${stockInfo.bg}`}>
                 <p className={`text-sm font-medium ${stockInfo.color}`}>{stockInfo.label}</p>
-                {form.trackInventory && (
+                {!!form.trackInventory && (
                   <p className="text-xs text-muted-foreground mt-1">
                     {form.stockCount as number} units in stock
                     {(form.lowStockThreshold as number) > 0 && ` · Threshold: ${form.lowStockThreshold as number}`}
@@ -1360,7 +1360,7 @@ export default function AdminProductDetailPage() {
                   onCheckedChange={(v) => updateField('trackInventory', v)}
                 />
               </div>
-              {form.trackInventory && (
+              {!!form.trackInventory && (
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="edit-stockCount">Stock Count</Label>
@@ -1501,7 +1501,7 @@ export default function AdminProductDetailPage() {
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {['FRONT', 'BACK', 'SIDE', 'PORTS', 'PACKAGING', 'ACCESSORIES', 'CLOSEUP', 'LIFESTYLE', 'KEYBOARD', 'DISPLAY', 'BOTTOM', 'CHARGER', 'SCREEN', 'OTHER'].map((t) => (
-                    <SelectItem key={t} value={t}>{t.charAt() + t.slice(1).toLowerCase()}</SelectItem>
+                    <SelectItem key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
