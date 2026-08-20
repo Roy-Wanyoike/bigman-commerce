@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const maxPrice = searchParams.get('maxPrice')
     const search = searchParams.get('q')
     const sort = searchParams.get('sort') || 'sortOrder'
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const limit = parseInt(searchParams.get('limit') || '100')
     const offset = parseInt(searchParams.get('offset') || '0')
 
     // Build synonym expansion for search

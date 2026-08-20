@@ -32,7 +32,7 @@ export default function RefurbishedClient({ products }: Props) {
     <main className="flex-1">
       {/* Refurbished hero */}
       <section className="bg-gradient-to-b from-amber-50 to-background">
-        <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
+        <div className="container-main py-12 md:py-16">
           <div className="max-w-xl">
             <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[10px] font-semibold tracking-wider mb-3">REFURBISHED STORE</Badge>
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3">Quality Tested, Warrantied Devices</h1>
@@ -63,7 +63,7 @@ export default function RefurbishedClient({ products }: Props) {
 
       {/* Grade legend */}
       <section className="border-b border-border/60 bg-card">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="container-main py-4">
           <div className="flex items-center gap-6 text-xs overflow-x-auto">
             <span className="font-semibold text-muted-foreground shrink-0">Grades:</span>
             {Object.entries(gradeDescriptions).map(([grade, desc]) => (
@@ -78,7 +78,7 @@ export default function RefurbishedClient({ products }: Props) {
 
       {/* Products */}
       <section className="py-10 md:py-14">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="container-main">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">Refurbished Products</h2>
             <Select value={sortBy} onValueChange={setSortBy}>
@@ -92,7 +92,7 @@ export default function RefurbishedClient({ products }: Props) {
           </div>
 
           {sorted.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
               {sorted.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           ) : (

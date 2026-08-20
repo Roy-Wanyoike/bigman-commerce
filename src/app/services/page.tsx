@@ -24,7 +24,7 @@ export default async function ServicesPage() {
       <Header categories={buildTree()} />
       <main className="flex-1">
         <section className="py-10 md:py-14 border-b border-border/60">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="container-main">
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">Professional Services</h1>
             <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
               Expert repair, upgrade, installation and recovery services. Walk in or book an appointment.

@@ -554,7 +554,7 @@ export default function CheckoutClient() {
     <div className="min-h-screen flex flex-col">
       <Header categories={[]} />
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8 md:py-12">
+      <main className="flex-1 container-main py-8 md:py-12">
         {step > 1 && step < 4 && (
           <button
             onClick={goBack}
@@ -567,7 +567,7 @@ export default function CheckoutClient() {
 
         {step < 4 && <StepIndicator currentStep={step} />}
 
-        <div className={step < 4 ? 'grid grid-cols-1 lg:grid-cols-3 gap-8' : ''}>
+        <div className={step < 4 ? 'grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-0' : ''}>
           <div className={step < 4 ? 'lg:col-span-2' : ''}>
             {renderStepContent()}
 

@@ -1,34 +1,25 @@
-# Bigman Commerce Worklog
-
 ---
 Task ID: 1
-Agent: Main Agent
-Task: Comprehensive audit, product seeding, bug fixes, WhatsApp button, favicon, and feature completion
+Agent: Main Orchestrator + 8 Subagents
+Task: Principal UI/UX Layout Correction, Product Seeding, 404 Fixes, Product Gallery Rebuild
 
 Work Log:
-- Audited all 20+ source files, 15 API routes, database state (45 categories, 46 brands)
-- Identified and documented all bugs: compare page slug bug, missing Header/Footer on 5 pages, 16-product cap, 8 DRAFT products without images
-- Created `/public/favicon.svg` from the Bigman logo
-- Updated `layout.tsx` with favicon metadata and WhatsAppButton component
-- Built `WhatsAppButton.tsx` — floating FAB with popup card, quick actions (WhatsApp chat, call, email), business hours, location info
-- Fixed `product/[slug]/page.tsx` — added Header, BigmanFooter, MobileBottomNav wrapper
-- Fixed `compare/page.tsx` — fixed slug bug (`item.slug || item.productId`), added Header/Footer
-- Fixed `brand/[slug]/page.tsx` — added Header/Footer
-- Fixed `search/page.tsx` — added Header/Footer
-- Removed 16-product cap in `FullCatalog` component (`slice(0,16)` → no slice)
-- Added `slug` field to `CompareItem` interface in store
-- Updated `ProductCard` to pass `slug` when adding to compare
-- Created `fadeIn` keyframe animation in globals.css
-- Published 8 DRAFT products (added images, changed status to ACTIVE with 8% discount)
-- Seeded 37 new products across all categories with Unsplash images (131 total images added)
-- Total ACTIVE products: 80 (from ~32)
+- Explored full codebase: 36 routes, 11 bigman components, globals.css design system
+- Identified root cause: all components used inconsistent max-w-7xl, no shared container system, no min-w-0 on grids/flex children, header nav exposed 15+ categories causing overflow
+- Agent 1: Fixed globals.css — added container-main utility (1440px max), box-model fixes, overflow-x: clip on body, img/svg max-width rules, CSS custom properties for design tokens
+- Agent 2: Rebuilt Header — replaced dynamic category nav with 6 static links (Shop/Gaming/Refurbished/Deals/Services/Business), single Shop mega menu with 4-column classified layout, search bar min-w-0, all containers use container-main
+- Agent 3: Fixed Sections/Hero/Footer — replaced all 11 max-w-7xl instances in Sections.tsx, Hero.tsx, HomePage.tsx with container-main, added min-w-0 to all grids
+- Agent 4: Seeded 45+ products — 125 total active products, 373 approved images, across 10 categories (laptops, desktops, monitors, keyboards, mice, storage, networking, printers, accessories, gaming)
+- Agent 5: Fixed product/[slug]/page.tsx — container-main, min-w-0 on grids and main
+- Agent 6: Created missing pages — /terms, /returns, /about, /contact, /business, /account (6 pages, zero 404s)
+- Agent 7: Rebuilt ProductGallery — 542-line world-class gallery with Embla mobile carousel, Amazon-style cursor zoom, thumbnail strip, fullscreen dialog with swipe, keyboard navigation, crossfade transitions
+- Agent 8: Fixed shop/[[...slug]]/page.tsx — added Header/Footer/MobileBottomNav, min-w-0 on grids, overflow-hidden on container
+- Agent 9: Fixed remaining pages — cart/CartClient.tsx, checkout/CheckoutClient.tsx, admin/layout.tsx all updated to container-main
 
 Stage Summary:
-- 80 ACTIVE products across laptops, gaming, desktops, monitors, storage, RAM, networking, accessories, parts, power, software, printers, refurbished
-- Zero build errors — `next build` compiles successfully
-- All routes return 200 during build verification
-- Every page now has consistent Header/Footer/MobileBottomNav
-- WhatsApp floating button is global (in root layout)
-- Favicon uses Bigman "B" logo SVG
-- Product image carousel with Embla (mobile swipe + desktop thumbnails + zoom + fullscreen + keyboard nav) already existed
-- Compare page now correctly links to product slugs instead of IDs
+- ZERO max-w-7xl remains in src/ (verified)
+- ZERO 404 routes (all 20 public routes verified)
+- 125 active products with 373 images in database
+- container-main used in 20+ files, min-w-0 in 25+ locations
+- Build passes with zero errors, all 36 routes compile
+- Header simplified from 15+ nav items to 6 clean links with organized mega menu

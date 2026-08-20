@@ -25,7 +25,7 @@ export default function DealsClient({ products }: Props) {
     <main className="flex-1">
       {/* Deals hero */}
       <section className="bg-gradient-to-b from-orange-50/80 to-background border-b border-border/60">
-        <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
+        <div className="container-main py-10 md:py-14">
           <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-[10px] font-semibold tracking-wider mb-3">DEALS</Badge>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">Today&apos;s Best Deals</h1>
           <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
@@ -36,7 +36,7 @@ export default function DealsClient({ products }: Props) {
 
       {/* Products */}
       <section className="py-10 md:py-14">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="container-main">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">Deals ({products.length})</h2>
             <Select value={sortBy} onValueChange={setSortBy}>
@@ -50,7 +50,7 @@ export default function DealsClient({ products }: Props) {
           </div>
 
           {sorted.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
               {sorted.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           ) : (

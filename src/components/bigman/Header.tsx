@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
@@ -8,6 +8,7 @@ import {
   Phone, MessageCircle, User, Building2, Gamepad2, Wrench,
   Laptop, Monitor, Printer, Mouse, Cpu, HardDrive, Wifi, Zap, Code,
   MapPin, Truck, Shield, CreditCard, Percent, RotateCcw, MemoryStick,
+  Store, Headphones, Keyboard, Cable, Box, Package,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -21,23 +22,52 @@ import { cn } from '@/lib/utils'
 const iconMap: Record<string, any> = {
   Laptop, Monitor, Gamepad2, Apple: Building2, Server: Building2, Printer, Mouse,
   Wrench, Cpu, HardDrive, MemoryStick, Wifi, Zap, Code, Percent, RotateCcw, Building2,
+  Headphones, Keyboard, Cable, Box, Package,
 }
 function getIcon(name: string) { return iconMap[name] || Laptop }
 
-/* Main nav items for the top-level bar */
-const navLinks = [
+/* Static main nav items – only Shop gets a mega menu */
+const mainNavItems = [
+  { label: 'Shop', href: '/shop', hasMega: true },
+  { label: 'Gaming', href: '/gaming' },
+  { label: 'Refurbished', href: '/refurbished' },
+  { label: 'Deals', href: '/deals' },
+  { label: 'Services', href: '/services' },
+  { label: 'Business', href: '/business' },
+]
+
+/* Fallback nav links used in the mobile drawer quick-links grid */
+const mobileQuickLinks = [
   { label: 'Shop', href: '/shop' },
   { label: 'Gaming', href: '/gaming' },
   { label: 'Refurbished', href: '/refurbished' },
   { label: 'Deals', href: '/deals' },
-  { label: 'Business', href: '/business' },
   { label: 'Services', href: '/services' },
+  { label: 'Business', href: '/business' },
 ]
+
+/* Column definitions for the Shop mega menu */
+type MegaColumn = { title: string; icon: any; keywords: string[] }
+const megaColumns: MegaColumn[] = [
+  { title: 'Computers', icon: Laptop, keywords: ['laptop', 'desktop', 'all-in-one', 'mini-pc', 'server', 'workstation', 'monitor', 'printer', 'apple', 'macbook', 'imac'] },
+  { title: 'Components', icon: Cpu, keywords: ['cpu', 'processor', 'ram', 'memory', 'storage', 'ssd', 'hdd', 'hard-drive', 'harddrive', 'gpu', 'graphics-card', 'motherboard', 'power-supply', 'psu', 'case', 'cooling', 'fan'] },
+  { title: 'Accessories', icon: Mouse, keywords: ['mouse', 'keyboard', 'headset', 'headphone', 'speaker', 'webcam', 'bag', 'adapter', 'charger', 'battery', 'dock', 'hub', 'cable', 'display', 'stand', 'chair'] },
+  { title: 'Connectivity', icon: Wifi, keywords: ['network', 'router', 'switch', 'modem', 'wifi', 'wireless', 'bluetooth', 'antenna', 'extender', 'access-point', 'nas', 'ups'] },
+]
+
+/** Classify a category into a mega menu column based on slug/name keywords */
+function classifyCategory(cat: CategoryNode): number {
+  const haystack = `${cat.slug} ${cat.name} ${cat.navIcon || ''}`.toLowerCase()
+  for (let i = 0; i < megaColumns.length; i++) {
+    if (megaColumns[i].keywords.some(kw => haystack.includes(kw))) return i
+  }
+  return -1 // unclassified
+}
 
 interface HeaderProps { categories: CategoryNode[] }
 
 export default function Header({ categories }: HeaderProps) {
-  const [megaOpen, setMegaOpen] = useState<string | null>(null)
+  const [shopMegaOpen, setShopMegaOpen] = useState(false)
   const router = useRouter()
   const [searchQ, setSearchQ] = useState('')
   const [searchResults, setSearchResults] = useState<any>(null)
@@ -46,13 +76,38 @@ export default function Header({ categories }: HeaderProps) {
   const searchRef = useRef<HTMLDivElement>(null)
   const { cartCount, wishlist, mobileMenuOpen, setMobileMenuOpen, searchOpen, setSearchOpen } = useStore()
 
-  const handleMegaEnter = useCallback((slug: string) => {
+  const handleMegaEnter = useCallback(() => {
     clearTimeout(megaTimeout.current)
-    setMegaOpen(slug)
+    setShopMegaOpen(true)
   }, [])
   const handleMegaLeave = useCallback(() => {
-    megaTimeout.current = setTimeout(() => setMegaOpen(null), 200)
+    megaTimeout.current = setTimeout(() => setShopMegaOpen(false), 200)
   }, [])
+
+  /* Organise categories into 4 mega-menu columns */
+  const megaMenuColumns = useMemo(() => {
+    const navCats = categories.filter(c => c.showInNav)
+    const buckets: CategoryNode[][] = [[], [], [], []]
+    const unclassified: CategoryNode[] = []
+
+    for (const cat of navCats) {
+      const col = classifyCategory(cat)
+      if (col >= 0) {
+        buckets[col].push(cat)
+      } else {
+        unclassified.push(cat)
+      }
+    }
+
+    // Distribute unclassified round-robin to balance columns
+    let idx = 0
+    for (const cat of unclassified) {
+      buckets[idx % 4].push(cat)
+      idx++
+    }
+
+    return buckets
+  }, [categories])
 
   useEffect(() => {
     if (!searchQ || searchQ.length < 2) return () => {}
@@ -76,13 +131,11 @@ export default function Header({ categories }: HeaderProps) {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  const activeMega = categories.find(c => c.slug === megaOpen)
-
   return (
     <header className="sticky top-0 z-50 bg-background">
       {/* ── Top Utility Bar ── */}
       <div className="hidden lg:block border-b border-border/60 bg-primary">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-8 text-[11px] text-primary-foreground/70">
+        <div className="container-main flex items-center justify-between h-8 text-[11px] text-primary-foreground/70">
           <div className="flex items-center gap-5">
             <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> Nairobi Showroom</span>
             <span className="flex items-center gap-1"><Truck className="h-3 w-3" /> Kenya-wide Delivery</span>
@@ -99,7 +152,7 @@ export default function Header({ categories }: HeaderProps) {
 
       {/* ── Main Header ── */}
       <div className="border-b border-border bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/80">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="container-main">
           <div className="flex items-center justify-between h-14 lg:h-16 gap-4">
             {/* Mobile hamburger + Logo */}
             <div className="flex items-center gap-2.5 shrink-0">
@@ -128,7 +181,7 @@ export default function Header({ categories }: HeaderProps) {
             </div>
 
             {/* ── Search Bar (PRIMARY NAV ELEMENT) ── */}
-            <div className="hidden md:flex flex-1 max-w-2xl relative" ref={searchRef}>
+            <div className="hidden md:flex flex-1 max-w-2xl min-w-0 relative" ref={searchRef}>
               <div className="relative w-full group">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
                 <Input
@@ -201,7 +254,7 @@ export default function Header({ categories }: HeaderProps) {
             </div>
 
             {/* ── Right Actions ── */}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5 shrink-0">
               <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSearchOpen(!searchOpen)} aria-label="Search">
                 <Search className="h-5 w-5" />
               </Button>
@@ -237,75 +290,108 @@ export default function Header({ categories }: HeaderProps) {
 
       {/* ── Mobile Search Bar ── */}
       {searchOpen && (
-        <div className="md:hidden border-b border-border bg-background px-4 py-2.5">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search products..." className="pl-9 h-10 rounded-lg" value={searchQ} onChange={e => setSearchQ(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && searchQ.trim()) { setSearchOpen(false); router.push(`/search?q=${encodeURIComponent(searchQ.trim())}`) } }}
-              autoFocus />
+        <div className="md:hidden border-b border-border bg-background py-2.5">
+          <div className="container-main min-w-0">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search products..." className="pl-9 h-10 rounded-lg" value={searchQ} onChange={e => setSearchQ(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && searchQ.trim()) { setSearchOpen(false); router.push(`/search?q=${encodeURIComponent(searchQ.trim())}`) } }}
+                autoFocus />
+            </div>
           </div>
         </div>
       )}
 
       {/* ── Desktop Navigation Bar ── */}
       <nav className="hidden lg:block border-b border-border/60 bg-background" aria-label="Main navigation">
-        <div className="max-w-7xl mx-auto px-4">
-          <ul className="flex items-center gap-0 h-10">
-            {categories.filter(c => c.showInNav).map(cat => {
-              const Icon = getIcon(cat.navIcon || '')
-              return (
-                <li key={cat.id} className="relative"
-                  onMouseEnter={() => cat.children.length > 0 && handleMegaEnter(cat.slug)}
-                  onMouseLeave={cat.children.length > 0 ? handleMegaLeave : undefined}
-                >
-                  <Link href={`/shop/${cat.slug}`}
-                    className={cn(
-                      'flex items-center gap-1.5 px-3 py-2 text-[13px] font-medium rounded-md transition-colors whitespace-nowrap',
-                      'hover:bg-accent/8 hover:text-accent',
-                      megaOpen === cat.slug && 'bg-accent/8 text-accent'
-                    )}
+        <div className="container-main">
+          <ul className="flex items-center gap-0 h-10 overflow-hidden">
+            {mainNavItems.map((item) => {
+              if (item.hasMega) {
+                return (
+                  <li key={item.label} className="relative"
+                    onMouseEnter={handleMegaEnter}
+                    onMouseLeave={handleMegaLeave}
                   >
-                    <Icon className="h-3.5 w-3.5" />
-                    {cat.name}
-                    {cat.children.length > 0 && <ChevronDown className={cn("h-3 w-3 opacity-40 transition-transform", megaOpen === cat.slug && "rotate-180")} />}
-                  </Link>
-
-                  {/* Mega Menu */}
-                  {megaOpen === cat.slug && cat.children.length > 0 && (
-                    <div className="absolute top-full left-0 bg-popover border border-border rounded-xl shadow-2xl mega-menu-enter z-50 p-5"
-                      style={{ width: `${Math.min(cat.navColumns * 180 + 80, 640)}px` }}
-                      onMouseEnter={() => handleMegaEnter(cat.slug)}
-                      onMouseLeave={handleMegaLeave}
+                    <Link href={item.href}
+                      className={cn(
+                        'flex items-center gap-1.5 px-3 py-2 text-[13px] font-medium rounded-md transition-colors whitespace-nowrap min-w-0',
+                        'hover:bg-accent/8 hover:text-accent',
+                        shopMegaOpen && 'bg-accent/8 text-accent'
+                      )}
                     >
-                      <div className="grid gap-5" style={{ gridTemplateColumns: `repeat(${cat.navColumns}, minmax(0, 1fr))` }}>
-                        {cat.children.map(child => (
-                          <div key={child.id}>
-                            <Link href={`/shop/${cat.slug}/${child.slug}`}
-                              className="block text-[13px] font-semibold py-0.5 hover:text-accent transition-colors"
-                            >
-                              {child.name}
-                            </Link>
-                            {child.children?.length > 0 && (
-                              <div className="mt-1.5 space-y-0.5">
-                                {child.children.slice(0, 6).map(gc => (
-                                  <Link key={gc.id} href={`/shop/${cat.slug}/${child.slug}/${gc.slug}`}
-                                    className="block text-xs text-muted-foreground hover:text-foreground py-0.5 transition-colors"
-                                  >
-                                    {gc.name}
-                                  </Link>
-                                ))}
+                      <Store className="h-3.5 w-3.5" />
+                      {item.label}
+                      <ChevronDown className={cn("h-3 w-3 opacity-40 transition-transform", shopMegaOpen && "rotate-180")} />
+                    </Link>
+
+                    {/* Shop Mega Menu */}
+                    {shopMegaOpen && (
+                      <div
+                        className="absolute top-full left-0 min-w-[600px] max-w-[800px] bg-popover border border-border rounded-xl shadow-2xl mega-menu-enter z-50 p-5 overflow-hidden"
+                        onMouseEnter={handleMegaEnter}
+                        onMouseLeave={handleMegaLeave}
+                      >
+                        <div className="grid grid-cols-4 gap-5">
+                          {megaMenuColumns.map((bucket, colIdx) => {
+                            const ColIcon = megaColumns[colIdx].icon
+                            return (
+                              <div key={megaColumns[colIdx].title}>
+                                <div className="flex items-center gap-1.5 mb-2">
+                                  <ColIcon className="h-3.5 w-3.5 text-accent" />
+                                  <span className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                    {megaColumns[colIdx].title}
+                                  </span>
+                                </div>
+                                <div className="space-y-0.5">
+                                  {bucket.map(cat => {
+                                    const CatIcon = getIcon(cat.navIcon || '')
+                                    return (
+                                      <div key={cat.id}>
+                                        <Link href={`/shop/${cat.slug}`}
+                                          className="flex items-center gap-1.5 text-[13px] font-medium py-0.5 hover:text-accent transition-colors"
+                                        >
+                                          <CatIcon className="h-3 w-3 text-muted-foreground/60 shrink-0" />
+                                          {cat.name}
+                                        </Link>
+                                        {cat.children?.length > 0 && (
+                                          <div className="ml-5 mt-0.5 space-y-0.5">
+                                            {cat.children.slice(0, 5).map(child => (
+                                              <Link key={child.id} href={`/shop/${cat.slug}/${child.slug}`}
+                                                className="block text-xs text-muted-foreground hover:text-foreground py-0.5 transition-colors truncate"
+                                              >
+                                                {child.name}
+                                              </Link>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )
+                                  })}
+                                </div>
                               </div>
-                            )}
-                          </div>
-                        ))}
+                            )
+                          })}
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-border/50">
+                          <Link href="/shop" className="text-xs font-semibold text-accent hover:underline flex items-center gap-1">
+                            View All Products <ChevronRight className="h-3 w-3" />
+                          </Link>
+                        </div>
                       </div>
-                      <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between">
-                        <Link href={`/shop/${cat.slug}`} className="text-xs font-semibold text-accent hover:underline flex items-center gap-1">
-                          View all {cat.name.toLowerCase()} <ChevronRight className="h-3 w-3" />
-                        </Link>
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </li>
+                )
+              }
+
+              // Simple nav link (no mega menu)
+              return (
+                <li key={item.label} className="min-w-0">
+                  <Link href={item.href}
+                    className="flex items-center gap-1.5 px-3 py-2 text-[13px] font-medium rounded-md transition-colors whitespace-nowrap hover:bg-accent/8 hover:text-accent"
+                  >
+                    {item.label}
+                  </Link>
                 </li>
               )
             })}
@@ -347,7 +433,7 @@ function MobileCategoryDrawer({ categories }: { categories: CategoryNode[] }) {
 
       {/* Quick links */}
       <div className="grid grid-cols-3 gap-px bg-border mx-3 mt-3 rounded-lg overflow-hidden">
-        {navLinks.slice(0, 6).map(link => (
+        {mobileQuickLinks.slice(0, 6).map(link => (
           <Link key={link.label} href={link.href}
             className="bg-card text-center py-2.5 text-xs font-medium hover:bg-secondary transition-colors"
             onClick={() => useStore.getState().setMobileMenuOpen(false)}>

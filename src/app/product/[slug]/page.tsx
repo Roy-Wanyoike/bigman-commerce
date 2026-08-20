@@ -244,16 +244,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col min-w-0">
       <Header categories={categoryTree} />
-      <main className="flex-1">
+      <main className="flex-1 min-w-0">
         {/* JSON-LD */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 
-        <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
+        <div className="container-main py-4 md:py-8">
         {/* ===== BREADCRUMBS ===== */}
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
@@ -278,7 +278,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </Breadcrumb>
 
         {/* ===== PRODUCT HERO: 2-col on desktop ===== */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 lg:gap-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 lg:gap-14 min-w-0">
           {/* LEFT: Image Gallery */}
           <ProductGallery images={images} productName={product.name} />
 
@@ -481,7 +481,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 View all <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
               {crossSellProducts.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           </section>

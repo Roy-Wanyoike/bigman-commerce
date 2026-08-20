@@ -32,9 +32,9 @@ export default function HomePage({ categories, products, brands, services }: Pro
   const newLaptops = products.filter(p => p.condition === 'NEW' && p.categories.some(c => c.category.slug === 'laptops'))
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col min-w-0">
       <Header categories={categories} />
-      <main className="flex-1">
+      <main className="flex-1 min-w-0">
         <Hero />
         <TrustStrip />
         <FeaturedCategories categories={categories} />

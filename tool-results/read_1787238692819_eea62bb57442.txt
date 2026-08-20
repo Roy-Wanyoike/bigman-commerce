@@ -1,0 +1,631 @@
+     1→'use client'
+     2→
+     3→import { useState } from 'react'
+     4→import Link from 'next/link'
+     5→import {
+     6→  ChevronRight, SlidersHorizontal, ArrowUpDown, Laptop, Monitor, Gamepad2, Apple, RotateCcw,
+     7→  Cpu, Printer, Wrench, HardDrive, Zap, Code, Building2, Home, Phone, MessageCircle, MapPin, Clock,
+     8→  Search, ShoppingCart, User, ArrowRight, Shield, Truck, Headphones, CheckCircle2, Star,
+     9→  GraduationCap, Palette, Wifi, MemoryStick,
+    10→} from 'lucide-react'
+    11→import { Button } from '@/components/ui/button'
+    12→import { Badge } from '@/components/ui/badge'
+    13→import { Card, CardContent } from '@/components/ui/card'
+    14→import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+    15→import { Separator } from '@/components/ui/separator'
+    16→import ProductCard, { ProductCardSkeleton } from './ProductCard'
+    17→import { useStore } from '@/lib/store'
+    18→import { formatPrice } from '@/lib/prices'
+    19→import type { Product, CategoryNode, Brand, ServiceItem } from './types'
+    20→import { useCases, budgetPages } from './types'
+    21→import { cn } from '@/lib/utils'
+    22→
+    23→const catIcons: Record<string, any> = {
+    24→  laptops: Laptop, desktops: Monitor, gaming: Gamepad2, 'mac-apple': Apple,
+    25→  workstations: Cpu, monitors: Monitor, printers: Printer, accessories: Wrench,
+    26→  parts: Wrench, hardware: Cpu, storage: HardDrive, 'ram-memory': MemoryStick,
+    27→  networking: Wifi, power: Zap, software: Code, 'bags-protection': Laptop,
+    28→  'office-technology': Building2, refurbished: RotateCcw, deals: Cpu,
+    29→  services: Wrench, business: Building2, 'cables-adapters': Zap,
+    30→}
+    31→
+    32→// ============================================================
+    33→// TRUST STRIP — Premium trust signals
+    34→// ============================================================
+    35→const trustItems = [
+    36→  { icon: Shield, label: 'Bigman Inspected', desc: 'Every device tested & verified' },
+    37→  { icon: Truck, label: 'Fast Delivery', desc: 'Nairobi same-day, countrywide' },
+    38→  { icon: Zap, label: 'M-Pesa Accepted', desc: 'Pay how you prefer' },
+    39→  { icon: Headphones, label: 'Expert Support', desc: 'In-store repair & assistance' },
+    40→]
+    41→
+    42→export function TrustStrip() {
+    43→  return (
+    44→    <section className="border-b border-border/60 bg-card">
+    45→      <div className="container-main py-4 md:py-5">
+    46→        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+    47→          {trustItems.map(item => (
+    48→            <div key={item.label} className="flex items-center gap-3">
+    49→              <div className="h-9 w-9 rounded-lg bg-accent/8 flex items-center justify-center shrink-0">
+    50→                <item.icon className="h-[18px] w-[18px] text-accent" />
+    51→              </div>
+    52→              <div>
+    53→                <div className="text-[13px] font-semibold">{item.label}</div>
+    54→                <div className="text-[11px] text-muted-foreground leading-tight">{item.desc}</div>
+    55→              </div>
+    56→            </div>
+    57→          ))}
+    58→        </div>
+    59→      </div>
+    60→    </section>
+    61→  )
+    62→}
+    63→
+    64→// ============================================================
+    65→// FEATURED CATEGORIES — Visual category grid
+    66→// ============================================================
+    67→export function FeaturedCategories({ categories }: { categories: CategoryNode[] }) {
+    68→  const featured = categories.filter(c => c.isFeatured || ['laptops', 'gaming', 'desktops', 'accessories', 'parts', 'hardware', 'storage', 'monitors'].includes(c.slug))
+    69→  return (
+    70→    <section className="py-10 md:py-14">
+    71→      <div className="container-main">
+    72→        <div className="flex items-end justify-between mb-6">
+    73→          <div>
+    74→            <h2 className="text-xl md:text-2xl font-bold tracking-tight">Shop by Category</h2>
+    75→            <p className="text-sm text-muted-foreground mt-0.5">Find exactly what you need</p>
+    76→          </div>
+    77→          <Link href="/shop" className="hidden sm:flex items-center gap-1 text-sm font-medium text-accent hover:text-accent/80 transition-colors">
+    78→            All categories <ChevronRight className="h-3.5 w-3.5" />
+    79→          </Link>
+    80→        </div>
+    81→        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-2.5 min-w-0">
+    82→          {featured.slice(0, 8).map(cat => {
+    83→            const Icon = catIcons[cat.slug] || Laptop
+    84→            const childCount = cat.children.length
+    85→            return (
+    86→              <Link key={cat.id} href={`/shop/${cat.slug}`} className="group">
+    87→                <Card className="hover:border-accent/40 hover:shadow-md transition-all h-full border-border/60">
+    88→                  <CardContent className="p-3 md:p-4 flex flex-col items-center text-center gap-2">
+    89→                    <div className="h-11 w-11 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-accent/10 transition-colors">
+    90→                      <Icon className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors" />
+    91→                    </div>
+    92→                    <div className="font-medium text-xs leading-tight">{cat.name}</div>
+    93→                    {childCount > 0 && (
+    94→                      <div className="text-[10px] text-muted-foreground">{childCount} sub</div>
+    95→                    )}
+    96→                  </CardContent>
+    97→                </Card>
+    98→              </Link>
+    99→            )
+   100→          })}
+   101→        </div>
+   102→        <Link href="/shop" className="sm:hidden flex items-center justify-center gap-1 text-sm font-medium text-accent mt-4">
+   103→          View all categories <ChevronRight className="h-3.5 w-3.5" />
+   104→        </Link>
+   105→      </div>
+   106→    </section>
+   107→  )
+   108→}
+   109→
+   110→// ============================================================
+   111→// PRODUCT SECTION — Reusable (Featured / Deals / Gaming / Refurbished)
+   112→// ============================================================
+   113→interface ProductSectionProps {
+   114→  title: string
+   115→  subtitle?: string
+   116→  products: Product[]
+   117→  viewAllHref: string
+   118→  accentColor?: string
+   119→  surface?: 'default' | 'gaming'
+   120→}
+   121→
+   122→export function ProductSection({ title, subtitle, products, viewAllHref, accentColor, surface = 'default' }: ProductSectionProps) {
+   123→  const display = products.slice(0, 8)
+   124→  if (display.length === 0) return null
+   125→
+   126→  return (
+   127→    <section className={cn(
+   128→      'py-10 md:py-14',
+   129→      surface === 'gaming' ? 'gaming-surface' : '',
+   130→    )}>
+   131→      <div className="container-main">
+   132→        <div className="flex items-end justify-between mb-6">
+   133→          <div className="flex items-center gap-3">
+   134→            {accentColor && <div className={cn('h-8 w-1 rounded-full', accentColor)} />}
+   135→            <div>
+   136→              <h2 className={cn('text-xl md:text-2xl font-bold tracking-tight', surface === 'gaming' && 'text-white')}>{title}</h2>
+   137→              {subtitle && <p className={cn('text-sm mt-0.5', surface === 'gaming' ? 'text-white/50' : 'text-muted-foreground')}>{subtitle}</p>}
+   138→            </div>
+   139→          </div>
+   140→          <Link href={viewAllHref} className={cn('flex items-center gap-1 text-sm font-medium transition-colors',
+   141→            surface === 'gaming' ? 'text-accent hover:text-accent/80' : 'text-accent hover:text-accent/80'
+   142→          )}>
+   143→            View all <ChevronRight className="h-3.5 w-3.5" />
+   144→          </Link>
+   145→        </div>
+   146→        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
+   147→          {display.map(p => <ProductCard key={p.id} product={p} />)}
+   148→        </div>
+   149→      </div>
+   150→    </section>
+   151→  )
+   152→}
+   153→
+   154→// ============================================================
+   155→// LAPTOP FINDER — Guided product discovery
+   156→// ============================================================
+   157→export function LaptopFinder({ products }: { products: Product[] }) {
+   158→  const laptops = products.filter(p => p.categories.some(c => ['laptops', 'gaming-laptops'].includes(c.category.slug)))
+   159→  if (laptops.length === 0) return null
+   160→
+   161→  return (
+   162→    <section className="py-10 md:py-14 bg-secondary/30">
+   163→      <div className="container-main">
+   164→        <div className="max-w-2xl mx-auto text-center mb-8">
+   165→          <h2 className="text-xl md:text-2xl font-bold tracking-tight">Not Sure What to Buy?</h2>
+   166→          <p className="text-sm text-muted-foreground mt-1.5">We&apos;ll help you find the right laptop for your needs and budget.</p>
+   167→        </div>
+   168→        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-3xl mx-auto">
+   169→          {useCases.slice(0, 3).map(uc => (
+   170→            <Link key={uc.slug} href={`/shop/laptops?useCase=${uc.slug}`} className="group">
+   171→              <Card className="hover:border-accent/40 hover:shadow-md transition-all border-border/60">
+   172→                <CardContent className="p-5 text-center">
+   173→                  <div className="h-12 w-12 rounded-xl bg-accent/8 flex items-center justify-center mx-auto mb-3 group-hover:bg-accent/15 transition-colors">
+   174→                    <uc.icon className="h-6 w-6 text-accent" />
+   175→                  </div>
+   176→                  <div className="font-semibold text-sm mb-1">{uc.name}</div>
+   177→                  <div className="text-[11px] text-muted-foreground leading-relaxed">{uc.desc}</div>
+   178→                </CardContent>
+   179→              </Card>
+   180→            </Link>
+   181→          ))}
+   182→        </div>
+   183→        <div className="text-center mt-6">
+   184→          <Link href="/shop/laptops" className="text-sm font-medium text-accent hover:text-accent/80 transition-colors">
+   185→            Browse all laptops →
+   186→          </Link>
+   187→        </div>
+   188→      </div>
+   189→    </section>
+   190→  )
+   191→}
+   192→
+   193→// ============================================================
+   194→// FULL CATALOG WITH FILTERS
+   195→// ============================================================
+   196→export function FullCatalog({ products, categories, brands }: { products: Product[]; categories: CategoryNode[]; brands: Brand[] }) {
+   197→  const [activeCat, setActiveCat] = useState<string | null>(null)
+   198→  const [sortBy, setSortBy] = useState('sortOrder')
+   199→  const [conditionFilter, setConditionFilter] = useState<string | null>(null)
+   200→  const { compareList, clearCompare } = useStore()
+   201→
+   202→  let filtered = [...products]
+   203→  if (activeCat) {
+   204→    const catSlugs = getCatAndDescendantSlugs(categories, activeCat)
+   205→    filtered = filtered.filter(p => p.categories.some(c => catSlugs.includes(c.category.slug)))
+   206→  }
+   207→  if (conditionFilter) filtered = filtered.filter(p => p.condition === conditionFilter)
+   208→
+   209→  if (sortBy === 'price-asc') filtered.sort((a, b) => a.basePrice - b.basePrice)
+   210→  else if (sortBy === 'price-desc') filtered.sort((a, b) => b.basePrice - a.basePrice)
+   211→  else if (sortBy === 'newest') filtered.sort((a, b) => (b.publishedAt?.getTime() || 0) - (a.publishedAt?.getTime() || 0))
+   212→
+   213→  const topCategories = categories.filter(c => !c.parentId)
+   214→
+   215→  return (
+   216→    <section className="py-10 md:py-14 bg-muted/30">
+   217→      <div className="container-main">
+   218→        <div className="flex items-end justify-between mb-6">
+   219→          <div>
+   220→            <h2 className="text-xl md:text-2xl font-bold tracking-tight">All Products</h2>
+   221→            <p className="text-sm text-muted-foreground mt-0.5">{filtered.length} products available</p>
+   222→          </div>
+   223→        </div>
+   224→
+   225→        {/* Filters bar */}
+   226→        <div className="min-w-0 flex flex-wrap items-center gap-2 mb-6 p-3 bg-card rounded-xl border border-border/60">
+   227→          <div className="overflow-x-auto flex-nowrap flex items-center gap-2 min-w-0">
+   228→          <SlidersHorizontal className="h-4 w-4 text-muted-foreground mr-1 shrink-0" />
+   229→          <Button variant={activeCat === null ? 'default' : 'outline'} size="sm" className="h-7 text-xs rounded-md shrink-0" onClick={() => setActiveCat(null)}>All</Button>
+   230→          {topCategories.slice(0, 10).map(c => (
+   231→            <Button key={c.id} variant={activeCat === c.slug ? 'default' : 'outline'} size="sm" className="h-7 text-xs rounded-md shrink-0"
+   232→              onClick={() => setActiveCat(activeCat === c.slug ? null : c.slug)}>
+   233→              {c.name}
+   234→            </Button>
+   235→          ))}
+   236→          </div>
+   237→          <div className="ml-auto flex items-center gap-2 shrink-0">
+   238→            <Select value={conditionFilter || 'all'} onValueChange={v => setConditionFilter(v === 'all' ? null : v)}>
+   239→              <SelectTrigger className="h-7 w-32 text-xs"><SelectValue placeholder="Condition" /></SelectTrigger>
+   240→              <SelectContent>
+   241→                <SelectItem value="all">All Conditions</SelectItem>
+   242→                <SelectItem value="NEW">New</SelectItem>
+   243→                <SelectItem value="REFURBISHED">Refurbished</SelectItem>
+   244→              </SelectContent>
+   245→            </Select>
+   246→            <Select value={sortBy} onValueChange={setSortBy}>
+   247→              <SelectTrigger className="h-7 w-36 text-xs"><ArrowUpDown className="h-3 w-3 mr-1" /><SelectValue /></SelectTrigger>
+   248→              <SelectContent>
+   249→                <SelectItem value="sortOrder">Featured</SelectItem>
+   250→                <SelectItem value="price-asc">Price: Low → High</SelectItem>
+   251→                <SelectItem value="price-desc">Price: High → Low</SelectItem>
+   252→                <SelectItem value="newest">Newest</SelectItem>
+   253→              </SelectContent>
+   254→            </Select>
+   255→          </div>
+   256→        </div>
+   257→
+   258→        {/* Product grid */}
+   259→        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+   260→          {filtered.map(p => <ProductCard key={p.id} product={p} />)}
+   261→        </div>
+   262→
+   263→        {filtered.length === 0 && (
+   264→          <div className="text-center py-16 text-muted-foreground">
+   265→            <Search className="h-10 w-10 mx-auto mb-3 opacity-30" />
+   266→            <p className="text-base font-medium">No products found</p>
+   267→            <p className="text-sm mt-1">Try adjusting your filters</p>
+   268→          </div>
+   269→        )}
+   270→      </div>
+   271→    </section>
+   272→  )
+   273→}
+   274→
+   275→function getCatAndDescendantSlugs(categories: CategoryNode[], slug: string): string[] {
+   276→  const cat = categories.find(c => c.slug === slug)
+   277→  if (!cat) return [slug]
+   278→  const slugs = [slug]
+   279→  function walk(children: CategoryNode[]) {
+   280→    for (const c of children) { slugs.push(c.slug); if (c.children?.length) walk(c.children) }
+   281→  }
+   282→  if (cat.children?.length) walk(cat.children)
+   283→  return slugs
+   284→}
+   285→
+   286→// ============================================================
+   287→// SHOP BY USE CASE
+   288→// ============================================================
+   289→export function UseCaseSection() {
+   290→  return (
+   291→    <section className="py-10 md:py-14">
+   292→      <div className="container-main">
+   293→        <div className="mb-6">
+   294→          <h2 className="text-xl md:text-2xl font-bold tracking-tight">Shop by Use Case</h2>
+   295→          <p className="text-sm text-muted-foreground mt-0.5">Curated recommendations for every need</p>
+   296→        </div>
+   297→        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+   298→          {useCases.map(uc => {
+   299→            const Icon = uc.icon
+   300→            return (
+   301→              <Link key={uc.slug} href={`/shop/${uc.slug}`} className="group">
+   302→                <Card className="hover:border-accent/40 hover:shadow-md transition-all h-full border-border/60">
+   303→                  <CardContent className="p-4 md:p-5 flex items-start gap-3">
+   304→                    <div className="h-10 w-10 rounded-lg bg-accent/8 flex items-center justify-center shrink-0 group-hover:bg-accent/15 transition-colors">
+   305→                      <Icon className="h-5 w-5 text-accent" />
+   306→                    </div>
+   307→                    <div>
+   308→                      <div className="font-semibold text-sm">{uc.name}</div>
+   309→                      <div className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{uc.desc}</div>
+   310→                    </div>
+   311→                  </CardContent>
+   312→                </Card>
+   313→              </Link>
+   314→            )
+   315→          })}
+   316→        </div>
+   317→      </div>
+   318→    </section>
+   319→  )
+   320→}
+   321→
+   322→// ============================================================
+   323→// BUDGET LANDING PAGES
+   324→// ============================================================
+   325→export function BudgetSection({ products }: { products: Product[] }) {
+   326→  const laptops = products.filter(p => p.categories.some(c => c.category.slug === 'laptops'))
+   327→  return (
+   328→    <section className="py-10 md:py-14 bg-muted/30">
+   329→      <div className="container-main">
+   330→        <div className="mb-6">
+   331→          <h2 className="text-xl md:text-2xl font-bold tracking-tight">Laptops by Budget</h2>
+   332→          <p className="text-sm text-muted-foreground mt-0.5">Find the right laptop for your budget</p>
+   333→        </div>
+   334→        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+   335→          {budgetPages.map(bp => {
+   336→            const count = laptops.filter(p => p.basePrice <= bp.max).length
+   337→            return (
+   338→              <Link key={bp.max} href={`/shop/laptops?maxPrice=${bp.max}`} className="group">
+   339→                <Card className="hover:border-accent/40 transition-all border-border/60">
+   340→                  <CardContent className="p-4 text-center">
+   341→                    <div className="price-display text-xl md:text-2xl font-bold text-accent">{bp.label}</div>
+   342→                    <div className="text-[11px] text-muted-foreground mt-1.5">{count} laptops available</div>
+   343→                    <div className="text-[11px] text-accent mt-2 opacity-0 group-hover:opacity-100 transition-opacity font-medium flex items-center justify-center gap-0.5">
+   344→                      Browse <ChevronRight className="h-3 w-3" />
+   345→                    </div>
+   346→                  </CardContent>
+   347→                </Card>
+   348→              </Link>
+   349→            )
+   350→          })}
+   351→        </div>
+   352→      </div>
+   353→    </section>
+   354→  )
+   355→}
+   356→
+   357→// ============================================================
+   358→// BRAND SHOWCASE
+   359→// ============================================================
+   360→export function BrandSection({ brands }: { brands: Brand[] }) {
+   361→  const active = brands.filter(b => b._count.products > 0)
+   362→  if (active.length === 0) return null
+   363→  return (
+   364→    <section className="py-10 md:py-14">
+   365→      <div className="container-main">
+   366→        <div className="flex items-end justify-between mb-6">
+   367→          <div>
+   368→            <h2 className="text-xl md:text-2xl font-bold tracking-tight">Shop by Brand</h2>
+   369→            <p className="text-sm text-muted-foreground mt-0.5">Trusted brands, genuine products</p>
+   370→          </div>
+   371→        </div>
+   372→        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 min-w-0">
+   373→          {active.map(b => (
+   374→            <Link key={b.id} href={`/brand/${b.slug}`} className="group">
+   375→              <Card className="hover:border-accent/40 hover:shadow-sm transition-all border-border/60">
+   376→                <CardContent className="p-3 text-center">
+   377→                  <div className="h-10 flex items-center justify-center">
+   378→                    <span className="text-base font-bold text-muted-foreground group-hover:text-foreground transition-colors tracking-tight">{b.name}</span>
+   379→                  </div>
+   380→                  <div className="text-[10px] text-muted-foreground mt-1">{b._count.products} items</div>
+   381→                </CardContent>
+   382→              </Card>
+   383→            </Link>
+   384→          ))}
+   385→        </div>
+   386→      </div>
+   387→    </section>
+   388→  )
+   389→}
+   390→
+   391→// ============================================================
+   392→// SERVICES SECTION
+   393→// ============================================================
+   394→export function ServicesSection({ services }: { services: ServiceItem[] }) {
+   395→  if (services.length === 0) return null
+   396→  const grouped = services.reduce((acc, s) => {
+   397→    const type = s.serviceType || 'OTHER'
+   398→    if (!acc[type]) acc[type] = []
+   399→    acc[type].push(s)
+   400→    return acc
+   401→  }, {} as Record<string, ServiceItem[]>)
+   402→
+   403→  const typeLabels: Record<string, string> = { REPAIR: 'Repairs', UPGRADE: 'Upgrades', INSTALLATION: 'Installation', RECOVERY: 'Recovery', SUPPORT: 'Support' }
+   404→
+   405→  return (
+   406→    <section className="py-10 md:py-14 bg-muted/30">
+   407→      <div className="container-main">
+   408→        <div className="flex items-end justify-between mb-6">
+   409→          <div>
+   410→            <h2 className="text-xl md:text-2xl font-bold tracking-tight">Services</h2>
+   411→            <p className="text-sm text-muted-foreground mt-0.5">Professional repair, upgrade and setup services</p>
+   412→          </div>
+   413→          <Link href="/services" className="hidden sm:flex items-center gap-1 text-sm font-medium text-accent hover:text-accent/80 transition-colors">
+   414→            All services <ChevronRight className="h-3.5 w-3.5" />
+   415→          </Link>
+   416→        </div>
+   417→        <div className="space-y-6">
+   418→          {Object.entries(grouped).map(([type, items]) => (
+   419→            <div key={type}>
+   420→              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+   421→                <Wrench className="h-3.5 w-3.5 text-accent" />
+   422→                {typeLabels[type] || type}
+   423→              </h3>
+   424→              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+   425→                {items.map(s => (
+   426→                  <Card key={s.id} className="hover:shadow-sm transition-all border-border/60">
+   427→                    <CardContent className="p-4 flex items-center justify-between">
+   428→                      <div>
+   429→                        <div className="text-sm font-medium">{s.name}</div>
+   430→                        <div className="text-[11px] text-muted-foreground mt-0.5">{s.duration || 'Contact for details'}</div>
+   431→                      </div>
+   432→                      <div className="text-right shrink-0 ml-4">
+   433→                        <div className="text-sm font-bold price-display">{formatPrice(s.basePrice)}</div>
+   434→                        <div className="text-[10px] text-muted-foreground">from</div>
+   435→                      </div>
+   436→                    </CardContent>
+   437→                  </Card>
+   438→                ))}
+   439→              </div>
+   440→            </div>
+   441→          ))}
+   442→        </div>
+   443→      </div>
+   444→    </section>
+   445→  )
+   446→}
+   447→
+   448→// ============================================================
+   449→// STORE LOCATION SECTION
+   450→// ============================================================
+   451→export function StoreLocation() {
+   452→  return (
+   453→    <section className="py-10 md:py-14">
+   454→      <div className="container-main">
+   455→        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+   456→          {/* Info */}
+   457→          <div>
+   458→            <h2 className="text-xl md:text-2xl font-bold tracking-tight mb-2">Visit Bigman</h2>
+   459→            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+   460→              Come see our full range of laptops, desktops, gaming gear and accessories in person.
+   461→              Our expert team is ready to help you find the right technology.
+   462→            </p>
+   463→            <div className="space-y-3">
+   464→              <div className="flex items-start gap-3">
+   465→                <MapPin className="h-4.5 w-4.5 text-accent mt-0.5 shrink-0" />
+   466→                <div>
+   467→                  <div className="text-sm font-medium">Rahimtulla Trust Building</div>
+   468→                  <div className="text-sm text-muted-foreground">Moi Avenue, Nairobi, Kenya</div>
+   469→                </div>
+   470→              </div>
+   471→              <div className="flex items-center gap-3">
+   472→                <Phone className="h-4.5 w-4.5 text-accent shrink-0" />
+   473→                <div className="text-sm">+254 722 450 610</div>
+   474→              </div>
+   475→              <div className="flex items-center gap-3">
+   476→                <MessageCircle className="h-4.5 w-4.5 text-accent shrink-0" />
+   477→                <div className="text-sm">WhatsApp Available</div>
+   478→              </div>
+   479→              <div className="flex items-center gap-3">
+   480→                <Clock className="h-4.5 w-4.5 text-accent shrink-0" />
+   481→                <div className="text-sm">Mon - Sat: 8:00 AM - 6:00 PM</div>
+   482→              </div>
+   483→            </div>
+   484→            <div className="flex gap-3 mt-6">
+   485→              <a href="https://wa.me/254722450610">
+   486→                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium">
+   487→                  <MessageCircle className="h-4 w-4 mr-1.5" /> WhatsApp Us
+   488→                </Button>
+   489→              </a>
+   490→              <a href="tel:+254722450610">
+   491→                <Button variant="outline" className="font-medium">
+   492→                  <Phone className="h-4 w-4 mr-1.5" /> Call Now
+   493→                </Button>
+   494→              </a>
+   495→            </div>
+   496→          </div>
+   497→
+   498→          {/* Map placeholder */}
+   499→          <Card className="border-border/60 overflow-hidden">
+   500→            <div className="aspect-[4/3] bg-secondary/40 flex items-center justify-center relative">
+   501→              <div className="text-center">
+   502→                <MapPin className="h-10 w-10 text-accent/40 mx-auto mb-2" />
+   503→                <p className="text-sm font-medium text-muted-foreground">Moi Avenue, Nairobi</p>
+   504→                <p className="text-xs text-muted-foreground mt-1">Rahimtulla Trust Building</p>
+   505→              </div>
+   506→              <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent" />
+   507→            </div>
+   508→          </Card>
+   509→        </div>
+   510→      </div>
+   511→    </section>
+   512→  )
+   513→}
+   514→
+   515→// ============================================================
+   516→// FOOTER — Rich, structured footer
+   517→// ============================================================
+   518→export function BigmanFooter({ categories }: { categories: CategoryNode[] }) {
+   519→  const mainCats = categories.filter(c => !c.parentId)
+   520→  return (
+   521→    <footer className="bg-primary text-primary-foreground mt-auto">
+   522→      <div className="container-main py-12 md:py-16">
+   523→        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12 min-w-0">
+   524→          {/* Brand column */}
+   525→          <div className="col-span-2 md:col-span-1 lg:col-span-2">
+   526→            <div className="flex items-center gap-2.5 mb-4">
+   527→              <div className="w-9 h-9 bg-primary-foreground rounded-lg flex items-center justify-center">
+   528→                <span className="text-primary font-extrabold text-sm">B</span>
+   529→              </div>
+   530→              <div>
+   531→                <div className="font-bold text-[15px] tracking-tight">BIGMAN</div>
+   532→                <div className="text-[9px] text-primary-foreground/50 uppercase tracking-[0.12em] font-medium">Computers</div>
+   533→              </div>
+   534→            </div>
+   535→            <p className="text-sm text-primary-foreground/55 leading-relaxed mb-5 max-w-xs">
+   536→              Nairobi&apos;s trusted technology retailer. New and refurbished laptops, desktops, gaming, parts, accessories and professional services.
+   537→            </p>
+   538→            <div className="space-y-2 text-sm text-primary-foreground/60">
+   539→              <div className="flex items-center gap-2.5"><MapPin className="h-3.5 w-3.5 shrink-0" /> Rahimtulla Trust Building, Moi Avenue</div>
+   540→              <div className="flex items-center gap-2.5"><Phone className="h-3.5 w-3.5 shrink-0" /> +254 722 450 610</div>
+   541→              <div className="flex items-center gap-2.5"><Clock className="h-3.5 w-3.5 shrink-0" /> Mon-Sat: 8am-6pm</div>
+   542→            </div>
+   543→          </div>
+   544→
+   545→          {/* Category link columns */}
+   546→          {mainCats.slice(0, 9).reduce((acc: any[], cat, i) => {
+   547→            const colIdx = Math.floor(i / 3)
+   548→            if (!acc[colIdx]) acc[colIdx] = { title: '', links: [] as { name: string; slug: string }[] }
+   549→            acc[colIdx].title = i % 3 === 0 ? cat.name : ''
+   550→            acc[colIdx].links.push({ name: cat.name, slug: cat.slug })
+   551→            return acc
+   552→          }, []).map((col: any, i: number) => (
+   553→            <div key={i}>
+   554→              <h4 className="font-semibold text-sm mb-3">{col.title || 'Categories'}</h4>
+   555→              <ul className="space-y-2">
+   556→                {col.links.map((link: any) => (
+   557→                  <li key={link.slug}>
+   558→                    <Link href={`/shop/${link.slug}`} className="text-sm text-primary-foreground/55 hover:text-primary-foreground transition-colors">{link.name}</Link>
+   559→                  </li>
+   560→                ))}
+   561→              </ul>
+   562→            </div>
+   563→          ))}
+   564→        </div>
+   565→
+   566→        <Separator className="my-8 bg-primary-foreground/10" />
+   567→
+   568→        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-primary-foreground/40">
+   569→          <div>© {new Date().getFullYear()} Bigman Computers. All rights reserved.</div>
+   570→          <div className="flex items-center gap-5">
+   571→            <Link href="/privacy" className="hover:text-primary-foreground transition-colors">Privacy Policy</Link>
+   572→            <Link href="/terms" className="hover:text-primary-foreground transition-colors">Terms of Service</Link>
+   573→            <Link href="/returns" className="hover:text-primary-foreground transition-colors">Returns & Warranty</Link>
+   574→          </div>
+   575→        </div>
+   576→      </div>
+   577→    </footer>
+   578→  )
+   579→}
+   580→
+   581→// ============================================================
+   582→// COMPARE BAR
+   583→// ============================================================
+   584→export function CompareBar() {
+   585→  const { compareList, removeFromCompare, clearCompare } = useStore()
+   586→  if (compareList.length === 0) return null
+   587→  return (
+   588→    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-2xl p-3 flex items-center gap-3 max-w-2xl min-w-0">
+   589→      <span className="text-xs text-muted-foreground whitespace-nowrap font-medium shrink-0">Comparing ({compareList.length}/4):</span>
+   590→      <div className="flex-1 flex gap-2 overflow-x-auto min-w-0">
+   591→        {compareList.map(item => (
+   592→          <div key={item.productId} className="flex items-center gap-1.5 bg-secondary rounded-lg px-2.5 py-1.5 shrink-0">
+   593→            <span className="text-xs font-medium max-w-[120px] truncate">{item.name}</span>
+   594→            <button onClick={() => removeFromCompare(item.productId)} className="text-muted-foreground hover:text-foreground" aria-label="Remove from comparison">
+   595→              <span className="text-xs">✕</span>
+   596→            </button>
+   597→          </div>
+   598→        ))}
+   599→      </div>
+   600→      <Link href="/compare">
+   601→        <Button size="sm" className="h-7 text-xs rounded-md">Compare Now</Button>
+   602→      </Link>
+   603→      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={clearCompare}>Clear</Button>
+   604→    </div>
+   605→  )
+   606→}
+   607→
+   608→// ============================================================
+   609→// MOBILE BOTTOM NAVIGATION
+   610→// ============================================================
+   611→export function MobileBottomNav() {
+   612→  return (
+   613→    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border" aria-label="Mobile navigation">
+   614→      <div className="grid grid-cols-5 h-14 min-w-0">
+   615→        {[
+   616→          { icon: Home, label: 'Home', href: '/' },
+   617→          { icon: SlidersHorizontal, label: 'Shop', href: '/shop' },
+   618→          { icon: Search, label: 'Search', href: '/search' },
+   619→          { icon: ShoppingCart, label: 'Cart', href: '/cart' },
+   620→          { icon: User, label: 'Account', href: '/account' },
+   621→        ].map(item => (
+   622→          <Link key={item.label} href={item.href} className="flex flex-col items-center justify-center gap-0.5 text-muted-foreground hover:text-foreground transition-colors">
+   623→            <item.icon className="h-[18px] w-[18px]" />
+   624→            <span className="text-[10px] font-medium">{item.label}</span>
+   625→          </Link>
+   626→        ))}
+   627→      </div>
+   628→    </nav>
+   629→  )
+   630→}
+   631→

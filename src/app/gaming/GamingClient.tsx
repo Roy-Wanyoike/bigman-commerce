@@ -37,7 +37,7 @@ export default function GamingClient({ products }: Props) {
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-gaming blur-3xl" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-16">
+        <div className="relative container-main py-12 md:py-16">
           <div className="max-w-xl">
             <Badge className="bg-gaming/20 text-accent border-gaming/30 text-[10px] font-semibold tracking-wider mb-3">GAMING</Badge>
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3">Level Up Your Setup</h1>
@@ -55,7 +55,7 @@ export default function GamingClient({ products }: Props) {
 
       {/* Gaming subcategories */}
       <section className="py-8 border-b border-border/60 bg-card">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="container-main">
           <div className="flex gap-2 overflow-x-auto pb-1">
             {gamingCats.map(cat => (
               <Link key={cat.slug} href={`/shop/gaming/${cat.slug}`}
@@ -70,7 +70,7 @@ export default function GamingClient({ products }: Props) {
 
       {/* Products */}
       <section className="py-10 md:py-14">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="container-main">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">All Gaming Products</h2>
             <div className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export default function GamingClient({ products }: Props) {
           </div>
 
           {filtered.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
               {filtered.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           ) : (

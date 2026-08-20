@@ -18,7 +18,7 @@ export default function CartClient() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header categories={[]} />
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 md:py-12">
+      <main className="flex-1 container-main py-8 md:py-12">
         <h1 className="text-2xl font-bold tracking-tight mb-1">Shopping Cart</h1>
         <p className="text-sm text-muted-foreground mb-8">{itemCount} {itemCount === 1 ? 'item' : 'items'}</p>
 
@@ -32,7 +32,7 @@ export default function CartClient() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-0">
             {/* Cart items */}
             <div className="lg:col-span-2 space-y-3">
               {cart.map(item => (

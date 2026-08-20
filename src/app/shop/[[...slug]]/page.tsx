@@ -19,6 +19,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTr
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import ProductCard from '@/components/bigman/ProductCard'
+import Header from '@/components/bigman/Header'
+import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
 import { formatPrice } from '@/lib/prices'
 import type { CategoryNode, Product } from '@/components/bigman/types'
 import { cn } from '@/lib/utils'
@@ -237,29 +239,37 @@ export default function CategoryPage({ params }: { params: Promise<{ slug?: stri
   // Category loading skeleton
   if (catLoading) {
     return (
-      <main className="min-h-screen bg-background pb-16 md:pb-0">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <Skeleton className="h-5 w-48 mb-6" />
-          <Skeleton className="h-10 w-64 mb-2" />
-          <Skeleton className="h-4 w-96 mb-8" />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="space-y-3">
-                <Skeleton className="aspect-[4/3] w-full rounded-lg" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-6 w-24" />
-              </div>
-            ))}
+      <div className="min-h-screen flex flex-col">
+        <Header categories={[]} />
+        <main className="flex-1 bg-background pb-16 md:pb-0 min-w-0">
+          <div className="container-main py-6">
+            <Skeleton className="h-5 w-48 mb-6" />
+            <Skeleton className="h-10 w-64 mb-2" />
+            <Skeleton className="h-4 w-96 mb-8" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-w-0">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-6 w-24" />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+        <BigmanFooter categories={[]} />
+        <MobileBottomNav />
+        <div className="lg:hidden h-14" />
+      </div>
     )
   }
 
   return (
-    <main className="min-h-screen bg-background pb-16 md:pb-0">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen flex flex-col">
+      <Header categories={categories} />
+      <main className="flex-1 bg-background pb-16 md:pb-0 min-w-0">
+        <div className="container-main overflow-hidden">
         {/* ========== BREADCRUMB ========== */}
         <nav aria-label="breadcrumb" className="pt-4 pb-2">
           <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
@@ -303,7 +313,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug?: stri
         {/* ========== SUBCATEGORIES GRID ========== */}
         {subcategories.length > 0 && (
           <section className="pb-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 min-w-0">
               {subcategories.map(cat => {
                 const Icon = catIcons[cat.slug] || Laptop
                 return (
@@ -435,7 +445,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug?: stri
         </div>
 
         {/* ========== MAIN CONTENT: SIDEBAR + PRODUCTS ========== */}
-        <div className="flex gap-6">
+        <div className="flex gap-6 min-w-0">
           {/* Desktop Filter Sidebar */}
           <aside className="hidden lg:block w-56 shrink-0">
             <div className="sticky top-24 space-y-6">
@@ -453,7 +463,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug?: stri
           {/* Product Grid + Pagination */}
           <div className="flex-1 min-w-0">
             {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="space-y-3">
                     <Skeleton className="aspect-[4/3] w-full rounded-lg" />
@@ -480,7 +490,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug?: stri
             ) : (
               <>
                 {/* Product Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
                   {products.map(p => (
                     <ProductCard key={p.id} product={p} />
                   ))}
@@ -527,7 +537,11 @@ export default function CategoryPage({ params }: { params: Promise<{ slug?: stri
           </div>
         </div>
       </div>
-    </main>
+      </main>
+      <BigmanFooter categories={categories} />
+      <MobileBottomNav />
+      <div className="lg:hidden h-14" />
+    </div>
   )
 }
 

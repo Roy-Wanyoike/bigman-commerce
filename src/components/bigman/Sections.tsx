@@ -42,7 +42,7 @@ const trustItems = [
 export function TrustStrip() {
   return (
     <section className="border-b border-border/60 bg-card">
-      <div className="max-w-7xl mx-auto px-4 py-4 md:py-5">
+      <div className="container-main py-4 md:py-5">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {trustItems.map(item => (
             <div key={item.label} className="flex items-center gap-3">
@@ -68,7 +68,7 @@ export function FeaturedCategories({ categories }: { categories: CategoryNode[] 
   const featured = categories.filter(c => c.isFeatured || ['laptops', 'gaming', 'desktops', 'accessories', 'parts', 'hardware', 'storage', 'monitors'].includes(c.slug))
   return (
     <section className="py-10 md:py-14">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="text-xl md:text-2xl font-bold tracking-tight">Shop by Category</h2>
@@ -78,7 +78,7 @@ export function FeaturedCategories({ categories }: { categories: CategoryNode[] 
             All categories <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         </div>
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-2.5">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-2.5 min-w-0">
           {featured.slice(0, 8).map(cat => {
             const Icon = catIcons[cat.slug] || Laptop
             const childCount = cat.children.length
@@ -128,7 +128,7 @@ export function ProductSection({ title, subtitle, products, viewAllHref, accentC
       'py-10 md:py-14',
       surface === 'gaming' ? 'gaming-surface' : '',
     )}>
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="flex items-end justify-between mb-6">
           <div className="flex items-center gap-3">
             {accentColor && <div className={cn('h-8 w-1 rounded-full', accentColor)} />}
@@ -143,7 +143,7 @@ export function ProductSection({ title, subtitle, products, viewAllHref, accentC
             View all <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
           {display.map(p => <ProductCard key={p.id} product={p} />)}
         </div>
       </div>
@@ -160,7 +160,7 @@ export function LaptopFinder({ products }: { products: Product[] }) {
 
   return (
     <section className="py-10 md:py-14 bg-secondary/30">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="max-w-2xl mx-auto text-center mb-8">
           <h2 className="text-xl md:text-2xl font-bold tracking-tight">Not Sure What to Buy?</h2>
           <p className="text-sm text-muted-foreground mt-1.5">We&apos;ll help you find the right laptop for your needs and budget.</p>
@@ -214,7 +214,7 @@ export function FullCatalog({ products, categories, brands }: { products: Produc
 
   return (
     <section className="py-10 md:py-14 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="text-xl md:text-2xl font-bold tracking-tight">All Products</h2>
@@ -223,16 +223,18 @@ export function FullCatalog({ products, categories, brands }: { products: Produc
         </div>
 
         {/* Filters bar */}
-        <div className="flex flex-wrap items-center gap-2 mb-6 p-3 bg-card rounded-xl border border-border/60">
-          <SlidersHorizontal className="h-4 w-4 text-muted-foreground mr-1" />
-          <Button variant={activeCat === null ? 'default' : 'outline'} size="sm" className="h-7 text-xs rounded-md" onClick={() => setActiveCat(null)}>All</Button>
+        <div className="min-w-0 flex flex-wrap items-center gap-2 mb-6 p-3 bg-card rounded-xl border border-border/60">
+          <div className="overflow-x-auto flex-nowrap flex items-center gap-2 min-w-0">
+          <SlidersHorizontal className="h-4 w-4 text-muted-foreground mr-1 shrink-0" />
+          <Button variant={activeCat === null ? 'default' : 'outline'} size="sm" className="h-7 text-xs rounded-md shrink-0" onClick={() => setActiveCat(null)}>All</Button>
           {topCategories.slice(0, 10).map(c => (
-            <Button key={c.id} variant={activeCat === c.slug ? 'default' : 'outline'} size="sm" className="h-7 text-xs rounded-md"
+            <Button key={c.id} variant={activeCat === c.slug ? 'default' : 'outline'} size="sm" className="h-7 text-xs rounded-md shrink-0"
               onClick={() => setActiveCat(activeCat === c.slug ? null : c.slug)}>
               {c.name}
             </Button>
           ))}
-          <div className="ml-auto flex items-center gap-2">
+          </div>
+          <div className="ml-auto flex items-center gap-2 shrink-0">
             <Select value={conditionFilter || 'all'} onValueChange={v => setConditionFilter(v === 'all' ? null : v)}>
               <SelectTrigger className="h-7 w-32 text-xs"><SelectValue placeholder="Condition" /></SelectTrigger>
               <SelectContent>
@@ -287,7 +289,7 @@ function getCatAndDescendantSlugs(categories: CategoryNode[], slug: string): str
 export function UseCaseSection() {
   return (
     <section className="py-10 md:py-14">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="mb-6">
           <h2 className="text-xl md:text-2xl font-bold tracking-tight">Shop by Use Case</h2>
           <p className="text-sm text-muted-foreground mt-0.5">Curated recommendations for every need</p>
@@ -324,7 +326,7 @@ export function BudgetSection({ products }: { products: Product[] }) {
   const laptops = products.filter(p => p.categories.some(c => c.category.slug === 'laptops'))
   return (
     <section className="py-10 md:py-14 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="mb-6">
           <h2 className="text-xl md:text-2xl font-bold tracking-tight">Laptops by Budget</h2>
           <p className="text-sm text-muted-foreground mt-0.5">Find the right laptop for your budget</p>
@@ -360,14 +362,14 @@ export function BrandSection({ brands }: { brands: Brand[] }) {
   if (active.length === 0) return null
   return (
     <section className="py-10 md:py-14">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="text-xl md:text-2xl font-bold tracking-tight">Shop by Brand</h2>
             <p className="text-sm text-muted-foreground mt-0.5">Trusted brands, genuine products</p>
           </div>
         </div>
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 min-w-0">
           {active.map(b => (
             <Link key={b.id} href={`/brand/${b.slug}`} className="group">
               <Card className="hover:border-accent/40 hover:shadow-sm transition-all border-border/60">
@@ -402,7 +404,7 @@ export function ServicesSection({ services }: { services: ServiceItem[] }) {
 
   return (
     <section className="py-10 md:py-14 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="text-xl md:text-2xl font-bold tracking-tight">Services</h2>
@@ -449,7 +451,7 @@ export function ServicesSection({ services }: { services: ServiceItem[] }) {
 export function StoreLocation() {
   return (
     <section className="py-10 md:py-14">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container-main">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Info */}
           <div>
@@ -517,8 +519,8 @@ export function BigmanFooter({ categories }: { categories: CategoryNode[] }) {
   const mainCats = categories.filter(c => !c.parentId)
   return (
     <footer className="bg-primary text-primary-foreground mt-auto">
-      <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
+      <div className="container-main py-12 md:py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12 min-w-0">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1 lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
@@ -583,9 +585,9 @@ export function CompareBar() {
   const { compareList, removeFromCompare, clearCompare } = useStore()
   if (compareList.length === 0) return null
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-2xl p-3 flex items-center gap-3 max-w-2xl">
-      <span className="text-xs text-muted-foreground whitespace-nowrap font-medium">Comparing ({compareList.length}/4):</span>
-      <div className="flex-1 flex gap-2 overflow-x-auto">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-2xl p-3 flex items-center gap-3 max-w-2xl min-w-0">
+      <span className="text-xs text-muted-foreground whitespace-nowrap font-medium shrink-0">Comparing ({compareList.length}/4):</span>
+      <div className="flex-1 flex gap-2 overflow-x-auto min-w-0">
         {compareList.map(item => (
           <div key={item.productId} className="flex items-center gap-1.5 bg-secondary rounded-lg px-2.5 py-1.5 shrink-0">
             <span className="text-xs font-medium max-w-[120px] truncate">{item.name}</span>
@@ -609,7 +611,7 @@ export function CompareBar() {
 export function MobileBottomNav() {
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border" aria-label="Mobile navigation">
-      <div className="grid grid-cols-5 h-14">
+      <div className="grid grid-cols-5 h-14 min-w-0">
         {[
           { icon: Home, label: 'Home', href: '/' },
           { icon: SlidersHorizontal, label: 'Shop', href: '/shop' },

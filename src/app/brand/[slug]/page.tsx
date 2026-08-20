@@ -52,7 +52,7 @@ export default function BrandPage({ params }: { params: Promise<{ slug: string }
     <div className="min-h-screen flex flex-col">
       <Header categories={[]} />
       <main className="flex-1 bg-background">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="container-main py-6">
           <Breadcrumb className="mb-6">
             <BreadcrumbList>
               <BreadcrumbItem><BreadcrumbLink href="/">Home</BreadcrumbLink></BreadcrumbItem>
@@ -87,7 +87,7 @@ export default function BrandPage({ params }: { params: Promise<{ slug: string }
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-w-0">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="rounded-lg border bg-card">
                   <Skeleton className="aspect-square rounded-t-lg" />
@@ -106,7 +106,7 @@ export default function BrandPage({ params }: { params: Promise<{ slug: string }
               <p className="text-sm">No {brandInfo?.name || slug} products are currently available.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-w-0">
               {products.map((p: any) => (
                 <ProductCard key={p.id} product={p} />
               ))}

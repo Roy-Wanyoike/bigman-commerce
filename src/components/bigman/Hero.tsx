@@ -22,7 +22,7 @@ export default function Hero() {
         </svg>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 py-14 md:py-20 lg:py-24">
+      <div className="relative container-main py-14 md:py-20 lg:py-24">
         <div className="max-w-2xl">
           {/* Eyebrow */}
           <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider mb-5">
