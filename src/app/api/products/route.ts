@@ -42,10 +42,14 @@ export async function GET(req: NextRequest) {
       }
     }
     if (brand) {
-      const b = await db.brand.findFirst({ where: { slug: brand } })
-      if (b) where.brandId = b.id
+      const slugs = brand.split(',').map(s => s.trim()).filter(Boolean)
+      const brands = await db.brand.findMany({ where: { slug: { in: slugs } } })
+      if (brands.length) where.brandId = { in: brands.map(b => b.id) }
     }
-    if (condition) where.condition = condition
+    if (condition) {
+      const conditions = condition.split(',').map(s => s.trim()).filter(Boolean)
+      where.condition = conditions.length === 1 ? conditions[0] : { in: conditions }
+    }
     if (gaming === 'true') where.isGaming = true
     if (deal === 'true') where.isDeal = true
     if (featured === 'true') where.isFeatured = true
@@ -57,9 +61,8 @@ export async function GET(req: NextRequest) {
     }
     if (search) {
       where.OR = searchTerms.flatMap(term => [
-        { name: { contains: term, mode: 'insensitive' } },
-        { shortDescription: { contains: term, mode: 'insensitive' } },
         { name: { contains: term } },
+        { shortDescription: { contains: term } },
       ])
     }
 

@@ -1,0 +1,661 @@
+     1→'use client'
+     2→
+     3→import { use, useState, useEffect, useCallback, useMemo } from 'react'
+     4→import Link from 'next/link'
+     5→import {
+     6→  Home, ChevronRight, SlidersHorizontal, X, ArrowUpDown,
+     7→  ChevronLeft, ChevronRight as ChevronR, PackageOpen, Loader2,
+     8→  Laptop, Monitor, Gamepad2, Apple, RotateCcw, Cpu, Printer,
+     9→  Wrench, HardDrive, Zap, Code, Building2,
+    10→} from 'lucide-react'
+    11→import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
+    12→import { Button } from '@/components/ui/button'
+    13→import { Badge } from '@/components/ui/badge'
+    14→import { Card, CardContent } from '@/components/ui/card'
+    15→import { Input } from '@/components/ui/input'
+    16→import { Checkbox } from '@/components/ui/checkbox'
+    17→import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+    18→import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet'
+    19→import { Skeleton } from '@/components/ui/skeleton'
+    20→import { Separator } from '@/components/ui/separator'
+    21→import ProductCard from '@/components/bigman/ProductCard'
+    22→import Header from '@/components/bigman/Header'
+    23→import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
+    24→import { formatPrice } from '@/lib/prices'
+    25→import type { CategoryNode, Product } from '@/components/bigman/types'
+    26→import { cn } from '@/lib/utils'
+    27→
+    28→// ============================================================
+    29→// ICON MAP for subcategory cards
+    30→// ============================================================
+    31→const catIcons: Record<string, any> = {
+    32→  laptops: Laptop, desktops: Monitor, gaming: Gamepad2, 'mac-apple': Apple,
+    33→  workstations: Cpu, monitors: Monitor, printers: Printer, accessories: Wrench,
+    34→  parts: Wrench, hardware: Cpu, storage: HardDrive, 'ram-memory': HardDrive,
+    35→  networking: Zap, power: Zap, software: Code, 'bags-protection': Laptop,
+    36→  'office-technology': Building2, refurbished: RotateCcw, deals: Cpu,
+    37→  services: Wrench, business: Building2, 'cables-adapters': Zap,
+    38→}
+    39→
+    40→const CONDITIONS = [
+    41→  { value: 'NEW', label: 'New' },
+    42→  { value: 'REFURBISHED', label: 'Refurbished' },
+    43→  { value: 'USED', label: 'Used' },
+    44→  { value: 'OPEN_BOX', label: 'Open Box' },
+    45→] as const
+    46→
+    47→const SORT_OPTIONS = [
+    48→  { value: 'sortOrder', label: 'Relevance' },
+    49→  { value: 'price-asc', label: 'Price: Low → High' },
+    50→  { value: 'price-desc', label: 'Price: High → Low' },
+    51→  { value: 'newest', label: 'Newest' },
+    52→] as const
+    53→
+    54→const PAGE_SIZE = 20
+    55→
+    56→// ============================================================
+    57→// HELPERS
+    58→// ============================================================
+    59→
+    60→/** Walk the category tree to find a node matching the slug path */
+    61→function findCategoryByPath(tree: CategoryNode[], slugs: string[]): CategoryNode | null {
+    62→  if (!slugs.length) return null
+    63→  let current = tree.find(c => c.slug === slugs[0]) || null
+    64→  for (let i = 1; i < slugs.length; i++) {
+    65→    if (!current) return null
+    66→    current = current.children.find(c => c.slug === slugs[i]) || null
+    67→  }
+    68→  return current
+    69→}
+    70→
+    71→/** Build breadcrumb trail from slug array + category tree */
+    72→function buildBreadcrumbs(tree: CategoryNode[], slugs: string[]) {
+    73→  const crumbs: { name: string; href: string }[] = [{ name: 'Home', href: '/' }]
+    74→  let nodes: CategoryNode[] = tree
+    75→  for (let i = 0; i < slugs.length; i++) {
+    76→    const found = nodes.find(c => c.slug === slugs[i])
+    77→    const href = '/shop/' + slugs.slice(0, i + 1).join('/')
+    78→    crumbs.push({ name: found?.name || slugs[i], href })
+    79→    if (found) nodes = found.children
+    80→  }
+    81→  return crumbs
+    82→}
+    83→
+    84→/** Build products API URL from filter state */
+    85→function buildProductsUrl(opts: {
+    86→  categorySlug: string | null
+    87→  brands: string[]
+    88→  conditions: string[]
+    89→  minPrice: string
+    90→  maxPrice: string
+    91→  sort: string
+    92→  page: number
+    93→}) {
+    94→  const params = new URLSearchParams()
+    95→  if (opts.categorySlug) params.set('category', opts.categorySlug)
+    96→  if (opts.brands.length > 0) params.set('brand', opts.brands.join(','))
+    97→  if (opts.conditions.length > 0) params.set('condition', opts.conditions.join(','))
+    98→  if (opts.minPrice) params.set('minPrice', opts.minPrice)
+    99→  if (opts.maxPrice) params.set('maxPrice', opts.maxPrice)
+   100→  if (opts.sort) params.set('sort', opts.sort)
+   101→  params.set('limit', String(PAGE_SIZE))
+   102→  params.set('offset', String((opts.page - 1) * PAGE_SIZE))
+   103→  return `/api/products?${params.toString()}`
+   104→}
+   105→
+   106→// ============================================================
+   107→// MAIN PAGE COMPONENT
+   108→// ============================================================
+   109→
+   110→export default function CategoryPage({ params }: { params: Promise<{ slug?: string[] }> }) {
+   111→  const { slug } = use(params)
+   112→  const slugs = slug || []
+   113→
+   114→  // ---- State ----
+   115→  const [categories, setCategories] = useState<CategoryNode[]>([])
+   116→  const [products, setProducts] = useState<Product[]>([])
+   117→  const [total, setTotal] = useState(0)
+   118→  const [loading, setLoading] = useState(true)
+   119→  const [catLoading, setCatLoading] = useState(true)
+   120→
+   121→  // Filters
+   122→  const [brands, setBrands] = useState<string[]>([])
+   123→  const [conditions, setConditions] = useState<string[]>([])
+   124→  const [minPrice, setMinPrice] = useState('')
+   125→  const [maxPrice, setMaxPrice] = useState('')
+   126→  const [sort, setSort] = useState('sortOrder')
+   127→  const [page, setPage] = useState(1)
+   128→  const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
+   129→
+   130→  // Derived
+   131→  const categorySlug = slugs.length > 0 ? slugs[slugs.length - 1] : null
+   132→  const currentCategory = useMemo(() => findCategoryByPath(categories, slugs), [categories, slugs])
+   133→  const breadcrumbs = useMemo(() => buildBreadcrumbs(categories, slugs), [categories, slugs])
+   134→  const totalPages = Math.ceil(total / PAGE_SIZE)
+   135→
+   136→  // Extract unique brands from current results
+   137→  const availableBrands = useMemo(() => {
+   138→    const set = new Map<string, string>()
+   139→    for (const p of products) {
+   140→      if (p.brand) set.set(p.brand.slug, p.brand.name)
+   141→    }
+   142→    return Array.from(set.entries()).sort((a, b) => a[1].localeCompare(b[1]))
+   143→  }, [products])
+   144→
+   145→  // ---- Fetch categories ----
+   146→  useEffect(() => {
+   147→    let cancelled = false
+   148→    setCatLoading(true)
+   149→    fetch('/api/categories')
+   150→      .then(r => r.json())
+   151→      .then(data => {
+   152→        if (!cancelled) setCategories(Array.isArray(data) ? data : [])
+   153→      })
+   154→      .catch(() => {})
+   155→      .finally(() => { if (!cancelled) setCatLoading(false) })
+   156→    return () => { cancelled = true }
+   157→  }, [])
+   158→
+   159→  // ---- Fetch products ----
+   160→  const fetchProducts = useCallback(() => {
+   161→    setLoading(true)
+   162→    const url = buildProductsUrl({ categorySlug, brands, conditions, minPrice, maxPrice, sort, page })
+   163→    fetch(url)
+   164→      .then(r => r.json())
+   165→      .then(data => {
+   166→        if (!data.error) {
+   167→          setProducts(data.products || [])
+   168→          setTotal(data.total || 0)
+   169→        } else {
+   170→          setProducts([])
+   171→          setTotal(0)
+   172→        }
+   173→      })
+   174→      .catch(() => { setProducts([]); setTotal(0) })
+   175→      .finally(() => setLoading(false))
+   176→  }, [categorySlug, brands, conditions, minPrice, maxPrice, sort, page])
+   177→
+   178→  useEffect(() => { fetchProducts() }, [fetchProducts])
+   179→
+   180→  // Reset page when filters change
+   181→  useEffect(() => { setPage(1) }, [brands, conditions, minPrice, maxPrice, sort, categorySlug])
+   182→
+   183→  // Update document title
+   184→  useEffect(() => {
+   185→    const seoTitle = (currentCategory as any)?.seoTitle
+   186→    document.title = seoTitle
+   187→      ? `${seoTitle} | Bigman Computers`
+   188→      : slugs.length > 0
+   189→        ? `${currentCategory?.name || slugs[slugs.length - 1]} | Bigman Computers`
+   190→        : 'All Products | Bigman Computers'
+   191→  }, [currentCategory, slugs])
+   192→
+   193→  // ---- Handlers ----
+   194→  const toggleBrand = (brandSlug: string) => {
+   195→    setBrands(prev => prev.includes(brandSlug) ? prev.filter(b => b !== brandSlug) : [...prev, brandSlug])
+   196→  }
+   197→
+   198→  const toggleCondition = (cond: string) => {
+   199→    setConditions(prev => prev.includes(cond) ? prev.filter(c => c !== cond) : [...prev, cond])
+   200→  }
+   201→
+   202→  const clearAllFilters = () => {
+   203→    setBrands([])
+   204→    setConditions([])
+   205→    setMinPrice('')
+   206→    setMaxPrice('')
+   207→    setSort('sortOrder')
+   208→    setPage(1)
+   209→  }
+   210→
+   211→  const hasActiveFilters = brands.length > 0 || conditions.length > 0 || minPrice || maxPrice || sort !== 'sortOrder'
+   212→
+   213→  const removeBrand = (b: string) => setBrands(prev => prev.filter(x => x !== b))
+   214→  const removeCondition = (c: string) => setConditions(prev => prev.filter(x => x !== c))
+   215→
+   216→  const categoryName = currentCategory?.name || (slugs.length > 0 ? slugs[slugs.length - 1] : 'All Products')
+   217→  const categoryDesc = currentCategory?.description
+   218→  const categoryImage = (currentCategory as any)?.image
+   219→  const subcategories = currentCategory?.children?.length ? currentCategory.children : []
+   220→
+   221→  // ---- Pagination pages to show ----
+   222→  const pageNumbers = useMemo(() => {
+   223→    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
+   224→    const pages: number[] = []
+   225→    pages.push(1)
+   226→    if (page > 3) pages.push(-1) // ellipsis
+   227→    const start = Math.max(2, page - 1)
+   228→    const end = Math.min(totalPages - 1, page + 1)
+   229→    for (let i = start; i <= end; i++) pages.push(i)
+   230→    if (page < totalPages - 2) pages.push(-1)
+   231→    if (totalPages > 1) pages.push(totalPages)
+   232→    return pages
+   233→  }, [page, totalPages])
+   234→
+   235→  // ============================================================
+   236→  // RENDER
+   237→  // ============================================================
+   238→
+   239→  // Category loading skeleton
+   240→  if (catLoading) {
+   241→    return (
+   242→      <div className="min-h-screen flex flex-col">
+   243→        <Header categories={[]} />
+   244→        <main className="flex-1 bg-background pb-16 md:pb-0 min-w-0">
+   245→          <div className="container-main py-6">
+   246→            <Skeleton className="h-5 w-48 mb-6" />
+   247→            <Skeleton className="h-10 w-64 mb-2" />
+   248→            <Skeleton className="h-4 w-96 mb-8" />
+   249→            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-w-0">
+   250→              {Array.from({ length: 8 }).map((_, i) => (
+   251→                <div key={i} className="space-y-3">
+   252→                  <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+   253→                  <Skeleton className="h-4 w-3/4" />
+   254→                  <Skeleton className="h-4 w-1/2" />
+   255→                  <Skeleton className="h-6 w-24" />
+   256→                </div>
+   257→              ))}
+   258→            </div>
+   259→          </div>
+   260→        </main>
+   261→        <BigmanFooter categories={[]} />
+   262→        <MobileBottomNav />
+   263→        <div className="lg:hidden h-14" />
+   264→      </div>
+   265→    )
+   266→  }
+   267→
+   268→  return (
+   269→    <div className="min-h-screen flex flex-col">
+   270→      <Header categories={categories} />
+   271→      <main className="flex-1 bg-background pb-16 md:pb-0 min-w-0">
+   272→        <div className="container-main overflow-hidden">
+   273→        {/* ========== BREADCRUMB ========== */}
+   274→        <nav aria-label="breadcrumb" className="pt-4 pb-2">
+   275→          <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+   276→            {breadcrumbs.map((crumb, i) => (
+   277→              <li key={crumb.href} className="flex items-center gap-1.5">
+   278→                {i > 0 && <ChevronRight className="h-3.5 w-3.5 shrink-0" />}
+   279→                {i < breadcrumbs.length - 1 ? (
+   280→                  <Link href={crumb.href} className="hover:text-foreground transition-colors">
+   281→                    {crumb.name === 'Home' ? <Home className="h-3.5 w-3.5 inline" /> : crumb.name}
+   282→                  </Link>
+   283→                ) : (
+   284→                  <span className="text-foreground font-medium">{crumb.name}</span>
+   285→                )}
+   286→              </li>
+   287→            ))}
+   288→          </ol>
+   289→        </nav>
+   290→
+   291→        {/* ========== CATEGORY HEADER ========== */}
+   292→        <div className="py-4 md:py-6">
+   293→          <div className="flex items-start gap-4">
+   294→            {categoryImage && (
+   295→              <div className="hidden md:block w-20 h-20 rounded-xl bg-secondary/50 overflow-hidden shrink-0">
+   296→                <img src={categoryImage} alt={categoryName} className="w-full h-full object-cover" />
+   297→              </div>
+   298→            )}
+   299→            <div className="flex-1 min-w-0">
+   300→              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{categoryName}</h1>
+   301→              {categoryDesc && (
+   302→                <p className="text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed">{categoryDesc}</p>
+   303→              )}
+   304→              {!loading && (
+   305→                <p className="text-sm text-muted-foreground mt-1">
+   306→                  Showing {products.length} of {total} products
+   307→                </p>
+   308→              )}
+   309→            </div>
+   310→          </div>
+   311→        </div>
+   312→
+   313→        {/* ========== SUBCATEGORIES GRID ========== */}
+   314→        {subcategories.length > 0 && (
+   315→          <section className="pb-6">
+   316→            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 min-w-0">
+   317→              {subcategories.map(cat => {
+   318→                const Icon = catIcons[cat.slug] || Laptop
+   319→                return (
+   320→                  <Link
+   321→                    key={cat.id}
+   322→                    href={`/shop/${slugs.concat(cat.slug).join('/')}`}
+   323→                    className="group"
+   324→                  >
+   325→                    <Card className="hover:border-accent/50 hover:shadow-md transition-all h-full">
+   326→                      <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+   327→                        <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+   328→                          <Icon className="h-6 w-6 text-accent" />
+   329→                        </div>
+   330→                        <div className="font-medium text-sm">{cat.name}</div>
+   331→                        {cat.children.length > 0 && (
+   332→                          <div className="text-[11px] text-muted-foreground">{cat.children.length} subcategories</div>
+   333→                        )}
+   334→                      </CardContent>
+   335→                    </Card>
+   336→                  </Link>
+   337→                )
+   338→              })}
+   339→            </div>
+   340→          </section>
+   341→        )}
+   342→
+   343→        <Separator className="mb-6" />
+   344→
+   345→        {/* ========== ACTIVE FILTERS ========== */}
+   346→        {hasActiveFilters && (
+   347→          <div className="flex flex-wrap items-center gap-2 mb-4">
+   348→            <span className="text-sm text-muted-foreground">Active filters:</span>
+   349→            {brands.map(b => {
+   350→              const label = availableBrands.find(x => x[0] === b)?.[1] || b
+   351→              return (
+   352→                <Badge key={b} variant="secondary" className="gap-1 pr-1 cursor-pointer hover:bg-secondary/80"
+   353→                  onClick={() => removeBrand(b)}>
+   354→                  {label}
+   355→                  <button className="hover:text-foreground text-muted-foreground ml-0.5">
+   356→                    <X className="h-3 w-3" />
+   357→                  </button>
+   358→                </Badge>
+   359→              )
+   360→            })}
+   361→            {conditions.map(c => (
+   362→              <Badge key={c} variant="secondary" className="gap-1 pr-1 cursor-pointer hover:bg-secondary/80"
+   363→                onClick={() => removeCondition(c)}>
+   364→                {CONDITIONS.find(x => x.value === c)?.label || c}
+   365→                <button className="hover:text-foreground text-muted-foreground ml-0.5">
+   366→                  <X className="h-3 w-3" />
+   367→                  </button>
+   368→              </Badge>
+   369→            ))}
+   370→            {minPrice && (
+   371→              <Badge variant="secondary" className="gap-1 pr-1 cursor-pointer hover:bg-secondary/80"
+   372→                onClick={() => setMinPrice('')}>
+   373→                Min: {formatPrice(Number(minPrice))}
+   374→                <button className="hover:text-foreground text-muted-foreground ml-0.5">
+   375→                  <X className="h-3 w-3" />
+   376→                  </button>
+   377→              </Badge>
+   378→            )}
+   379→            {maxPrice && (
+   380→              <Badge variant="secondary" className="gap-1 pr-1 cursor-pointer hover:bg-secondary/80"
+   381→                onClick={() => setMaxPrice('')}>
+   382→                Max: {formatPrice(Number(maxPrice))}
+   383→                <button className="hover:text-foreground text-muted-foreground ml-0.5">
+   384→                  <X className="h-3 w-3" />
+   385→                  </button>
+   386→              </Badge>
+   387→            )}
+   388→            <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground"
+   389→              onClick={clearAllFilters}>
+   390→              Clear all
+   391→            </Button>
+   392→          </div>
+   393→        )}
+   394→
+   395→        {/* ========== TOOLBAR (Sort + Mobile Filter Button) ========== */}
+   396→        <div className="flex items-center justify-between gap-3 mb-4">
+   397→          <div className="flex items-center gap-2">
+   398→            {/* Mobile filter trigger */}
+   399→            <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
+   400→              <SheetTrigger asChild>
+   401→                <Button variant="outline" size="sm" className="lg:hidden h-9 gap-1.5">
+   402→                  <SlidersHorizontal className="h-4 w-4" />
+   403→                  Filters
+   404→                  {hasActiveFilters && (
+   405→                    <Badge variant="default" className="h-4 w-4 p-0 flex items-center justify-center text-[10px] rounded-full ml-0.5">
+   406→                      {brands.length + conditions.length + (minPrice ? 1 : 0) + (maxPrice ? 1 : 0)}
+   407→                    </Badge>
+   408→                  )}
+   409→                </Button>
+   410→              </SheetTrigger>
+   411→              <SheetContent side="left" className="w-80 p-0 overflow-y-auto">
+   412→                <SheetHeader className="p-4 pb-0">
+   413→                  <SheetTitle>Filters</SheetTitle>
+   414→                  <SheetDescription>Narrow down your search</SheetDescription>
+   415→                </SheetHeader>
+   416→                <div className="p-4 pt-2">
+   417→                  <FilterControls
+   418→                    brands={brands} conditions={conditions}
+   419→                    minPrice={minPrice} maxPrice={maxPrice} sort={sort}
+   420→                    availableBrands={availableBrands}
+   421→                    onToggleBrand={toggleBrand} onToggleCondition={toggleCondition}
+   422→                    onMinPriceChange={setMinPrice} onMaxPriceChange={setMaxPrice}
+   423→                    onSortChange={setSort} onClearAll={clearAllFilters}
+   424→                    onApply={() => setMobileFilterOpen(false)}
+   425→                  />
+   426→                </div>
+   427→              </SheetContent>
+   428→            </Sheet>
+   429→          </div>
+   430→
+   431→          <div className="flex items-center gap-2">
+   432→            <span className="text-sm text-muted-foreground hidden sm:inline">Sort by:</span>
+   433→            <Select value={sort} onValueChange={setSort}>
+   434→              <SelectTrigger className="h-9 w-40 md:w-48 text-sm">
+   435→                <ArrowUpDown className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+   436→                <SelectValue />
+   437→              </SelectTrigger>
+   438→              <SelectContent>
+   439→                {SORT_OPTIONS.map(opt => (
+   440→                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+   441→                ))}
+   442→              </SelectContent>
+   443→            </Select>
+   444→          </div>
+   445→        </div>
+   446→
+   447→        {/* ========== MAIN CONTENT: SIDEBAR + PRODUCTS ========== */}
+   448→        <div className="flex gap-6 min-w-0">
+   449→          {/* Desktop Filter Sidebar */}
+   450→          <aside className="hidden lg:block w-56 shrink-0">
+   451→            <div className="sticky top-24 space-y-6">
+   452→              <FilterControls
+   453→                brands={brands} conditions={conditions}
+   454→                minPrice={minPrice} maxPrice={maxPrice} sort={sort}
+   455→                availableBrands={availableBrands}
+   456→                onToggleBrand={toggleBrand} onToggleCondition={toggleCondition}
+   457→                onMinPriceChange={setMinPrice} onMaxPriceChange={setMaxPrice}
+   458→                onSortChange={setSort} onClearAll={clearAllFilters}
+   459→              />
+   460→            </div>
+   461→          </aside>
+   462→
+   463→          {/* Product Grid + Pagination */}
+   464→          <div className="flex-1 min-w-0">
+   465→            {loading ? (
+   466→              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
+   467→                {Array.from({ length: 8 }).map((_, i) => (
+   468→                  <div key={i} className="space-y-3">
+   469→                    <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+   470→                    <Skeleton className="h-4 w-3/4" />
+   471→                    <Skeleton className="h-4 w-1/2" />
+   472→                    <Skeleton className="h-6 w-24" />
+   473→                  </div>
+   474→                ))}
+   475→              </div>
+   476→            ) : products.length === 0 ? (
+   477→              /* Empty State */
+   478→              <div className="text-center py-16">
+   479→                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+   480→                  <PackageOpen className="h-8 w-8 text-muted-foreground" />
+   481→                </div>
+   482→                <h3 className="text-lg font-semibold mb-1">No products found</h3>
+   483→                <p className="text-sm text-muted-foreground mb-4">
+   484→                  Try adjusting your filters or browse a different category.
+   485→                </p>
+   486→                <Button variant="outline" onClick={clearAllFilters}>
+   487→                  Clear all filters
+   488→                </Button>
+   489→              </div>
+   490→            ) : (
+   491→              <>
+   492→                {/* Product Grid */}
+   493→                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
+   494→                  {products.map(p => (
+   495→                    <ProductCard key={p.id} product={p} />
+   496→                  ))}
+   497→                </div>
+   498→
+   499→                {/* Pagination */}
+   500→                {totalPages > 1 && (
+   501→                  <nav className="flex items-center justify-center gap-1.5 mt-8 mb-4" aria-label="Pagination">
+   502→                    <Button
+   503→                      variant="outline" size="icon" className="h-9 w-9"
+   504→                      disabled={page <= 1}
+   505→                      onClick={() => setPage(p => Math.max(1, p - 1))}
+   506→                    >
+   507→                      <ChevronLeft className="h-4 w-4" />
+   508→                    </Button>
+   509→
+   510→                    {pageNumbers.map((p, i) =>
+   511→                      p === -1 ? (
+   512→                        <span key={`ellipsis-${i}`} className="px-1.5 text-muted-foreground">…</span>
+   513→                      ) : (
+   514→                        <Button
+   515→                          key={p}
+   516→                          variant={p === page ? 'default' : 'outline'}
+   517→                          size="icon"
+   518→                          className="h-9 w-9"
+   519→                          onClick={() => setPage(p)}
+   520→                        >
+   521→                          {p}
+   522→                        </Button>
+   523→                      )
+   524→                    )}
+   525→
+   526→                    <Button
+   527→                      variant="outline" size="icon" className="h-9 w-9"
+   528→                      disabled={page >= totalPages}
+   529→                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+   530→                    >
+   531→                      <ChevronR className="h-4 w-4" />
+   532→                    </Button>
+   533→                  </nav>
+   534→                )}
+   535→              </>
+   536→            )}
+   537→          </div>
+   538→        </div>
+   539→      </div>
+   540→      </main>
+   541→      <BigmanFooter categories={categories} />
+   542→      <MobileBottomNav />
+   543→      <div className="lg:hidden h-14" />
+   544→    </div>
+   545→  )
+   546→}
+   547→
+   548→// ============================================================
+   549→// FILTER CONTROLS (shared between sidebar and mobile sheet)
+   550→// ============================================================
+   551→
+   552→interface FilterControlsProps {
+   553→  brands: string[]
+   554→  conditions: string[]
+   555→  minPrice: string
+   556→  maxPrice: string
+   557→  sort: string
+   558→  availableBrands: [string, string][]
+   559→  onToggleBrand: (slug: string) => void
+   560→  onToggleCondition: (cond: string) => void
+   561→  onMinPriceChange: (v: string) => void
+   562→  onMaxPriceChange: (v: string) => void
+   563→  onSortChange: (v: string) => void
+   564→  onClearAll: () => void
+   565→  onApply?: () => void
+   566→}
+   567→
+   568→function FilterControls({
+   569→  brands, conditions, minPrice, maxPrice,
+   570→  availableBrands,
+   571→  onToggleBrand, onToggleCondition,
+   572→  onMinPriceChange, onMaxPriceChange,
+   573→  onClearAll, onApply,
+   574→}: FilterControlsProps) {
+   575→  return (
+   576→    <>
+   577→      {/* Clear All */}
+   578→      <div className="flex items-center justify-between">
+   579→        <h3 className="text-sm font-semibold">Filters</h3>
+   580→        <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={onClearAll}>
+   581→          Clear all
+   582→        </Button>
+   583→      </div>
+   584→
+   585→      {/* Condition Filter */}
+   586→      <div>
+   587→        <h4 className="text-sm font-medium mb-2">Condition</h4>
+   588→        <div className="space-y-2 max-h-48 overflow-y-auto">
+   589→          {CONDITIONS.map(cond => (
+   590→            <label key={cond.value} className="flex items-center gap-2.5 cursor-pointer group">
+   591→              <Checkbox
+   592→                checked={conditions.includes(cond.value)}
+   593→                onCheckedChange={() => onToggleCondition(cond.value)}
+   594→                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+   595→              />
+   596→              <span className="text-sm group-hover:text-foreground transition-colors">{cond.label}</span>
+   597→            </label>
+   598→          ))}
+   599→        </div>
+   600→      </div>
+   601→
+   602→      {/* Brand Filter */}
+   603→      <div>
+   604→        <h4 className="text-sm font-medium mb-2">Brand</h4>
+   605→        <div className="space-y-2 max-h-64 overflow-y-auto">
+   606→          {availableBrands.map(([slug, name]) => (
+   607→            <label key={slug} className="flex items-center gap-2.5 cursor-pointer group">
+   608→              <Checkbox
+   609→                checked={brands.includes(slug)}
+   610→                onCheckedChange={() => onToggleBrand(slug)}
+   611→                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+   612→              />
+   613→              <span className="text-sm group-hover:text-foreground transition-colors">{name}</span>
+   614→            </label>
+   615→          ))}
+   616→          {availableBrands.length === 0 && (
+   617→            <p className="text-xs text-muted-foreground">No brands available</p>
+   618→          )}
+   619→        </div>
+   620→      </div>
+   621→
+   622→      {/* Price Range */}
+   623→      <div>
+   624→        <h4 className="text-sm font-medium mb-2">Price Range</h4>
+   625→        <div className="flex items-center gap-2">
+   626→          <Input
+   627→            type="number"
+   628→            placeholder="Min"
+   629→            className="h-9 text-sm"
+   630→            value={minPrice}
+   631→            onChange={e => onMinPriceChange(e.target.value)}
+   632→            min={0}
+   633→          />
+   634→          <span className="text-muted-foreground text-sm">–</span>
+   635→          <Input
+   636→            type="number"
+   637→            placeholder="Max"
+   638→            className="h-9 text-sm"
+   639→            value={maxPrice}
+   640→            onChange={e => onMaxPriceChange(e.target.value)}
+   641→            min={0}
+   642→          />
+   643→        </div>
+   644→        {(minPrice || maxPrice) && (
+   645→          <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground mt-1.5"
+   646→            onClick={() => { onMinPriceChange(''); onMaxPriceChange('') }}>
+   647→            Clear price
+   648→          </Button>
+   649→        )}
+   650→      </div>
+   651→
+   652→      {/* Apply Button (mobile only) */}
+   653→      {onApply && (
+   654→        <Button className="w-full mt-2" onClick={onApply}>
+   655→          Apply Filters
+   656→        </Button>
+   657→      )}
+   658→    </>
+   659→  )
+   660→}
+   661→

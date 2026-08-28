@@ -28,7 +28,7 @@ export default function GamingClient({ products }: Props) {
   if (conditionFilter) filtered = filtered.filter(p => p.condition === conditionFilter)
   if (sortBy === 'price-asc') filtered.sort((a, b) => a.basePrice - b.basePrice)
   else if (sortBy === 'price-desc') filtered.sort((a, b) => b.basePrice - a.basePrice)
-  else if (sortBy === 'newest') filtered.sort((a, b) => (b.publishedAt?.getTime() || 0) - (a.publishedAt?.getTime() || 0))
+  else if (sortBy === 'newest') filtered.sort((a, b) => (b.publishedAt ? new Date(b.publishedAt).getTime() : 0) - (a.publishedAt ? new Date(a.publishedAt).getTime() : 0))
 
   return (
     <main className="flex-1">

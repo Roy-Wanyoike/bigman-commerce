@@ -16,11 +16,11 @@ interface Props { product: Product }
 export default function ProductCard({ product }: Props) {
   const { addToCart, toggleWishlist, wishlist, addToCompare, compareList } = useStore()
   const specs: Record<string, string> = product.specifications ? JSON.parse(product.specifications) : {}
-  const discount = getDiscount(product.basePrice, product.compareAtPrice)
+  const effectivePrice = product.salePrice || product.basePrice
+  const discount = getDiscount(effectivePrice, product.compareAtPrice)
   const stock = stockStatus(product.stockCount, product.trackInventory)
   const isWished = wishlist.includes(product.id)
   const isComparing = compareList.some(c => c.productId === product.id)
-  const effectivePrice = product.salePrice || product.basePrice
   const isGaming = product.isGaming
   const isRefurb = product.condition === 'REFURBISHED'
 

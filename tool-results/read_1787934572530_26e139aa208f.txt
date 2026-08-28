@@ -1,0 +1,760 @@
+     1→/**
+     2→ * Bigman Commerce - Product Seeding Script
+     3→ * Seeds 45+ products across all categories with 2-4 images each.
+     4→ * Idempotent: skips products that already exist by slug.
+     5→ */
+     6→import { db } from '../src/lib/db'
+     7→
+     8→// ── helpers ──────────────────────────────────────────────────────────────────
+     9→function slug(name: string): string {
+    10→  return name
+    11→    .toLowerCase()
+    12→    .replace(/[^a-z0-9]+/g, '-')
+    13→    .replace(/-+/g, '-')
+    14→    .replace(/^-|-$/g, '')
+    15→}
+    16→
+    17→function toKebab(name: string): string {
+    18→  return slug(name)
+    19→}
+    20→
+    21→function compareAt(base: number, pct: number): number {
+    22→  return Math.round(base * (1 + pct / 100))
+    23→}
+    24→
+    25→function rand(min: number, max: number): number {
+    26→  return Math.floor(Math.random() * (max - min + 1)) + min
+    27→}
+    28→
+    29→// ── types ────────────────────────────────────────────────────────────────────
+    30→interface ProductSeed {
+    31→  name: string
+    32→  brand: string
+    33→  condition: 'NEW' | 'REFURBISHED'
+    34→  conditionGrade?: string
+    35→  basePrice: number
+    36→  compareAtPct: number      // percentage above basePrice for "was" price
+    37→  warrantyMonths: number
+    38→  stockCount: number
+    39→  isFeatured: boolean
+    40→  isDeal: boolean
+    41→  isGaming: boolean
+    42→  dealLabel?: string
+    43→  categories: string[]       // slug patterns to match
+    44→  specifications: Record<string, string>
+    45→  shortDescription: string
+    46→  seoTitle: string
+    47→  seoDescription: string
+    48→  sku: string
+    49→  imageCount: number         // 2-4
+    50→}
+    51→
+    52→// ── product data ─────────────────────────────────────────────────────────────
+    53→const products: ProductSeed[] = [
+    54→  // ════════════════════════════════════════════════════════════════════
+    55→  // LAPTOPS (10)
+    56→  // ════════════════════════════════════════════════════════════════════
+    57→  {
+    58→    name: 'HP ProBook 450 G10', brand: 'HP', condition: 'NEW',
+    59→    basePrice: 89500, compareAtPct: 15, warrantyMonths: 12, stockCount: 12,
+    60→    isFeatured: true, isDeal: false, isGaming: false,
+    61→    categories: ['laptops', 'laptops/hp', 'laptops/business', 'laptops/new'],
+    62→    specifications: { processor: 'Intel Core i5-1335U (12M Cache, up to 4.6 GHz)', ram: '8GB DDR5-4800', storage: '512GB PCIe NVMe SSD', display: '15.6" FHD (1920×1080) IPS, 250 nits', gpu: 'Intel Iris Xe Graphics', os: 'Windows 11 Pro', battery: 'Up to 10 hours', weight: '1.74 kg' },
+    63→    shortDescription: 'Reliable business laptop with 13th Gen Intel Core i5, 8GB DDR5 RAM, and 512GB SSD. Ideal for professionals.',
+    64→    seoTitle: 'HP ProBook 450 G10 Laptop Kenya - Bigman Computers',
+    65→    seoDescription: 'Buy HP ProBook 450 G10 with Intel Core i5-1335U, 8GB DDR5, 512GB SSD in Nairobi. Best price at Bigman Computers.',
+    66→    sku: 'HP-PB450G10-I5', imageCount: 3
+    67→  },
+    68→  {
+    69→    name: 'HP EliteBook 860 G10', brand: 'HP', condition: 'REFURBISHED', conditionGrade: 'A',
+    70→    basePrice: 105000, compareAtPct: 20, warrantyMonths: 6, stockCount: 5,
+    71→    isFeatured: true, isDeal: true, isGaming: false, dealLabel: 'Refurbished Deal',
+    72→    categories: ['laptops', 'laptops/hp', 'laptops/business'],
+    73→    specifications: { processor: 'Intel Core i7-1365U (12M Cache, up to 5.2 GHz)', ram: '16GB DDR5-5600', storage: '512GB PCIe NVMe SSD', display: '16" WUXGA (1920×1200) IPS, 400 nits', gpu: 'Intel Iris Xe Graphics', os: 'Windows 11 Pro', battery: 'Up to 13 hours', weight: '1.81 kg' },
+    74→    shortDescription: 'Premium refurbished business laptop with Intel Core i7, 16GB RAM, 16" WUXGA display. Grade A condition.',
+    75→    seoTitle: 'HP EliteBook 860 G10 Refurbished Laptop Kenya',
+    76→    seoDescription: 'Save big on HP EliteBook 860 G10 refurbished. Intel i7-1365U, 16GB DDR5, 512GB SSD. Grade A. Bigman Computers Nairobi.',
+    77→    sku: 'HP-EB860G10-RFB', imageCount: 3
+    78→  },
+    79→  {
+    80→    name: 'Dell Inspiron 15 3530', brand: 'Dell', condition: 'NEW',
+    81→    basePrice: 62000, compareAtPct: 12, warrantyMonths: 12, stockCount: 18,
+    82→    isFeatured: false, isDeal: false, isGaming: false,
+    83→    categories: ['laptops', 'laptops/dell', 'laptops/new'],
+    84→    specifications: { processor: 'Intel Core i5-1335U (12M Cache, up to 4.6 GHz)', ram: '8GB DDR5-4800', storage: '256GB PCIe NVMe SSD', display: '15.6" FHD (1920×1080) WVA, 250 nits', gpu: 'Intel Iris Xe Graphics', os: 'Windows 11 Home', battery: 'Up to 8 hours', weight: '1.76 kg' },
+    85→    shortDescription: 'Affordable everyday laptop with Intel i5, 8GB RAM, and 256GB SSD. Great for home and student use.',
+    86→    seoTitle: 'Dell Inspiron 15 3530 Laptop Kenya - Bigman Computers',
+    87→    seoDescription: 'Buy Dell Inspiron 15 3530 with Intel Core i5, 8GB DDR5, 256GB SSD. Best prices in Nairobi at Bigman Computers.',
+    88→    sku: 'DEL-IN153530-I5', imageCount: 3
+    89→  },
+    90→  {
+    91→    name: 'Dell Vostro 3520', brand: 'Dell', condition: 'NEW',
+    92→    basePrice: 58000, compareAtPct: 15, warrantyMonths: 12, stockCount: 15,
+    93→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Business Value',
+    94→    categories: ['laptops', 'laptops/dell', 'laptops/business'],
+    95→    specifications: { processor: 'Intel Core i3-1215U (10M Cache, up to 4.4 GHz)', ram: '8GB DDR4-3200', storage: '256GB PCIe NVMe SSD', display: '15.6" FHD (1920×1080) WVA, 250 nits', gpu: 'Intel UHD Graphics', os: 'Windows 11 Pro', battery: 'Up to 7 hours', weight: '1.69 kg' },
+    96→    shortDescription: 'Budget-friendly business laptop with Intel Core i3, 8GB RAM, and Windows 11 Pro.',
+    97→    seoTitle: 'Dell Vostro 3520 Business Laptop Kenya',
+    98→    seoDescription: 'Dell Vostro 3520 with Intel i3, 8GB DDR4, 256GB SSD, Windows 11 Pro. Best business laptop deal at Bigman Computers.',
+    99→    sku: 'DEL-V3520-I3', imageCount: 2
+   100→  },
+   101→  {
+   102→    name: 'Dell Latitude 7440', brand: 'Dell', condition: 'REFURBISHED', conditionGrade: 'A',
+   103→    basePrice: 120000, compareAtPct: 20, warrantyMonths: 6, stockCount: 4,
+   104→    isFeatured: true, isDeal: true, isGaming: false, dealLabel: 'Premium Refurbished',
+   105→    categories: ['laptops', 'laptops/dell', 'laptops/business'],
+   106→    specifications: { processor: 'Intel Core i7-1365U (12M Cache, up to 5.2 GHz)', ram: '16GB LPDDR5-5200', storage: '512GB PCIe NVMe SSD', display: '14" QHD+ (2560×1600) IPS, 300 nits', gpu: 'Intel Iris Xe Graphics', os: 'Windows 11 Pro', battery: 'Up to 14 hours', weight: '1.39 kg' },
+   107→    shortDescription: 'Ultra-light premium refurbished business laptop. QHD+ display, 16GB RAM, Grade A condition.',
+   108→    seoTitle: 'Dell Latitude 7440 Refurbished - Bigman Computers',
+   109→    seoDescription: 'Dell Latitude 7440 refurbished in Grade A. Intel i7, 16GB, 512GB SSD, 14" QHD+ display. 6-month warranty.',
+   110→    sku: 'DEL-L7440-RFB', imageCount: 3
+   111→  },
+   112→  {
+   113→    name: 'Lenovo ThinkPad T14 Gen 4', brand: 'Lenovo', condition: 'NEW',
+   114→    basePrice: 155000, compareAtPct: 15, warrantyMonths: 12, stockCount: 8,
+   115→    isFeatured: true, isDeal: false, isGaming: false,
+   116→    categories: ['laptops', 'laptops/lenovo', 'laptops/business', 'laptops/new'],
+   117→    specifications: { processor: 'Intel Core i7-1365U (12M Cache, up to 5.2 GHz)', ram: '16GB DDR5-5600', storage: '512GB PCIe Gen4 NVMe SSD', display: '14" WUXGA (1920×1200) IPS, 400 nits, low power', gpu: 'Intel Iris Xe Graphics', os: 'Windows 11 Pro', battery: 'Up to 15 hours', weight: '1.37 kg' },
+   118→    shortDescription: 'Legendary ThinkPad keyboard and durability. Intel i7, 16GB DDR5, WUXGA display.',
+   119→    seoTitle: 'Lenovo ThinkPad T14 Gen 4 Kenya - Bigman Computers',
+   120→    seoDescription: 'Buy Lenovo ThinkPad T14 Gen 4 with Intel i7-1365U, 16GB DDR5, 512GB SSD. Best ThinkPad deals at Bigman Computers.',
+   121→    sku: 'LNV-T14G4-I7', imageCount: 4
+   122→  },
+   123→  {
+   124→    name: 'Lenovo IdeaPad Slim 5', brand: 'Lenovo', condition: 'NEW',
+   125→    basePrice: 72000, compareAtPct: 12, warrantyMonths: 12, stockCount: 20,
+   126→    isFeatured: true, isDeal: false, isGaming: false,
+   127→    categories: ['laptops', 'laptops/lenovo', 'laptops/new'],
+   128→    specifications: { processor: 'AMD Ryzen 5 7530U (8C/16T, up to 4.5 GHz)', ram: '8GB LPDDR5-6400', storage: '512GB PCIe NVMe SSD', display: '14" WUXGA (1920×1200) OLED, 400 nits', gpu: 'AMD Radeon Graphics', os: 'Windows 11 Home', battery: 'Up to 12 hours', weight: '1.46 kg' },
+   129→    shortDescription: 'Stylish thin-and-light with OLED display and AMD Ryzen 5. Great value for everyday computing.',
+   130→    seoTitle: 'Lenovo IdeaPad Slim 5 Laptop Kenya',
+   131→    seoDescription: 'Buy Lenovo IdeaPad Slim 5 with AMD Ryzen 5, 8GB, 512GB SSD, 14" OLED display. Bigman Computers Nairobi.',
+   132→    sku: 'LNV-IPS5-R5', imageCount: 3
+   133→  },
+   134→  {
+   135→    name: 'ASUS ZenBook 14', brand: 'ASUS', condition: 'NEW',
+   136→    basePrice: 95000, compareAtPct: 18, warrantyMonths: 12, stockCount: 10,
+   137→    isFeatured: true, isDeal: true, isGaming: false, dealLabel: 'Premium Ultrabook',
+   138→    categories: ['laptops', 'laptops/asus', 'laptops/new'],
+   139→    specifications: { processor: 'Intel Core i7-1355U (12M Cache, up to 5.0 GHz)', ram: '16GB LPDDR5-5200', storage: '512GB PCIe NVMe SSD', display: '14" 2.8K (2880×1800) OLED, 600 nits, 90Hz', gpu: 'Intel Iris Xe Graphics', os: 'Windows 11 Home', battery: 'Up to 14 hours', weight: '1.28 kg' },
+   140→    shortDescription: 'Stunning 2.8K OLED display in a 1.28kg ultraportable. Intel i7, 16GB RAM, all-day battery.',
+   141→    seoTitle: 'ASUS ZenBook 14 OLED Laptop Kenya',
+   142→    seoDescription: 'Buy ASUS ZenBook 14 with 2.8K OLED, Intel i7-1355U, 16GB, 512GB SSD. Premium ultrabook at Bigman Computers.',
+   143→    sku: 'ASUS-ZB14-I7', imageCount: 3
+   144→  },
+   145→  {
+   146→    name: 'Acer Aspire 5', brand: 'Acer', condition: 'REFURBISHED', conditionGrade: 'B',
+   147→    basePrice: 45000, compareAtPct: 15, warrantyMonths: 6, stockCount: 7,
+   148→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Budget Deal',
+   149→    categories: ['laptops', 'laptops/acer', 'laptops/student'],
+   150→    specifications: { processor: 'AMD Ryzen 3 5300U (4C/8T, up to 3.8 GHz)', ram: '8GB DDR4-3200', storage: '256GB PCIe NVMe SSD', display: '15.6" FHD (1920×1080) IPS, 300 nits', gpu: 'AMD Radeon Graphics', os: 'Windows 11 Home', battery: 'Up to 8 hours', weight: '1.8 kg' },
+   151→    shortDescription: 'Affordable refurbished laptop for students and home use. Grade B with full functionality.',
+   152→    seoTitle: 'Acer Aspire 5 Refurbished Laptop Kenya',
+   153→    seoDescription: 'Buy refurbished Acer Aspire 5 with AMD Ryzen 3, 8GB, 256GB SSD. Grade B, 6-month warranty. Bigman Computers.',
+   154→    sku: 'ACR-AP5-RFB', imageCount: 2
+   155→  },
+   156→  {
+   157→    name: 'Lenovo ThinkPad X1 Carbon Gen 11', brand: 'Lenovo', condition: 'REFURBISHED', conditionGrade: 'A',
+   158→    basePrice: 185000, compareAtPct: 20, warrantyMonths: 6, stockCount: 3,
+   159→    isFeatured: true, isDeal: true, isGaming: false, dealLabel: 'Flagship Refurbished',
+   160→    categories: ['laptops', 'laptops/lenovo', 'laptops/business'],
+   161→    specifications: { processor: 'Intel Core i7-1365U (12M Cache, up to 5.2 GHz)', ram: '32GB LPDDR5-5200', storage: '1TB PCIe Gen4 NVMe SSD', display: '14" 2.8K (2880×1800) OLED, 400 nits', gpu: 'Intel Iris Xe Graphics', os: 'Windows 11 Pro', battery: 'Up to 15 hours', weight: '1.12 kg' },
+   162→    shortDescription: 'The ultimate business ultrabook. 2.8K OLED, 32GB RAM, 1TB SSD, 1.12kg. Grade A refurbished.',
+   163→    seoTitle: 'Lenovo ThinkPad X1 Carbon Gen 11 Refurbished Kenya',
+   164→    seoDescription: 'Save on Lenovo X1 Carbon Gen 11. Intel i7, 32GB, 1TB SSD, 2.8K OLED. Grade A. Bigman Computers Nairobi.',
+   165→    sku: 'LNV-X1C11-RFB', imageCount: 4
+   166→  },
+   167→
+   168→  // ════════════════════════════════════════════════════════════════════
+   169→  // DESKTOPS (4)
+   170→  // ════════════════════════════════════════════════════════════════════
+   171→  {
+   172→    name: 'HP ProDesk 600 G9 Desktop', brand: 'HP', condition: 'NEW',
+   173→    basePrice: 85000, compareAtPct: 15, warrantyMonths: 12, stockCount: 10,
+   174→    isFeatured: true, isDeal: false, isGaming: false,
+   175→    categories: ['desktops', 'desktops/office', 'desktops/business'],
+   176→    specifications: { processor: 'Intel Core i5-12500T (12M Cache, up to 4.4 GHz)', ram: '8GB DDR5-4800', storage: '512GB PCIe NVMe SSD', gpu: 'Intel UHD Graphics 770', os: 'Windows 11 Pro', case: 'SFF Tower', expansion: '1x PCIe 4.0 x16, 2x PCIe 3.0 x1', ports: '6x USB-A, 2x USB-C, DisplayPort, HDMI' },
+   177→    shortDescription: 'Compact and powerful office desktop with 12th Gen Intel i5, 8GB DDR5, 512GB SSD.',
+   178→    seoTitle: 'HP ProDesk 600 G9 Desktop PC Kenya',
+   179→    seoDescription: 'Buy HP ProDesk 600 G9 with Intel i5-12500T, 8GB DDR5, 512GB SSD. Best desktop prices at Bigman Computers.',
+   180→    sku: 'HP-PD600G9-I5', imageCount: 2
+   181→  },
+   182→  {
+   183→    name: 'Dell OptiPlex 7010 SFF', brand: 'Dell', condition: 'NEW',
+   184→    basePrice: 92000, compareAtPct: 12, warrantyMonths: 12, stockCount: 8,
+   185→    isFeatured: false, isDeal: false, isGaming: false,
+   186→    categories: ['desktops', 'desktops/office', 'desktops/business'],
+   187→    specifications: { processor: 'Intel Core i5-13500 (24M Cache, up to 4.8 GHz)', ram: '8GB DDR5-4800', storage: '256GB PCIe NVMe SSD', gpu: 'Intel UHD Graphics 770', os: 'Windows 11 Pro', case: 'Small Form Factor', expansion: '1x PCIe 5.0 x16, 1x PCIe 3.0 x1', ports: '5x USB-A, 1x USB-C, DP, HDMI, RJ-45' },
+   188→    shortDescription: 'Reliable business desktop with 13th Gen Intel i5, 8GB DDR5, and Windows 11 Pro.',
+   189→    seoTitle: 'Dell OptiPlex 7010 SFF Desktop Kenya',
+   190→    seoDescription: 'Buy Dell OptiPlex 7010 SFF with Intel i5-13500, 8GB DDR5, 256GB SSD. Business desktop at Bigman Computers.',
+   191→    sku: 'DEL-O7010SFF-I5', imageCount: 2
+   192→  },
+   193→  {
+   194→    name: 'Lenovo ThinkCentre M70s', brand: 'Lenovo', condition: 'REFURBISHED', conditionGrade: 'A',
+   195→    basePrice: 65000, compareAtPct: 18, warrantyMonths: 6, stockCount: 6,
+   196→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Refurbished Desktop',
+   197→    categories: ['desktops', 'desktops/office', 'desktops/refurbished'],
+   198→    specifications: { processor: 'Intel Core i5-11400T (12M Cache, up to 4.1 GHz)', ram: '8GB DDR4-3200', storage: '256GB PCIe NVMe SSD', gpu: 'Intel UHD Graphics 730', os: 'Windows 11 Pro', case: 'Tower', expansion: '1x PCIe 4.0 x16, 2x PCIe 3.0 x1', ports: '6x USB-A, 1x USB-C, DP, HDMI' },
+   199→    shortDescription: 'Refurbished Lenovo desktop with Intel i5, 8GB RAM, 256GB SSD. Grade A, office-ready.',
+   200→    seoTitle: 'Lenovo ThinkCentre M70s Refurbished Desktop Kenya',
+   201→    seoDescription: 'Buy refurbished Lenovo ThinkCentre M70s. Intel i5, 8GB DDR4, 256GB SSD. Grade A, 6-month warranty. Bigman Computers.',
+   202→    sku: 'LNV-M70S-RFB', imageCount: 2
+   203→  },
+   204→  {
+   205→    name: 'HP EliteDesk 805 G8 Mini PC', brand: 'HP', condition: 'NEW',
+   206→    basePrice: 110000, compareAtPct: 15, warrantyMonths: 12, stockCount: 5,
+   207→    isFeatured: true, isDeal: false, isGaming: false,
+   208→    categories: ['desktops', 'desktops/office', 'desktops/mini-pcs'],
+   209→    specifications: { processor: 'AMD Ryzen 5 PRO 5650G (6C/12T, up to 4.4 GHz)', ram: '16GB DDR4-3200', storage: '512GB PCIe NVMe SSD', gpu: 'AMD Radeon Graphics (integrated)', os: 'Windows 11 Pro', case: 'Mini PC (1L)', expansion: '1x PCIe 3.0 x16, 1x M.2', ports: '5x USB-A, 1x USB-C, DP, HDMI, RJ-45' },
+   210→    shortDescription: 'Ultra-compact mini PC with AMD Ryzen 5 PRO, 16GB RAM. Perfect for space-constrained offices.',
+   211→    seoTitle: 'HP EliteDesk 805 G8 Mini PC Kenya',
+   212→    seoDescription: 'Buy HP EliteDesk 805 G8 Mini PC with AMD Ryzen 5 PRO, 16GB, 512GB SSD. Compact business desktop at Bigman Computers.',
+   213→    sku: 'HP-ED805G8-R5', imageCount: 2
+   214→  },
+   215→
+   216→  // ════════════════════════════════════════════════════════════════════
+   217→  // MONITORS (4)
+   218→  // ════════════════════════════════════════════════════════════════════
+   219→  {
+   220→    name: 'LG 24MR400-B 24" Monitor', brand: 'LG', condition: 'NEW',
+   221→    basePrice: 22000, compareAtPct: 15, warrantyMonths: 12, stockCount: 15,
+   222→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Office Value',
+   223→    categories: ['monitors', 'monitors/office'],
+   224→    specifications: { size: '24"', resolution: '1920×1080 (FHD)', panel: 'IPS', refreshRate: '75Hz', responseTime: '5ms', ports: 'HDMI, VGA', features: 'Reader Mode, Flicker Safe, OnScreen Control' },
+   225→    shortDescription: 'Affordable 24" IPS monitor with 75Hz refresh rate. Perfect for office work and everyday use.',
+   226→    seoTitle: 'LG 24MR400-B 24" Monitor Kenya',
+   227→    seoDescription: 'Buy LG 24MR400-B 24" FHD IPS 75Hz monitor. Best office monitor price in Nairobi at Bigman Computers.',
+   228→    sku: 'LG-24MR400', imageCount: 2
+   229→  },
+   230→  {
+   231→    name: 'Samsung ViewFinity S27A600U 27" 4K', brand: 'Samsung', condition: 'NEW',
+   232→    basePrice: 58000, compareAtPct: 12, warrantyMonths: 12, stockCount: 8,
+   233→    isFeatured: true, isDeal: false, isGaming: false,
+   234→    categories: ['monitors', 'monitors/4k', 'monitors/professional'],
+   235→    specifications: { size: '27"', resolution: '3840×2160 (4K UHD)', panel: 'IPS', refreshRate: '60Hz', responseTime: '5ms', ports: 'USB-C (90W PD), 2x HDMI, DisplayPort', features: 'HDR10, TÜV Rheinland Eye Comfort, USB Hub', color: '99% sRGB, 95% DCI-P3' },
+   236→    shortDescription: 'Professional 27" 4K IPS monitor with USB-C 90W power delivery and HDR10 support.',
+   237→    seoTitle: 'Samsung ViewFinity S27A600U 4K Monitor Kenya',
+   238→    seoDescription: 'Buy Samsung ViewFinity S27A600U 27" 4K USB-C monitor. Professional display at best price. Bigman Computers Nairobi.',
+   239→    sku: 'SAM-S27A600U', imageCount: 3
+   240→  },
+   241→  {
+   242→    name: 'Dell UltraSharp U2723QE 27" 4K', brand: 'Dell', condition: 'NEW',
+   243→    basePrice: 78000, compareAtPct: 15, warrantyMonths: 12, stockCount: 6,
+   244→    isFeatured: true, isDeal: false, isGaming: false,
+   245→    categories: ['monitors', 'monitors/4k', 'monitors/professional', 'monitors/office'],
+   246→    specifications: { size: '27"', resolution: '3840×2160 (4K UHD)', panel: 'IPS Black', refreshRate: '60Hz', responseTime: '5ms', ports: 'USB-C (90W PD), 2x HDMI, DP 1.4, 5x USB-A, RJ-45', features: 'KVM Switch, Picture-by-Picture, ComfortView Plus', color: '98% DCI-P3, 100% sRGB' },
+   247→    shortDescription: 'Premium 27" 4K monitor with IPS Black panel, USB-C hub with RJ-45, and built-in KVM switch.',
+   248→    seoTitle: 'Dell UltraSharp U2723QE 4K Monitor Kenya',
+   249→    seoDescription: 'Buy Dell UltraSharp U2723QE 27" 4K USB-C monitor. IPS Black panel, KVM, 90W PD. Premium display at Bigman Computers.',
+   250→    sku: 'DEL-U2723QE', imageCount: 3
+   251→  },
+   252→  {
+   253→    name: 'HP E24 G5 FHD Monitor', brand: 'HP', condition: 'NEW',
+   254→    basePrice: 28000, compareAtPct: 12, warrantyMonths: 12, stockCount: 12,
+   255→    isFeatured: false, isDeal: false, isGaming: false,
+   256→    categories: ['monitors', 'monitors/office'],
+   257→    specifications: { size: '24"', resolution: '1920×1080 (FHD)', panel: 'IPS', refreshRate: '75Hz', responseTime: '5ms', ports: 'HDMI, DisplayPort, VGA', features: 'Low Blue Light, Adjustable stand (tilt, swivel, pivot, height)', ergonomics: '100mm height adjust, 90° pivot, ±45° swivel' },
+   258→    shortDescription: 'Ergonomic 24" FHD IPS monitor with adjustable stand. Ideal for long work sessions.',
+   259→    seoTitle: 'HP E24 G5 FHD Monitor Kenya',
+   260→    seoDescription: 'Buy HP E24 G5 24" FHD IPS monitor with ergonomic stand. Best office monitor at Bigman Computers Nairobi.',
+   261→    sku: 'HP-E24G5', imageCount: 2
+   262→  },
+   263→
+   264→  // ════════════════════════════════════════════════════════════════════
+   265→  // KEYBOARDS (3)
+   266→  // ════════════════════════════════════════════════════════════════════
+   267→  {
+   268→    name: 'Logitech K380 Multi-Device Keyboard', brand: 'Logitech', condition: 'NEW',
+   269→    basePrice: 5500, compareAtPct: 15, warrantyMonths: 12, stockCount: 25,
+   270→    isFeatured: true, isDeal: false, isGaming: false,
+   271→    categories: ['accessories', 'accessories/keyboards'],
+   272→    specifications: { type: 'Wireless Bluetooth', layout: 'Full-size compact', connectivity: 'Bluetooth 3.0, Bluetooth 4.0 LE', battery: '2x AAA (up to 24 months)', compatibility: 'Windows, macOS, Chrome OS, Android, iOS', weight: '423g', color: 'Graphite' },
+   273→    shortDescription: 'Slim wireless keyboard that connects to 3 devices. Perfect for multi-device workflows.',
+   274→    seoTitle: 'Logitech K380 Multi-Device Keyboard Kenya',
+   275→    seoDescription: 'Buy Logitech K380 Bluetooth keyboard. Connects to 3 devices, 24-month battery. Best price at Bigman Computers.',
+   276→    sku: 'LOG-K380', imageCount: 2
+   277→  },
+   278→  {
+   279→    name: 'HP K3100 Wireless Keyboard', brand: 'HP', condition: 'NEW',
+   280→    basePrice: 4500, compareAtPct: 18, warrantyMonths: 12, stockCount: 20,
+   281→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Accessory Deal',
+   282→    categories: ['accessories', 'accessories/keyboards'],
+   283→    specifications: { type: 'Wireless 2.4GHz', layout: 'Full-size with numeric keypad', connectivity: 'USB 2.4GHz dongle', battery: '2x AAA (up to 12 months)', compatibility: 'Windows, Chrome OS', weight: '520g', features: 'Adjustable tilt feet, spill-resistant' },
+   284→    shortDescription: 'Reliable wireless keyboard with full-size layout and numeric keypad. Spill-resistant design.',
+   285→    seoTitle: 'HP K3100 Wireless Keyboard Kenya',
+   286→    seoDescription: 'Buy HP K3100 wireless keyboard with numeric keypad. Spill-resistant, 12-month battery. Bigman Computers Nairobi.',
+   287→    sku: 'HP-K3100', imageCount: 2
+   288→  },
+   289→  {
+   290→    name: 'Dell KB216 Wired Keyboard', brand: 'Dell', condition: 'NEW',
+   291→    basePrice: 2500, compareAtPct: 20, warrantyMonths: 12, stockCount: 30,
+   292→    isFeatured: false, isDeal: false, isGaming: false,
+   293→    categories: ['accessories', 'accessories/keyboards'],
+   294→    specifications: { type: 'Wired USB', layout: 'Full-size with numeric keypad', connectivity: 'USB-A', compatibility: 'Windows', weight: '460g', features: 'Adjustable feet, durably built' },
+   295→    shortDescription: 'Simple and reliable wired USB keyboard. Full-size layout with numeric keypad.',
+   296→    seoTitle: 'Dell KB216 Wired Keyboard Kenya',
+   297→    seoDescription: 'Buy Dell KB216 wired USB keyboard. Full-size, reliable, affordable. Bigman Computers Nairobi.',
+   298→    sku: 'DEL-KB216', imageCount: 2
+   299→  },
+   300→
+   301→  // ════════════════════════════════════════════════════════════════════
+   302→  // MICE (3)
+   303→  // ════════════════════════════════════════════════════════════════════
+   304→  {
+   305→    name: 'Logitech M590 Multi-Device Mouse', brand: 'Logitech', condition: 'NEW',
+   306→    basePrice: 5200, compareAtPct: 12, warrantyMonths: 12, stockCount: 22,
+   307→    isFeatured: true, isDeal: false, isGaming: false,
+   308→    categories: ['accessories', 'accessories/mice'],
+   309→    specifications: { type: 'Wireless', connectivity: 'Bluetooth 4.0 LE, 2.4GHz USB', sensor: '1000 DPI optical', battery: '1x AA (up to 24 months)', buttons: '5 (including Forward/Back)', compatibility: 'Windows, macOS, Linux', weight: '110g', features: 'Silent clicks, dual-device, scroll wheel' },
+   310→    shortDescription: 'Silent wireless mouse with dual-device connectivity. 24-month battery life.',
+   311→    seoTitle: 'Logitech M590 Silent Mouse Kenya',
+   312→    seoDescription: 'Buy Logitech M590 multi-device silent mouse. Bluetooth + USB, 24-month battery. Bigman Computers Nairobi.',
+   313→    sku: 'LOG-M590', imageCount: 2
+   314→  },
+   315→  {
+   316→    name: 'HP X3000 Wireless Mouse', brand: 'HP', condition: 'NEW',
+   317→    basePrice: 2200, compareAtPct: 20, warrantyMonths: 12, stockCount: 30,
+   318→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Budget Accessory',
+   319→    categories: ['accessories', 'accessories/mice'],
+   320→    specifications: { type: 'Wireless', connectivity: '2.4GHz USB dongle', sensor: '1600 DPI optical', battery: '1x AA (up to 12 months)', buttons: '3', compatibility: 'Windows, Chrome OS', weight: '80g' },
+   321→    shortDescription: 'Affordable and reliable wireless mouse with 1600 DPI sensor.',
+   322→    seoTitle: 'HP X3000 Wireless Mouse Kenya',
+   323→    seoDescription: 'Buy HP X3000 wireless mouse. 1600 DPI, 12-month battery, affordable. Bigman Computers Nairobi.',
+   324→    sku: 'HP-X3000', imageCount: 2
+   325→  },
+   326→  {
+   327→    name: 'Dell MS116 Wired Mouse', brand: 'Dell', condition: 'NEW',
+   328→    basePrice: 1500, compareAtPct: 15, warrantyMonths: 12, stockCount: 40,
+   329→    isFeatured: false, isDeal: false, isGaming: false,
+   330→    categories: ['accessories', 'accessories/mice'],
+   331→    specifications: { type: 'Wired USB', connectivity: 'USB-A', sensor: '1000 DPI optical', buttons: '3', compatibility: 'Windows, Linux', weight: '75g' },
+   332→    shortDescription: 'Simple wired optical mouse. Plug and play, no drivers needed.',
+   333→    seoTitle: 'Dell MS116 Wired Mouse Kenya',
+   334→    seoDescription: 'Buy Dell MS116 wired USB mouse. Simple, reliable, affordable. Bigman Computers Nairobi.',
+   335→    sku: 'DEL-MS116', imageCount: 2
+   336→  },
+   337→
+   338→  // ════════════════════════════════════════════════════════════════════
+   339→  // STORAGE (4)
+   340→  // ════════════════════════════════════════════════════════════════════
+   341→  {
+   342→    name: 'Samsung T7 Portable SSD 1TB', brand: 'Samsung', condition: 'NEW',
+   343→    basePrice: 14500, compareAtPct: 12, warrantyMonths: 12, stockCount: 18,
+   344→    isFeatured: true, isDeal: false, isGaming: false,
+   345→    categories: ['storage', 'storage/external-ssd'],
+   346→    specifications: { capacity: '1TB', interface: 'USB 3.2 Gen 2', readSpeed: 'Up to 1,050 MB/s', writeSpeed: 'Up to 1,000 MB/s', formFactor: 'Portable (85g)', security: 'AES 256-bit hardware encryption', durability: 'IP65 water/dust resistant, drop-resistant', features: 'USB-C cable included, LED indicator' },
+   347→    shortDescription: 'Ultra-fast portable SSD with 1,050 MB/s read speeds. IP65 water and dust resistant.',
+   348→    seoTitle: 'Samsung T7 1TB Portable SSD Kenya',
+   349→    seoDescription: 'Buy Samsung T7 1TB portable SSD. 1,050 MB/s, IP65, USB-C. Best portable SSD price at Bigman Computers.',
+   350→    sku: 'SAM-T7-1TB', imageCount: 3
+   351→  },
+   352→  {
+   353→    name: 'WD Elements 2TB External HDD', brand: 'Western Digital', condition: 'NEW',
+   354→    basePrice: 9500, compareAtPct: 15, warrantyMonths: 12, stockCount: 14,
+   355→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Storage Deal',
+   356→    categories: ['storage', 'storage/external-hdd'],
+   357→    specifications: { capacity: '2TB', interface: 'USB 3.0', readSpeed: 'Up to 120 MB/s', formFactor: '2.5" Portable', compatibility: 'Windows, macOS (reformat required)', weight: '134g', features: 'Plug and play, pre-formatted for Windows' },
+   358→    shortDescription: 'Reliable portable 2TB hard drive. Plug and play USB 3.0 for easy backups.',
+   359→    seoTitle: 'WD Elements 2TB External HDD Kenya',
+   360→    seoDescription: 'Buy WD Elements 2TB portable hard drive. USB 3.0, plug & play. Best price at Bigman Computers Nairobi.',
+   361→    sku: 'WD-ELEM-2TB', imageCount: 2
+   362→  },
+   363→  {
+   364→    name: 'Seagate Expansion 1TB External HDD', brand: 'Seagate', condition: 'NEW',
+   365→    basePrice: 6500, compareAtPct: 18, warrantyMonths: 12, stockCount: 20,
+   366→    isFeatured: false, isDeal: false, isGaming: false,
+   367→    categories: ['storage', 'storage/external-hdd'],
+   368→    specifications: { capacity: '1TB', interface: 'USB 3.0', readSpeed: 'Up to 103 MB/s', formFactor: '2.5" Portable', compatibility: 'Windows, macOS', weight: '159g', features: 'Plug and play, drag-and-drop backup' },
+   369→    shortDescription: 'Affordable 1TB portable hard drive with USB 3.0. Simple drag-and-drop backup.',
+   370→    seoTitle: 'Seagate Expansion 1TB External HDD Kenya',
+   371→    seoDescription: 'Buy Seagate Expansion 1TB portable HDD. USB 3.0, plug & play. Best external hard drive price at Bigman Computers.',
+   372→    sku: 'SEA-EXP-1TB', imageCount: 2
+   373→  },
+   374→  {
+   375→    name: 'Kingston NV2 1TB NVMe SSD', brand: 'Kingston', condition: 'NEW',
+   376→    basePrice: 8900, compareAtPct: 15, warrantyMonths: 12, stockCount: 16,
+   377→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'SSD Value',
+   378→    categories: ['storage', 'storage/ssd', 'hardware/ssds'],
+   379→    specifications: { capacity: '1TB', interface: 'PCIe Gen4x4 NVMe', formFactor: 'M.2 2280', readSpeed: '3,500 MB/s', writeSpeed: '2,800 MB/s', tbw: '640 TBW', controller: 'Phison E27T', features: 'Single-sided, slim design for notebooks' },
+   380→    shortDescription: 'High-performance PCIe 4.0 NVMe SSD. 3,500 MB/s read, single-sided M.2 2280 design.',
+   381→    seoTitle: 'Kingston NV2 1TB NVMe SSD Kenya',
+   382→    seoDescription: 'Buy Kingston NV2 1TB PCIe 4.0 NVMe SSD. 3,500 MB/s read. Best SSD price in Nairobi at Bigman Computers.',
+   383→    sku: 'KNG-NV2-1TB', imageCount: 2
+   384→  },
+   385→
+   386→  // ════════════════════════════════════════════════════════════════════
+   387→  // NETWORKING (3)
+   388→  // ════════════════════════════════════════════════════════════════════
+   389→  {
+   390→    name: 'TP-Link Deco X50 WiFi 6 Mesh System (3-Pack)', brand: 'TP-Link', condition: 'NEW',
+   391→    basePrice: 32000, compareAtPct: 15, warrantyMonths: 12, stockCount: 8,
+   392→    isFeatured: true, isDeal: false, isGaming: false,
+   393→    categories: ['networking', 'networking/routers'],
+   394→    specifications: { standard: 'WiFi 6 (802.11ax)', speed: 'AX3000 (2402 Mbps on 5GHz, 574 Mbps on 2.4GHz)', coverage: 'Up to 550 m² (3-pack)', ports: '2x Gigabit Ethernet per unit', features: 'Seamless roaming, HomeCare (antivirus, parental controls, QoS)', mesh: 'Deco Mesh Technology', bands: 'Dual-band' },
+   395→    shortDescription: 'Whole-home WiFi 6 mesh system. Covers up to 550 m² with seamless roaming and built-in security.',
+   396→    seoTitle: 'TP-Link Deco X50 WiFi 6 Mesh Kenya',
+   397→    seoDescription: 'Buy TP-Link Deco X50 3-pack mesh WiFi 6 system. Covers 550 m², AX3000. Best mesh WiFi price at Bigman Computers.',
+   398→    sku: 'TP-DECX50-3PK', imageCount: 3
+   399→  },
+   400→  {
+   401→    name: 'TP-Link TL-SG108 8-Port Gigabit Switch', brand: 'TP-Link', condition: 'NEW',
+   402→    basePrice: 8500, compareAtPct: 20, warrantyMonths: 12, stockCount: 15,
+   403→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Networking Deal',
+   404→    categories: ['networking', 'networking/switches'],
+   405→    specifications: { ports: '8x Gigabit Ethernet (10/100/1000 Mbps)', switching: 'Non-blocking line-rate forwarding', buffer: '1.5 Mbit packet buffer', features: 'Plug and play, IGMP snooping, IEEE 802.3x flow control', power: 'Maximum 5.5W', standard: 'IEEE 802.3, 802.3u, 802.3ab, 802.3x' },
+   406→    shortDescription: 'Reliable 8-port unmanaged gigabit switch. Plug and play, no configuration needed.',
+   407→    seoTitle: 'TP-Link TL-SG108 8-Port Switch Kenya',
+   408→    seoDescription: 'Buy TP-Link TL-SG108 8-port gigabit switch. Plug & play, reliable. Best switch price at Bigman Computers.',
+   409→    sku: 'TP-SG108', imageCount: 2
+   410→  },
+   411→  {
+   412→    name: 'D-Link DIR-X1860 WiFi 6 Router', brand: 'D-Link', condition: 'NEW',
+   413→    basePrice: 15000, compareAtPct: 15, warrantyMonths: 12, stockCount: 10,
+   414→    isFeatured: false, isDeal: false, isGaming: false,
+   415→    categories: ['networking', 'networking/routers'],
+   416→    specifications: { standard: 'WiFi 6 (802.11ax)', speed: 'AX1800 (1201 Mbps on 5GHz, 574 Mbps on 2.4GHz)', antennas: '4x high-gain external', ports: '4x Gigabit LAN, 1x Gigabit WAN', features: 'WPA3 encryption, MU-MIMO, OFDMA, BSS Coloring', processor: '1.5 GHz dual-core', memory: '256MB RAM, 128MB Flash' },
+   417→    shortDescription: 'High-performance WiFi 6 router with AX1800 speeds. WPA3 security, MU-MIMO, OFDMA.',
+   418→    seoTitle: 'D-Link DIR-X1860 WiFi 6 Router Kenya',
+   419→    seoDescription: 'Buy D-Link DIR-X1860 WiFi 6 router. AX1800, WPA3, MU-MIMO. Best router price at Bigman Computers Nairobi.',
+   420→    sku: 'DL-X1860', imageCount: 2
+   421→  },
+   422→
+   423→  // ════════════════════════════════════════════════════════════════════
+   424→  // PRINTERS (3)
+   425→  // ════════════════════════════════════════════════════════════════════
+   426→  {
+   427→    name: 'HP DeskJet 2755e All-in-One Printer', brand: 'HP', condition: 'NEW',
+   428→    basePrice: 14000, compareAtPct: 15, warrantyMonths: 12, stockCount: 10,
+   429→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Printer Deal',
+   430→    categories: ['printers', 'printers/hp', 'printers/all-in-one', 'printers/inkjet'],
+   431→    specifications: { type: 'All-in-One (Print, Scan, Copy)', technology: 'Thermal Inkjet', printSpeed: 'Up to 7.5 ppm (black), 5.5 ppm (color)', resolution: '1200 x 1200 dpi (black), 4800 x 1200 dpi (color)', connectivity: 'WiFi, USB, Bluetooth', paper: 'A4, A5, B5, Envelopes', features: 'Auto duplex, HP Smart app, 6 months Instant Ink included' },
+   432→    shortDescription: 'Affordable all-in-one printer with WiFi, auto duplex, and HP Instant Ink support.',
+   433→    seoTitle: 'HP DeskJet 2755e All-in-One Printer Kenya',
+   434→    seoDescription: 'Buy HP DeskJet 2755e all-in-one printer. Print, scan, copy, WiFi, auto duplex. Best price at Bigman Computers.',
+   435→    sku: 'HP-DJ2755E', imageCount: 3
+   436→  },
+   437→  {
+   438→    name: 'Canon PIXMA G3020 MegaTank Printer', brand: 'Canon', condition: 'NEW',
+   439→    basePrice: 24000, compareAtPct: 12, warrantyMonths: 12, stockCount: 7,
+   440→    isFeatured: true, isDeal: false, isGaming: false,
+   441→    categories: ['printers', 'printers/canon', 'printers/all-in-one', 'printers/inkjet'],
+   442→    specifications: { type: 'All-in-One (Print, Scan, Copy)', technology: 'MegaTank Ink Tank', printSpeed: '10.8 ipm (black), 6.0 ipm (color)', resolution: '600 x 1200 dpi', connectivity: 'WiFi, USB', paper: 'A4, A5, B5, Envelopes, Photo Paper', features: 'Refillable ink tanks, borderless photo printing, built-in Wi-Fi', yield: 'Up to 7,700 pages (black), 7,700 pages (color)' },
+   443→    shortDescription: 'Ultra-low-cost-per-page printer with refillable ink tanks. Print up to 7,700 pages per set.',
+   444→    seoTitle: 'Canon PIXMA G3020 MegaTank Printer Kenya',
+   445→    seoDescription: 'Buy Canon PIXMA G3020 MegaTank printer. Refillable tanks, 7,700 pages, WiFi. Best tank printer price at Bigman Computers.',
+   446→    sku: 'CAN-G3020', imageCount: 3
+   447→  },
+   448→  {
+   449→    name: 'Epson WorkForce WF-2830 All-in-One', brand: 'Epson', condition: 'NEW',
+   450→    basePrice: 18000, compareAtPct: 15, warrantyMonths: 12, stockCount: 6,
+   451→    isFeatured: false, isDeal: false, isGaming: false,
+   452→    categories: ['printers', 'printers/epson', 'printers/all-in-one', 'printers/inkjet'],
+   453→    specifications: { type: 'All-in-One (Print, Scan, Copy, Fax)', technology: 'PrecisionCore Inkjet', printSpeed: '14 ppm (black), 7.5 ppm (color)', resolution: '4800 x 1200 dpi', connectivity: 'WiFi, USB, WiFi Direct', paper: 'A4, A5, B5, Envelopes, Legal', features: '30-page ADF, auto duplex, 2.4" LCD, Epson Print Enabler', dutyCycle: 'Up to 3,000 pages/month' },
+   454→    shortDescription: 'Versatile all-in-one with fax, ADF, auto duplex, and WiFi Direct.',
+   455→    seoTitle: 'Epson WorkForce WF-2830 Printer Kenya',
+   456→    seoDescription: 'Buy Epson WorkForce WF-2830 all-in-one. Print, scan, copy, fax, ADF, WiFi. Best price at Bigman Computers.',
+   457→    sku: 'EPS-WF2830', imageCount: 3
+   458→  },
+   459→
+   460→  // ════════════════════════════════════════════════════════════════════
+   461→  // ACCESSORIES (4)
+   462→  // ════════════════════════════════════════════════════════════════════
+   463→  {
+   464→    name: 'Targus Drifter II 17.3" Laptop Backpack', brand: 'Targus', condition: 'NEW',
+   465→    basePrice: 5500, compareAtPct: 18, warrantyMonths: 12, stockCount: 15,
+   466→    isFeatured: false, isDeal: true, isGaming: false, dealLabel: 'Bag Deal',
+   467→    categories: ['accessories', 'accessories/bags', 'bags-protection', 'bags-protection/backpacks'],
+   468→    specifications: { fit: 'Up to 17.3" laptops', material: 'Durable nylon', compartments: 'Padded laptop, tablet, accessories, front organizer', features: 'Ergonomic padded back, shoulder straps, trolley strap, rain cover', dimensions: '460 x 310 x 220 mm', weight: '1.1 kg' },
+   469→    shortDescription: 'Spacious 17.3" laptop backpack with padded compartment, ergonomic design, and rain cover.',
+   470→    seoTitle: 'Targus Drifter II 17.3" Backpack Kenya',
+   471→    seoDescription: 'Buy Targus Drifter II 17.3" laptop backpack. Padded, ergonomic, rain cover. Best backpack price at Bigman Computers.',
+   472→    sku: 'TG-DRII-173', imageCount: 3
+   473→  },
+   474→  {
+   475→    name: 'HP 240 Large Mouse Pad', brand: 'HP', condition: 'NEW',
+   476→    basePrice: 2500, compareAtPct: 20, warrantyMonths: 12, stockCount: 25,
+   477→    isFeatured: false, isDeal: false, isGaming: false,
+   478→    categories: ['accessories', 'accessories/cleaning'],
+   479→    specifications: { size: '400 x 300 x 3 mm', material: 'Non-slip rubber base, smooth fabric surface', features: 'Anti-slip, edge stitching, machine washable', weight: '180g', color: 'Black' },
+   480→    shortDescription: 'Large non-slip mouse pad with smooth surface and anti-slip rubber base.',
+   481→    seoTitle: 'HP 240 Large Mouse Pad Kenya',
+   482→    seoDescription: 'Buy HP 240 large mouse pad. Non-slip, edge stitched, 400x300mm. Best price at Bigman Computers.',
+   483→    sku: 'HP-MP240', imageCount: 2
+   484→  },
+   485→  {
+   486→    name: 'Logitech C920 HD Pro Webcam', brand: 'Logitech', condition: 'NEW',
+   487→    basePrice: 12000, compareAtPct: 15, warrantyMonths: 12, stockCount: 10,
+   488→    isFeatured: true, isDeal: false, isGaming: false,
+   489→    categories: ['accessories', 'accessories/webcams', 'office-technology/conference-cameras'],
+   490→    specifications: { resolution: '1080p Full HD at 30fps, 720p at 60fps', sensor: 'CMOS', fov: '78° diagonal', focus: 'Autofocus', mic: 'Dual stereo microphones with noise reduction', mounting: 'Universal clip (laptop, monitor, tripod)', compatibility: 'Windows, macOS, Chrome OS, Linux', cable: '1.5m USB-A' },
+   491→    shortDescription: 'Professional 1080p HD webcam with autofocus and dual stereo microphones for video calls.',
+   492→    seoTitle: 'Logitech C920 HD Pro Webcam Kenya',
+   493→    seoDescription: 'Buy Logitech C920 HD Pro 1080p webcam. Autofocus, stereo mics. Best webcam price at Bigman Computers Nairobi.',
+   494→    sku: 'LOG-C920', imageCount: 2
+   495→  },
+   496→  {
+   497→    name: 'Kensington SD4700P USB-C Docking Station', brand: 'Kensington', condition: 'NEW',
+   498→    basePrice: 18000, compareAtPct: 12, warrantyMonths: 12, stockCount: 5,
+   499→    isFeatured: false, isDeal: false, isGaming: false,
+   500→    categories: ['accessories', 'accessories/docking-stations'],
+   501→    specifications: { powerDelivery: '100W USB-C Power Delivery', video: 'Dual 4K HDMI (2x 4K@30Hz or 1x 4K@60Hz)', ports: '2x HDMI, 1x DisplayPort, 4x USB-A 3.2, 2x USB-C, 1x Gigabit Ethernet, 3.5mm audio', charging: '100W PD pass-through to laptop', compatibility: 'USB-C laptops (Windows, macOS, Chrome OS, Android)', weight: '370g' },
+   502→    shortDescription: 'Universal USB-C docking station with 100W PD, dual 4K HDMI, and Gigabit Ethernet.',
+   503→    seoTitle: 'Kensington SD4700P USB-C Dock Kenya',
+   504→    seoDescription: 'Buy Kensington SD4700P USB-C dock. 100W PD, dual 4K HDMI, GbE. Best dock price at Bigman Computers.',
+   505→    sku: 'KEN-SD4700P', imageCount: 2
+   506→  },
+   507→
+   508→  // ════════════════════════════════════════════════════════════════════
+   509→  // GAMING (4 + 3 extra gaming peripherals = 7)
+   510→  // ════════════════════════════════════════════════════════════════════
+   511→  {
+   512→    name: 'ASUS ROG Strix G18 Gaming Laptop', brand: 'ASUS', condition: 'NEW',
+   513→    basePrice: 245000, compareAtPct: 15, warrantyMonths: 12, stockCount: 4,
+   514→    isFeatured: true, isDeal: false, isGaming: true,
+   515→    categories: ['laptops', 'laptops/asus', 'laptops/gaming', 'gaming', 'gaming/laptops'],
+   516→    specifications: { processor: 'Intel Core i9-13980HX (24C/32T, up to 5.6 GHz)', ram: '32GB DDR5-4800', storage: '1TB PCIe Gen4 NVMe SSD', display: '18" WUXGA (1920×1200) IPS, 240Hz, 3ms', gpu: 'NVIDIA RTX 4070 8GB GDDR6', os: 'Windows 11 Home', battery: '90Wh, up to 6 hours', weight: '2.7 kg', keyboard: 'RGB backlit, 1.7mm travel', cooling: '4x fans, 7x heat pipes, liquid metal on CPU' },
+   517→    shortDescription: 'Flagship 18" gaming laptop with Intel i9, RTX 4070, 240Hz display, and advanced cooling.',
+   518→    seoTitle: 'ASUS ROG Strix G18 Gaming Laptop Kenya',
+   519→    seoDescription: 'Buy ASUS ROG Strix G18 with i9-13980HX, RTX 4070, 32GB, 1TB. Premium gaming laptop at Bigman Computers.',
+   520→    sku: 'ASUS-ROG18G', imageCount: 4
+   521→  },
+   522→  {
+   523→    name: 'Acer Nitro V15 Gaming Laptop', brand: 'Acer', condition: 'NEW',
+   524→    basePrice: 135000, compareAtPct: 12, warrantyMonths: 12, stockCount: 6,
+   525→    isFeatured: true, isDeal: true, isGaming: true, dealLabel: 'Gaming Value',
+   526→    categories: ['laptops', 'laptops/acer', 'laptops/gaming', 'gaming', 'gaming/laptops'],
+   527→    specifications: { processor: 'Intel Core i5-13420H (8C/12T, up to 4.6 GHz)', ram: '16GB DDR5-4800', storage: '512GB PCIe Gen4 NVMe SSD', display: '15.6" FHD (1920×1080) IPS, 144Hz', gpu: 'NVIDIA RTX 4050 6GB GDDR6', os: 'Windows 11 Home', battery: '57.5Wh, up to 5 hours', weight: '2.1 kg', keyboard: 'RGB backlit, Acer NitroSense key', cooling: 'Dual fans, Acer CoolBoost technology' },
+   528→    shortDescription: 'Powerful mid-range gaming laptop with RTX 4050, 144Hz display, and 16GB DDR5.',
+   529→    seoTitle: 'Acer Nitro V15 Gaming Laptop Kenya',
+   530→    seoDescription: 'Buy Acer Nitro V15 with RTX 4050, i5-13420H, 16GB, 144Hz. Best gaming laptop deal at Bigman Computers.',
+   531→    sku: 'ACR-NV15', imageCount: 3
+   532→  },
+   533→  {
+   534→    name: 'Lenovo Legion Slim 5', brand: 'Lenovo', condition: 'REFURBISHED', conditionGrade: 'A',
+   535→    basePrice: 145000, compareAtPct: 20, warrantyMonths: 6, stockCount: 3,
+   536→    isFeatured: true, isDeal: true, isGaming: true, dealLabel: 'Refurbished Gaming',
+   537→    categories: ['laptops', 'laptops/lenovo', 'laptops/gaming', 'gaming', 'gaming/laptops'],
+   538→    specifications: { processor: 'AMD Ryzen 7 7840HS (8C/16T, up to 5.1 GHz)', ram: '16GB DDR5-5600', storage: '512GB PCIe Gen4 NVMe SSD', display: '16" WUXGA (2560×1600) IPS, 165Hz, 3ms', gpu: 'NVIDIA RTX 4060 8GB GDDR6', os: 'Windows 11 Home', battery: '71.4Wh, up to 7 hours', weight: '2.15 kg', keyboard: 'RGB backlit, 1.5mm travel', cooling: 'Coldfront 5.0 thermal system' },
+   539→    shortDescription: 'Sleek gaming laptop with RTX 4060, Ryzen 7, 165Hz display. Grade A refurbished.',
+   540→    seoTitle: 'Lenovo Legion Slim 5 Refurbished Kenya',
+   541→    seoDescription: 'Buy refurbished Lenovo Legion Slim 5. RTX 4060, Ryzen 7, 16GB, 165Hz. Grade A, 6-month warranty. Bigman Computers.',
+   542→    sku: 'LNV-LS5-RFB', imageCount: 3
+   543→  },
+   544→  {
+   545→    name: 'Dell G15 Gaming Laptop 5530', brand: 'Dell', condition: 'REFURBISHED', conditionGrade: 'B',
+   546→    basePrice: 98000, compareAtPct: 18, warrantyMonths: 6, stockCount: 5,
+   547→    isFeatured: false, isDeal: true, isGaming: true, dealLabel: 'Budget Gaming',
+   548→    categories: ['laptops', 'laptops/dell', 'laptops/gaming', 'gaming', 'gaming/laptops'],
+   549→    specifications: { processor: 'Intel Core i5-13450HX (10C/16T, up to 4.6 GHz)', ram: '8GB DDR5-4800', storage: '512GB PCIe NVMe SSD', display: '15.6" FHD (1920×1080) WVA, 120Hz', gpu: 'NVIDIA RTX 3050 6GB GDDR6', os: 'Windows 11 Home', battery: '86Wh, up to 5 hours', weight: '2.63 kg', keyboard: 'Blue backlit, 1.4mm travel', cooling: 'Dual fans, thermal venting' },
+   550→    shortDescription: 'Affordable refurbished gaming laptop with RTX 3050 and 120Hz display. Grade B.',
+   551→    seoTitle: 'Dell G15 5530 Refurbished Gaming Laptop Kenya',
+   552→    seoDescription: 'Buy refurbished Dell G15 5530. RTX 3050, i5, 8GB, 120Hz. Grade B, 6-month warranty. Bigman Computers.',
+   553→    sku: 'DEL-G15R-RFB', imageCount: 3
+   554→  },
+   555→  {
+   556→    name: 'HyperX Alloy Origins 60 Mechanical Keyboard', brand: 'HyperX', condition: 'NEW',
+   557→    basePrice: 11000, compareAtPct: 15, warrantyMonths: 12, stockCount: 8,
+   558→    isFeatured: true, isDeal: false, isGaming: true,
+   559→    categories: ['accessories', 'accessories/keyboards', 'gaming', 'gaming/keyboards'],
+   560→    specifications: { type: 'Mechanical (60% layout)', switches: 'HyperX Red (linear)', backlight: 'Per-key RGB, HyperX NGENUITY software', frame: 'Aircraft-grade aluminum', actuation: '1.8mm travel, 45g actuation force', features: 'On-board memory (3 profiles), detachable USB-C cable', compatibility: 'Windows, macOS, PS5, Xbox', weight: '843g' },
+   561→    shortDescription: 'Compact 60% mechanical keyboard with HyperX Red switches and per-key RGB lighting.',
+   562→    seoTitle: 'HyperX Alloy Origins 60 Keyboard Kenya',
+   563→    seoDescription: 'Buy HyperX Alloy Origins 60 mechanical keyboard. Red switches, per-key RGB, aluminum frame. Bigman Computers.',
+   564→    sku: 'HGX-AO60', imageCount: 2
+   565→  },
+   566→  {
+   567→    name: 'Logitech G502 HERO Gaming Mouse', brand: 'Logitech', condition: 'NEW',
+   568→    basePrice: 8000, compareAtPct: 15, warrantyMonths: 12, stockCount: 12,
+   569→    isFeatured: true, isDeal: false, isGaming: true,
+   570→    categories: ['accessories', 'accessories/mice', 'gaming', 'gaming/mice'],
+   571→    specifications: { sensor: 'HERO 25K (up to 25,600 DPI)', buttons: '11 programmable', weight: '121g (adjustable with included weights)', switches: 'Mechanical, 50M click durability', lighting: 'RGB Lightsync', features: 'On-board memory, 5 configurable weights (up to 16g), G HUB software', cable: '2.1m braided USB-A', feet: 'PTFE for low friction' },
+   572→    shortDescription: 'Iconic gaming mouse with HERO 25K sensor, 11 buttons, and adjustable weight system.',
+   573→    seoTitle: 'Logitech G502 HERO Gaming Mouse Kenya',
+   574→    seoDescription: 'Buy Logitech G502 HERO gaming mouse. 25,600 DPI, 11 buttons, adjustable weight. Best gaming mouse at Bigman Computers.',
+   575→    sku: 'LOG-G502H', imageCount: 3
+   576→  },
+   577→  {
+   578→    name: 'Razer Barracuda Pro Wireless Gaming Headset', brand: 'Razer', condition: 'NEW',
+   579→    basePrice: 18000, compareAtPct: 12, warrantyMonths: 12, stockCount: 7,
+   580→    isFeatured: false, isDeal: true, isGaming: true, dealLabel: 'Audio Deal',
+   581→    categories: ['accessories', 'accessories/headsets', 'gaming', 'gaming/headsets'],
+   582→    specifications: { type: 'Wireless over-ear', driver: '50mm TriForce Titanium', surround: 'THX Spatial Audio', mic: 'Detachable HyperClear Supercardioid', connectivity: '2.4GHz wireless + Bluetooth 5.2', battery: 'Up to 40 hours (with RGB off)', weight: '310g', features: 'Active Noise Cancellation, memory foam ear cushions, Razer Synapse' },
+   583→    shortDescription: 'Premium wireless gaming headset with THX Spatial Audio, ANC, and 40-hour battery.',
+   584→    seoTitle: 'Razer Barracuda Pro Wireless Headset Kenya',
+   585→    seoDescription: 'Buy Razer Barracuda Pro wireless gaming headset. THX Spatial Audio, ANC, 40h battery. Bigman Computers.',
+   586→    sku: 'RZR-BARPRO', imageCount: 3
+   587→  },
+   588→]
+   589→
+   590→// ══════════════════════════════════════════════════════════════════════
+   591→// MAIN
+   592→// ══════════════════════════════════════════════════════════════════════
+   593→async function main() {
+   594→  console.log('🔍 Looking up brands and categories...')
+   595→
+   596→  // Build brand lookup
+   597→  const allBrands = await db.brand.findMany({ select: { id: true, name: true } })
+   598→  const brandMap = new Map(allBrands.map(b => [b.name, b.id]))
+   599→
+   600→  // Build category lookup (both simple slug and parent/slug composite)
+   601→  const allCats = await db.category.findMany({ select: { id: true, slug: true, parentId: true } })
+   602→  const catMap = new Map<string, string>()
+   603→  for (const c of allCats) {
+   604→    catMap.set(c.slug, c.id)
+   605→    const parent = c.parentId ? allCats.find(p => p.id === c.parentId) : null
+   606→    if (parent) {
+   607→      catMap.set(`${parent.slug}/${c.slug}`, c.id)
+   608→    }
+   609→  }
+   610→
+   611→  console.log(`   Brands: ${brandMap.size} | Categories: ${allCats.length}`)
+   612→
+   613→  // Step 1: Update any DRAFT products to ACTIVE
+   614→  console.log('\n📦 Updating any DRAFT products to ACTIVE...')
+   615→  const draftUpdate = await db.product.updateMany({
+   616→    where: { status: 'DRAFT' },
+   617→    data: { status: 'ACTIVE', publishedAt: new Date() },
+   618→  })
+   619→  console.log(`   Updated ${draftUpdate.count} DRAFT products → ACTIVE`)
+   620→
+   621→  // Step 2: Get business unit ID
+   622→  const bu = await db.businessUnit.findFirst({ where: { type: 'COMPUTERS' } })
+   623→  const businessUnitId = bu?.id || null
+   624→
+   625→  // Step 3: Seed products
+   626→  console.log(`\n🚀 Seeding ${products.length} products...`)
+   627→
+   628→  let created = 0
+   629→  let skipped = 0
+   630→  let imagesCreated = 0
+   631→
+   632→  for (let i = 0; i < products.length; i++) {
+   633→    const p = products[i]
+   634→    const productSlug = slug(p.name)
+   635→
+   636→    // Check if already exists
+   637→    const existing = await db.product.findUnique({ where: { slug: productSlug } })
+   638→    if (existing) {
+   639→      skipped++
+   640→      console.log(`   ⏭️  [${i + 1}/${products.length}] SKIP (exists): ${p.name}`)
+   641→      continue
+   642→    }
+   643→
+   644→    // Resolve brand ID
+   645→    const brandId = brandMap.get(p.brand) || null
+   646→
+   647→    // Resolve category IDs
+   648→    const categoryConnects: { categoryId: string; sortOrder: number }[] = []
+   649→    for (const catSlug of p.categories) {
+   650→      const catId = catMap.get(catSlug)
+   651→      if (catId) {
+   652→        categoryConnects.push({ categoryId: catId, sortOrder: categoryConnects.length })
+   653→      }
+   654→    }
+   655→
+   656→    if (categoryConnects.length === 0) {
+   657→      console.log(`   ⚠️  [${i + 1}/${products.length}] NO CATEGORIES FOUND: ${p.name} (${p.categories.join(', ')})`)
+   658→      skipped++
+   659→      continue
+   660→    }
+   661→
+   662→    const compareAtPrice = compareAt(p.basePrice, p.compareAtPct)
+   663→
+   664→    // Create product with images
+   665→    const product = await db.product.create({
+   666→      data: {
+   667→        name: p.name,
+   668→        slug: productSlug,
+   669→        shortDescription: p.shortDescription,
+   670→        description: `The ${p.name} is available at Bigman Computers, Nairobi. ${p.shortDescription} Visit our store or order online for the best price in Kenya.`,
+   671→        brandId,
+   672→        businessUnitId,
+   673→        condition: p.condition,
+   674→        conditionGrade: p.conditionGrade || null,
+   675→        basePrice: p.basePrice,
+   676→        compareAtPrice,
+   677→        currency: 'KES',
+   678→        warrantyMonths: p.warrantyMonths,
+   679→        specifications: JSON.stringify(p.specifications),
+   680→        stockCount: p.stockCount,
+   681→        trackInventory: true,
+   682→        lowStockThreshold: 5,
+   683→        status: 'ACTIVE',
+   684→        publishedAt: new Date(),
+   685→        isFeatured: p.isFeatured,
+   686→        isDeal: p.isDeal,
+   687→        isGaming: p.isGaming,
+   688→        dealLabel: p.dealLabel || null,
+   689→        seoTitle: p.seoTitle,
+   690→        seoDescription: p.seoDescription,
+   691→        sku: p.sku,
+   692→        categories: {
+   693→          create: categoryConnects,
+   694→        },
+   695→        productImages: {
+   696→          create: Array.from({ length: p.imageCount }, (_, imgIdx) => {
+   697→            const categorySlug = p.categories[0] || 'product'
+   698→            return {
+   699→              url: `/placeholder/product-${categorySlug.replace(/[^a-z0-9]/g, '-')}-${i + 1}-${imgIdx + 1}.jpg`,
+   700→              altText: imgIdx === 0
+   701→                ? `${p.name} - Main product image`
+   702→                : `${p.name} - ${['Side view', 'Detail view', 'Lifestyle shot', 'Angle view'][imgIdx - 1] || `Image ${imgIdx + 1}`}`,
+   703→              sortOrder: imgIdx,
+   704→              isPrimary: imgIdx === 0,
+   705→              imageType: imgIdx === 0 ? 'MAIN' : 'GALLERY',
+   706→              status: 'APPROVED',
+   707→              width: 800,
+   708→              height: 600,
+   709→              source: 'BIGMAN_OWN',
+   710→              mimeType: 'image/jpeg',
+   711→            }
+   712→          }),
+   713→        },
+   714→      },
+   715→    })
+   716→
+   717→    created++
+   718→    imagesCreated += p.imageCount
+   719→    console.log(
+   720→      `   ✅ [${i + 1}/${products.length}] ${p.name}` +
+   721→      ` | KSh ${p.basePrice.toLocaleString()}` +
+   722→      ` | ${p.condition}${p.conditionGrade ? ` (${p.conditionGrade})` : ''}` +
+   723→      ` | ${p.imageCount} images` +
+   724→      (p.isFeatured ? ' ⭐' : '') +
+   725→      (p.isDeal ? ' 🏷️' : '') +
+   726→      (p.isGaming ? ' 🎮' : '')
+   727→    )
+   728→  }
+   729→
+   730→  // Summary
+   731→  const totalProducts = await db.product.count()
+   732→  const activeProducts = await db.product.count({ where: { status: 'ACTIVE' } })
+   733→  const totalImages = await db.productImage.count()
+   734→  const featuredCount = await db.product.count({ where: { isFeatured: true, status: 'ACTIVE' } })
+   735→  const dealCount = await db.product.count({ where: { isDeal: true, status: 'ACTIVE' } })
+   736→  const gamingCount = await db.product.count({ where: { isGaming: true, status: 'ACTIVE' } })
+   737→  const refurbishedCount = await db.product.count({ where: { condition: 'REFURBISHED', status: 'ACTIVE' } })
+   738→
+   739→  console.log('\n' + '═'.repeat(60))
+   740→  console.log('📊 SEED SUMMARY')
+   741→  console.log('═'.repeat(60))
+   742→  console.log(`   Products created:  ${created}`)
+   743→  console.log(`   Products skipped:  ${skipped}`)
+   744→  console.log(`   Images created:    ${imagesCreated}`)
+   745→  console.log('─'.repeat(60))
+   746→  console.log(`   Total products:   ${totalProducts}`)
+   747→  console.log(`   Active products:  ${activeProducts}`)
+   748→  console.log(`   Total images:     ${totalImages}`)
+   749→  console.log('─'.repeat(60))
+   750→  console.log(`   ⭐ Featured:       ${featuredCount}`)
+   751→  console.log(`   🏷️  Deals:          ${dealCount}`)
+   752→  console.log(`   🎮 Gaming:         ${gamingCount}`)
+   753→  console.log(`   ♻️  Refurbished:    ${refurbishedCount}`)
+   754→  console.log('═'.repeat(60))
+   755→}
+   756→
+   757→main()
+   758→  .catch(e => { console.error('❌ Seed failed:', e); process.exit(1) })
+   759→  .finally(() => db.$disconnect())
+   760→

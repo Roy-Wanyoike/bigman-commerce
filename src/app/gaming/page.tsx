@@ -10,12 +10,22 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic'
 
+const productInclude = {
+  brand: true,
+  categories: { include: { category: true } },
+  productImages: {
+    where: { status: 'APPROVED' },
+    orderBy: { sortOrder: 'asc' },
+    select: { id: true, url: true, altText: true, isPrimary: true, imageType: true, status: true, width: true, height: true },
+  },
+} as const
+
 export default async function GamingPage() {
   const [categories, products] = await Promise.all([
     db.category.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),
     db.product.findMany({
       where: { status: { in: ['ACTIVE', 'PUBLISHED'] }, isGaming: true },
-      include: { brand: true, categories: { include: { category: true } } },
+      include: productInclude,
       orderBy: { sortOrder: 'asc' },
     }),
   ])

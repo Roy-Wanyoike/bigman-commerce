@@ -64,9 +64,18 @@ function classifyCategory(cat: CategoryNode): number {
   return -1 // unclassified
 }
 
-interface HeaderProps { categories: CategoryNode[] }
+interface HeaderProps { categories?: CategoryNode[] }
 
-export default function Header({ categories }: HeaderProps) {
+export default function Header({ categories: propCategories }: HeaderProps) {
+  const [fetchedCategories, setFetchedCategories] = useState<CategoryNode[] | null>(null)
+  const categories = propCategories && propCategories.length > 0 ? propCategories : (fetchedCategories || [])
+
+  useEffect(() => {
+    if (propCategories && propCategories.length > 0) return
+    fetch('/api/categories').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setFetchedCategories(data)
+    }).catch(() => {})
+  }, [propCategories])
   const [shopMegaOpen, setShopMegaOpen] = useState(false)
   const router = useRouter()
   const [searchQ, setSearchQ] = useState('')

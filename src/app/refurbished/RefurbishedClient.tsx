@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { RotateCcw, ShieldCheck, CheckCircle2, ArrowUpDown, SlidersHorizontal, Star } from 'lucide-react'
+import { RotateCcw, ShieldCheck, CheckCircle2, ArrowUpDown, SlidersHorizontal } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'

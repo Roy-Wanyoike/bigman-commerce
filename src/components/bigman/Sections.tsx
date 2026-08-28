@@ -5,8 +5,8 @@ import Link from 'next/link'
 import {
   ChevronRight, SlidersHorizontal, ArrowUpDown, Laptop, Monitor, Gamepad2, Apple, RotateCcw,
   Cpu, Printer, Wrench, HardDrive, Zap, Code, Building2, Home, Phone, MessageCircle, MapPin, Clock,
-  Search, ShoppingCart, User, ArrowRight, Shield, Truck, Headphones, CheckCircle2, Star,
-  GraduationCap, Palette, Wifi, MemoryStick,
+  Search, ShoppingCart, User, ArrowRight, Shield, Truck, Headphones, CheckCircle2,
+  Wifi, MemoryStick,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

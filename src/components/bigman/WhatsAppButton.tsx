@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { MessageCircle, X, Phone, Mail, Clock, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const WHATSAPP_NUMBER = '254700000000' // Replace with actual Bigman WhatsApp number
+const WHATSAPP_NUMBER = '254722450610'
 const WHATSAPP_MESSAGE = 'Hi Bigman Computers! I need help with...'
 
 export default function WhatsAppButton() {
@@ -73,7 +73,7 @@ export default function WhatsAppButton() {
                   <span className="text-foreground/80 group-hover:text-foreground">Chat on WhatsApp</span>
                 </a>
                 <a
-                  href="tel:+254700000000"
+                  href="tel:+254722450610"
                   className="flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-secondary/50 transition-colors text-sm group"
                 >
                   <Phone className="h-4 w-4 text-accent" />
@@ -119,7 +119,7 @@ export default function WhatsAppButton() {
           className={cn(
             'relative w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95',
             isOpen
-              ? 'bg-foreground text-foreground'
+              ? 'bg-foreground text-background'
               : 'bg-[#25D366] hover:bg-[#20bd5a] text-white'
           )}
           aria-label={isOpen ? 'Close support menu' : 'Open WhatsApp support'}

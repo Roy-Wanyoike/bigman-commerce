@@ -22,8 +22,8 @@ export async function GET(req: NextRequest) {
       where: {
         status: { in: ['ACTIVE', 'PUBLISHED'] },
         OR: uniqueTerms.flatMap(t => [
-          { name: { contains: t, mode: 'insensitive' } },
-          { shortDescription: { contains: t, mode: 'insensitive' } },
+          { name: { contains: t } },
+          { shortDescription: { contains: t } },
         ]),
       },
       include: {
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       where: {
         isActive: true,
         OR: uniqueTerms.flatMap(t => [
-          { name: { contains: t, mode: 'insensitive' } },
+          { name: { contains: t } },
         ]),
       },
       take: 5,

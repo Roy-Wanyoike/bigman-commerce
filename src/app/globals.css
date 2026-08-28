@@ -52,8 +52,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   /* Extended semantic colors */
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
   --color-emerald-accent: oklch(0.55 0.17 163);
   --color-emerald-accent-foreground: oklch(0.98 0 0);
   --color-gaming: oklch(0.55 0.22 305);
@@ -125,6 +123,10 @@
   --page-padding-desktop: 32px;
   --section-spacing: 3rem;
   --grid-gap: 1rem;
+
+  /* Skeleton shimmer */
+  --skeleton-from: oklch(0.955 0.005 250);
+  --skeleton-to: oklch(0.985 0.002 250);
 }
 
 /* ============================================================
