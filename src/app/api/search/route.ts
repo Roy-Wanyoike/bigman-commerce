@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     const products = await db.product.findMany({
       where: {
-        status: { in: ['ACTIVE', 'PUBLISHED'] },
+        status: { in: ['PUBLISHED'] },
         OR: uniqueTerms.flatMap(t => [
           { name: { contains: t } },
           { shortDescription: { contains: t } },

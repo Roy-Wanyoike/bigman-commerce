@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       searchTerms = [...new Set(searchTerms)]
     }
 
-    const where: any = { status: { in: ['ACTIVE', 'PUBLISHED'] } }
+    const where: any = { status: { in: ['PUBLISHED'] } }
 
     if (category) {
       const cat = await db.category.findFirst({ where: { slug: category, isActive: true } })

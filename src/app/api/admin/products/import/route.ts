@@ -349,9 +349,9 @@ export async function POST(request: NextRequest) {
             productId: product.id,
             url: imageUrl,
             source: imageSource || 'IMPORTED',
-            licenseStatus: imageLicenseStatus || 'PENDING_REVIEW',
+            licenseStatus: imageLicenseStatus || 'PENDING',
             isPrimary: true,
-            status: 'PENDING_REVIEW',
+            status: 'PENDING',
             sortOrder: 0,
           },
         })

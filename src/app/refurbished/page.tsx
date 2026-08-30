@@ -24,7 +24,7 @@ export default async function RefurbishedPage() {
   const [categories, products] = await Promise.all([
     db.category.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),
     db.product.findMany({
-      where: { status: { in: ['ACTIVE', 'PUBLISHED'] }, condition: 'REFURBISHED' },
+      where: { status: 'PUBLISHED', condition: 'REFURBISHED' },
       include: productInclude,
       orderBy: { sortOrder: 'asc' },
     }),

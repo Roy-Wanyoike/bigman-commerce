@@ -24,7 +24,7 @@ export default async function DealsPage() {
   const [categories, products] = await Promise.all([
     db.category.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),
     db.product.findMany({
-      where: { status: { in: ['ACTIVE', 'PUBLISHED'] }, isDeal: true },
+      where: { status: 'PUBLISHED', isDeal: true },
       include: productInclude,
       orderBy: { sortOrder: 'asc' },
     }),

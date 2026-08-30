@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { promises as fs } from 'fs'
 import path from 'path'
 

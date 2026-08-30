@@ -24,7 +24,7 @@ export default async function GamingPage() {
   const [categories, products] = await Promise.all([
     db.category.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),
     db.product.findMany({
-      where: { status: { in: ['ACTIVE', 'PUBLISHED'] }, isGaming: true },
+      where: { status: 'PUBLISHED', isGaming: true },
       include: productInclude,
       orderBy: { sortOrder: 'asc' },
     }),

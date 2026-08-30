@@ -174,7 +174,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     },
   })
 
-  if (!product || !['ACTIVE', 'PUBLISHED'].includes(product.status)) {
+  if (!product || !['PUBLISHED'].includes(product.status)) {
     notFound()
   }
 
@@ -193,7 +193,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     ? await db.product.findMany({
         where: {
           id: { not: product.id },
-          status: { in: ['ACTIVE', 'PUBLISHED'] },
+          status: 'PUBLISHED',
           categories: { some: { categoryId: { in: crossSellCatIds } } },
         },
         include: { brand: true, categories: { include: { category: true } }, productImages: { where: { status: 'APPROVED', inventoryUnitId: null, isPrimary: true }, select: { url: true }, take: 1 } },

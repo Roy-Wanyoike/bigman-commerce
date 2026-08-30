@@ -10,7 +10,7 @@ async function getData() {
       orderBy: { sortOrder: 'asc' },
     }),
     db.product.findMany({
-      where: { status: 'ACTIVE' },
+      where: { status: 'PUBLISHED' },
       include: {
         brand: true,
         categories: { include: { category: true } },
@@ -33,7 +33,7 @@ async function getData() {
     }),
     db.brand.findMany({
       where: { isActive: true },
-      include: { _count: { select: { products: { where: { status: 'ACTIVE' } } } } },
+      include: { _count: { select: { products: { where: { status: 'PUBLISHED' } } } } },
       orderBy: { name: 'asc' },
     }),
     db.serviceProduct.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),

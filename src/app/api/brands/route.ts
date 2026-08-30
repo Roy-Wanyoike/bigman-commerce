@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const brands = await db.brand.findMany({
       where: { isActive: true },
-      include: { _count: { select: { products: { where: { status: 'ACTIVE' } } } } },
+      include: { _count: { select: { products: { where: { status: 'PUBLISHED' } } } } },
       orderBy: { name: 'asc' },
     })
     return NextResponse.json(brands)
