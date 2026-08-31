@@ -1,0 +1,2002 @@
+     1→dispatch enough agents to fix any problem, complete any pending task and then to work on this. Don't stop till you're done,tested and verified its working. 
+     2→ # BIGMAN COMMERCE
+     3→# PRINCIPAL UI/UX + FRONTEND LAYOUT CORRECTION
+     4→# RESPONSIBILITY: STAFF FRONTEND ENGINEERING + SENIOR PRODUCT DESIGN
+     5→
+     6→We have a serious responsive layout issue in the current Bigman Commerce
+     7→storefront.
+     8→
+     9→The attached screenshot demonstrates the problem.
+    10→
+    11→DO NOT simply add:
+    12→
+    13→overflow-x: hidden;
+    14→
+    15→That is NOT an acceptable solution.
+    16→
+    17→The objective is to identify the element causing the overflow, correct
+    18→the underlying layout architecture, and redesign the storefront shell so
+    19→that it behaves correctly from mobile through ultrawide desktop displays.
+    20→
+    21→The result must feel like a professional modern electronics retailer,
+    22→not a partially constrained developer preview.
+    23→
+    24→==================================================
+    25→# 1. CURRENT PROBLEMS OBSERVED
+    26→==================================================
+    27→
+    28→The screenshot shows:
+    29→
+    30→1. Main content occupying only a narrow portion of the viewport.
+    31→2. Large unused whitespace on the right side.
+    32→3. Horizontal scrollbar appearing.
+    33→4. Navigation extending beyond its intended container.
+    34→5. Hero/content sections not respecting the viewport/container system.
+    35→6. Product sections appearing compressed into the left side.
+    36→7. Product cards are too narrow.
+    37→8. The overall page lacks a coherent maximum-width/responsive layout.
+    38→9. Header and navigation do not appear to share the same layout grid.
+    39→10. Some child element is wider than its containing block.
+    40→11. The visual hierarchy is broken because the storefront does not use
+    41→    the available viewport correctly.
+    42→
+    43→Treat these as layout-system issues.
+    44→
+    45→==================================================
+    46→# 2. FIRST TASK: FIND THE REAL OVERFLOW SOURCE
+    47→==================================================
+    48→
+    49→Before changing styles, inspect the DOM.
+    50→
+    51→Find every element whose:
+    52→
+    53→scrollWidth > clientWidth
+    54→
+    55→or:
+    56→
+    57→getBoundingClientRect().right > viewport width
+    58→
+    59→Temporarily instrument the page to identify the offending element.
+    60→
+    61→Use a development-only diagnostic such as:
+    62→
+    63→document.querySelectorAll('*').forEach((element) => {
+    64→  const rect = element.getBoundingClientRect();
+    65→
+    66→  if (
+    67→    rect.right > document.documentElement.clientWidth + 1 ||
+    68→    rect.left < -1
+    69→  ) {
+    70→    console.log('OVERFLOW:', element, rect);
+    71→  }
+    72→});
+    73→
+    74→Do not leave diagnostic code in production.
+    75→
+    76→Identify the actual root cause.
+    77→
+    78→==================================================
+    79→# 3. INVESTIGATE THESE COMMON CAUSES
+    80→==================================================
+    81→
+    82→Inspect the entire application for:
+    83→
+    84→width: 100vw
+    85→
+    86→min-width
+    87→
+    88→fixed pixel widths
+    89→
+    90→fixed navigation widths
+    91→
+    92→large negative margins
+    93→
+    94→absolute positioned elements
+    95→
+    96→transform: translateX()
+    97→
+    98→large box shadows
+    99→
+   100→large images
+   101→
+   102→unbounded flex children
+   103→
+   104→unbounded grid children
+   105→
+   106→long text without wrapping
+   107→
+   108→white-space: nowrap
+   109→
+   110→large SVGs
+   111→
+   112→iframes
+   113→
+   114→tables
+   115→
+   116→carousels
+   117→
+   118→product grids
+   119→
+   120→mega menus
+   121→
+   122→horizontal navigation
+   123→
+   124→buttons with fixed widths
+   125→
+   126→elements using calc() incorrectly
+   127→
+   128→children with width larger than parent
+   129→
+   130→Ensure the fix addresses the actual offending component.
+   131→
+   132→==================================================
+   133→# 4. GLOBAL BOX MODEL
+   134→==================================================
+   135→
+   136→Establish:
+   137→
+   138→html {
+   139→  box-sizing: border-box;
+   140→}
+   141→
+   142→*,
+   143→*::before,
+   144→*::after {
+   145→  box-sizing: inherit;
+   146→}
+   147→
+   148→html,
+   149→body {
+   150→  margin: 0;
+   151→  padding: 0;
+   152→  width: 100%;
+   153→  max-width: 100%;
+   154→}
+   155→
+   156→body {
+   157→  overflow-x: clip;
+   158→}
+   159→
+   160→IMPORTANT:
+   161→
+   162→overflow-x: clip is a final defensive boundary only.
+   163→
+   164→It must NOT be used as the primary fix.
+   165→
+   166→The page must already be structurally responsive.
+   167→
+   168→==================================================
+   169→# 5. APPLICATION ROOT
+   170→==================================================
+   171→
+   172→The application root must not have an accidental fixed width.
+   173→
+   174→Ensure:
+   175→
+   176→#root,
+   177→#__next,
+   178→main {
+   179→  width: 100%;
+   180→  max-width: 100%;
+   181→  min-width: 0;
+   182→}
+   183→
+   184→Inspect every parent container above the storefront.
+   185→
+   186→No parent should unintentionally use:
+   187→
+   188→width: 500px
+   189→
+   190→width: 1024px
+   191→
+   192→min-width: 1024px
+   193→
+   194→width: 100vw
+   195→
+   196→without a valid reason.
+   197→
+   198→==================================================
+   199→# 6. CREATE A SINGLE STOREFRONT CONTAINER SYSTEM
+   200→==================================================
+   201→
+   202→Do not allow every section to invent its own width.
+   203→
+   204→Create a central container:
+   205→
+   206→.container {
+   207→  width: min(100% - 32px, 1440px);
+   208→  margin-inline: auto;
+   209→}
+   210→
+   211→For larger desktop:
+   212→
+   213→.container {
+   214→  width: min(100% - 48px, 1440px);
+   215→}
+   216→
+   217→The exact values may be adjusted based on the existing design system.
+   218→
+   219→The important principle:
+   220→
+   221→EVERY MAJOR STOREFRONT SECTION MUST USE THE SAME HORIZONTAL GRID.
+   222→
+   223→==================================================
+   224→# 7. FULL-BLEED VS CONTAINER CONTENT
+   225→==================================================
+   226→
+   227→Clearly distinguish:
+   228→
+   229→FULL-BLEED SECTIONS
+   230→
+   231→from:
+   232→
+   233→CONTAINERIZED CONTENT.
+   234→
+   235→Example:
+   236→
+   237→<section className="hero">
+   238→  <div className="container">
+   239→    ...
+   240→  </div>
+   241→</section>
+   242→
+   243→The background can span:
+   244→
+   245→100%
+   246→
+   247→while the content remains constrained to:
+   248→
+   249→max-width: 1440px.
+   250→
+   251→Do NOT create:
+   252→
+   253→<section className="hero container">
+   254→
+   255→if the visual design requires a full-width background.
+   256→
+   257→==================================================
+   258→# 8. HEADER REDESIGN
+   259→==================================================
+   260→
+   261→The current header/navigation must be rebuilt around the same container
+   262→system.
+   263→
+   264→Structure:
+   265→
+   266→UTILITY BAR
+   267→MAIN HEADER
+   268→CATEGORY NAVIGATION
+   269→
+   270→All three must respect the viewport.
+   271→
+   272→Desktop:
+   273→
+   274→------------------------------------------------
+   275→BIGMAN | SEARCH                    ACCOUNT CART
+   276→------------------------------------------------
+   277→SHOP | LAPTOPS | GAMING | ACCESSORIES | ...
+   278→------------------------------------------------
+   279→
+   280→The search bar must be flexible.
+   281→
+   282→Do NOT use fixed widths that cause the navigation to overflow.
+   283→
+   284→Use:
+   285→
+   286→flex: 1;
+   287→min-width: 0;
+   288→
+   289→where appropriate.
+   290→
+   291→==================================================
+   292→# 9. SEARCH BAR
+   293→==================================================
+   294→
+   295→The search bar should grow/shrink based on available space.
+   296→
+   297→Avoid:
+   298→
+   299→width: 700px;
+   300→
+   301→Use something equivalent to:
+   302→
+   303→flex: 1;
+   304→min-width: 0;
+   305→max-width: 720px;
+   306→
+   307→On mobile:
+   308→
+   309→width: 100%.
+   310→
+   311→==================================================
+   312→# 10. CATEGORY NAVIGATION
+   313→==================================================
+   314→
+   315→The category navigation is a likely overflow candidate.
+   316→
+   317→Desktop:
+   318→
+   319→Use a responsive flex/grid system.
+   320→
+   321→Do not allow categories to push the entire page wider.
+   322→
+   323→If the number of categories cannot fit:
+   324→
+   325→Use a controlled horizontal category scroller INSIDE the navigation
+   326→container.
+   327→
+   328→The scroller must not expand the document width.
+   329→
+   330→For mobile:
+   331→
+   332→Use:
+   333→
+   334→overflow-x: auto;
+   335→
+   336→only on the navigation strip.
+   337→
+   338→The BODY itself must never horizontally scroll.
+   339→
+   340→==================================================
+   341→# 11. HERO SECTION
+   342→==================================================
+   343→
+   344→The hero should use the entire available viewport width.
+   345→
+   346→Do NOT allow the hero to occupy only a small left column unless that is
+   347→intentionally part of a two-column composition.
+   348→
+   349→Recommended:
+   350→
+   351→.hero {
+   352→  width: 100%;
+   353→}
+   354→
+   355→.hero-inner {
+   356→  width: min(100% - 32px, 1440px);
+   357→  margin-inline: auto;
+   358→}
+   359→
+   360→Desktop:
+   361→
+   362→grid-template-columns:
+   363→minmax(0, 1fr) minmax(0, 1fr);
+   364→
+   365→or another deliberate ratio.
+   366→
+   367→CRITICAL:
+   368→
+   369→Use minmax(0, 1fr).
+   370→
+   371→Do NOT use:
+   372→
+   373→grid-template-columns: 1fr 1fr;
+   374→
+   375→without checking whether children have intrinsic minimum widths.
+   376→
+   377→==================================================
+   378→# 12. GRID CHILDREN
+   379→==================================================
+   380→
+   381→Every grid/flex child that contains potentially large content should
+   382→allow itself to shrink.
+   383→
+   384→Use:
+   385→
+   386→min-width: 0;
+   387→
+   388→This is especially important for:
+   389→
+   390→hero content
+   391→product cards
+   392→search
+   393→navigation
+   394→filters
+   395→product details
+   396→comparison tables.
+   397→
+   398→==================================================
+   399→# 13. PRODUCT GRID
+   400→==================================================
+   401→
+   402→The current product cards are too compressed.
+   403→
+   404→Create a responsive product grid.
+   405→
+   406→Desktop:
+   407→
+   408→4 columns
+   409→
+   410→Large desktop:
+   411→
+   412→4–5 columns
+   413→
+   414→Tablet:
+   415→
+   416→2–3 columns
+   417→
+   418→Mobile:
+   419→
+   420→2 columns where product content remains usable
+   421→
+   422→Small mobile:
+   423→
+   424→1–2 columns depending on card complexity.
+   425→
+   426→Example:
+   427→
+   428→grid-template-columns:
+   429→repeat(4, minmax(0, 1fr));
+   430→
+   431→Do NOT use fixed:
+   432→
+   433→grid-template-columns:
+   434→repeat(4, 300px);
+   435→
+   436→because this creates overflow.
+   437→
+   438→==================================================
+   439→# 14. PRODUCT CARD
+   440→==================================================
+   441→
+   442→Product cards must be redesigned for electronics.
+   443→
+   444→Each card should have:
+   445→
+   446→IMAGE
+   447→BRAND
+   448→PRODUCT NAME
+   449→KEY SPECS
+   450→PRICE
+   451→OLD PRICE
+   452→CONDITION
+   453→WARRANTY
+   454→STOCK
+   455→ADD TO CART
+   456→
+   457→But maintain visual hierarchy.
+   458→
+   459→Do not display every specification.
+   460→
+   461→Example:
+   462→
+   463→HP EliteBook 840 G8
+   464→
+   465→Core i7 • 16GB • 512GB SSD
+   466→
+   467→Grade A Refurbished
+   468→
+   469→KSh 49,999
+   470→
+   471→6 Month Warranty
+   472→
+   473→IN STOCK
+   474→
+   475→Add to Cart
+   476→
+   477→==================================================
+   478→# 15. IMAGE CONSTRAINTS
+   479→==================================================
+   480→
+   481→Images must NEVER be allowed to expand their parent.
+   482→
+   483→Global rule:
+   484→
+   485→img {
+   486→  max-width: 100%;
+   487→  height: auto;
+   488→}
+   489→
+   490→For product media:
+   491→
+   492→width: 100%;
+   493→aspect-ratio: 1 / 1;
+   494→object-fit: contain;
+   495→
+   496→Use the previously defined image CDN architecture.
+   497→
+   498→Do not load huge original images.
+   499→
+   500→==================================================
+   501→# 16. PRODUCT IMAGE CONTAINER
+   502→==================================================
+   503→
+   504→Product images should have a predictable aspect ratio.
+   505→
+   506→Example:
+   507→
+   508→.product-image {
+   509→  aspect-ratio: 1 / 1;
+   510→  width: 100%;
+   511→  overflow: hidden;
+   512→}
+   513→
+   514→The image:
+   515→
+   516→width: 100%;
+   517→height: 100%;
+   518→object-fit: contain;
+   519→
+   520→This prevents product images from changing card dimensions.
+   521→
+   522→==================================================
+   523→# 17. SECTION WIDTHS
+   524→==================================================
+   525→
+   526→Audit every homepage section:
+   527→
+   528→Trust bar
+   529→Categories
+   530→Featured products
+   531→Deals
+   532→Gaming
+   533→Refurbished
+   534→Laptop Finder
+   535→Business
+   536→Services
+   537→Buying guides
+   538→Footer
+   539→
+   540→Every section should either be:
+   541→
+   542→FULL BLEED
+   543→
+   544→or:
+   545→
+   546→CONTAINERIZED.
+   547→
+   548→No arbitrary widths.
+   549→
+   550→==================================================
+   551→# 18. REMOVE THE LARGE EMPTY AREA
+   552→==================================================
+   553→
+   554→The screenshot shows a massive unused area to the right of the
+   555→storefront.
+   556→
+   557→Find the parent causing the constrained layout.
+   558→
+   559→Do not solve this by scaling the entire page.
+   560→
+   561→Do NOT:
+   562→
+   563→zoom
+   564→transform: scale()
+   565→set arbitrary width
+   566→duplicate content
+   567→
+   568→Instead establish:
+   569→
+   570→width: 100%
+   571→
+   572→and:
+   573→
+   574→max-width: 1440px
+   575→
+   576→for the content container.
+   577→
+   578→The page should visually occupy the available viewport while maintaining
+   579→reasonable reading/product widths.
+   580→
+   581→==================================================
+   582→# 19. ULTRAWIDE DESKTOP
+   583→==================================================
+   584→
+   585→The design must also work on:
+   586→
+   587→1440px
+   588→1600px
+   589→1920px
+   590→2560px
+   591→
+   592→Do NOT stretch product cards infinitely.
+   593→
+   594→At large widths:
+   595→
+   596→keep the content centered.
+   597→
+   598→Example:
+   599→
+   600→viewport:
+   601→2560px
+   602→
+   603→content:
+   604→1440px
+   605→
+   606→remaining whitespace:
+   607→
+   608→distributed equally on both sides.
+   609→
+   610→This is intentional whitespace.
+   611→
+   612→The screenshot's current whitespace is NOT intentional because the
+   613→actual storefront is incorrectly constrained to one side.
+   614→
+   615→==================================================
+   616→# 20. TABLET
+   617→==================================================
+   618→
+   619→Test:
+   620→
+   621→768px
+   622→820px
+   623→912px
+   624→1024px
+   625→
+   626→Header must gracefully collapse.
+   627→
+   628→Product grid must reduce columns.
+   629→
+   630→Navigation must not cause body overflow.
+   631→
+   632→Hero should become:
+   633→
+   634→single column
+   635→
+   636→when two columns become too cramped.
+   637→
+   638→==================================================
+   639→# 21. MOBILE
+   640→==================================================
+   641→
+   642→Test:
+   643→
+   644→320px
+   645→360px
+   646→375px
+   647→390px
+   648→412px
+   649→430px
+   650→
+   651→There must be:
+   652→
+   653→NO horizontal body scrolling.
+   654→
+   655→No clipped buttons.
+   656→
+   657→No overflowing text.
+   658→
+   659→No fixed desktop navigation.
+   660→
+   661→No desktop mega-menu forcing page width.
+   662→
+   663→No product card extending beyond viewport.
+   664→
+   665→==================================================
+   666→# 22. MOBILE HEADER
+   667→==================================================
+   668→
+   669→Mobile header:
+   670→
+   671→Logo
+   672→Search
+   673→Cart
+   674→
+   675→Then:
+   676→
+   677→Category/menu access
+   678→
+   679→Use a drawer for the full category navigation.
+   680→
+   681→Do not attempt to squeeze 15–20 categories into one row.
+   682→
+   683→==================================================
+   684→# 23. MOBILE PRODUCT GRID
+   685→==================================================
+   686→
+   687→Use:
+   688→
+   689→2 columns
+   690→
+   691→when the card remains usable.
+   692→
+   693→If the product content becomes too dense:
+   694→
+   695→switch to:
+   696→
+   697→1 column.
+   698→
+   699→Do not create cards narrower than practical touch targets and readable
+   700→product information.
+   701→
+   702→==================================================
+   703→# 24. BUTTONS
+   704→==================================================
+   705→
+   706→Avoid fixed widths such as:
+   707→
+   708→width: 300px;
+   709→
+   710→Prefer:
+   711→
+   712→width: 100%;
+   713→max-width: ...
+   714→
+   715→or:
+   716→
+   717→flex: 1;
+   718→
+   719→depending on context.
+   720→
+   721→Buttons must remain readable on mobile.
+   722→
+   723→==================================================
+   724→# 25. TYPOGRAPHY
+   725→==================================================
+   726→
+   727→Long product names must wrap.
+   728→
+   729→Avoid globally applying:
+   730→
+   731→white-space: nowrap;
+   732→
+   733→Only use nowrap where intentionally required.
+   734→
+   735→For product names:
+   736→
+   737→display: -webkit-box;
+   738→-webkit-line-clamp: 2;
+   739→-webkit-box-orient: vertical;
+   740→overflow: hidden;
+   741→
+   742→This keeps product grids aligned.
+   743→
+   744→==================================================
+   745→# 26. FOOTER
+   746→==================================================
+   747→
+   748→Footer must use the same container system.
+   749→
+   750→Desktop:
+   751→
+   752→multiple columns.
+   753→
+   754→Tablet:
+   755→
+   756→2 columns.
+   757→
+   758→Mobile:
+   759→
+   760→accordion or stacked sections.
+   761→
+   762→Never allow footer content to establish document width.
+   763→
+   764→==================================================
+   765→# 27. DESIGN SYSTEM
+   766→==================================================
+   767→
+   768→Create centralized tokens:
+   769→
+   770→--container-max
+   771→--page-padding
+   772→--section-spacing
+   773→--grid-gap
+   774→--card-radius
+   775→--button-height
+   776→--header-height
+   777→
+   778→Do not scatter arbitrary values throughout components.
+   779→
+   780→==================================================
+   781→# 28. RESPONSIVE BREAKPOINTS
+   782→==================================================
+   783→
+   784→Use a small number of deliberate breakpoints.
+   785→
+   786→Do not create:
+   787→
+   788→17 different breakpoints.
+   789→
+   790→Prefer something similar to:
+   791→
+   792→mobile
+   793→tablet
+   794→desktop
+   795→large desktop
+   796→
+   797→Adjust based on actual component behavior rather than device names.
+   798→
+   799→==================================================
+   800→# 29. VISUAL HIERARCHY
+   801→==================================================
+   802→
+   803→After fixing the technical overflow, redesign the visual hierarchy.
+   804→
+   805→The homepage should communicate:
+   806→
+   807→BIGMAN
+   808→
+   809→COMPUTERS + TECHNOLOGY
+   810→
+   811→SHOP
+   812→
+   813→GAMING
+   814→
+   815→REFURBISHED
+   816→
+   817→ACCESSORIES
+   818→
+   819→DEALS
+   820→
+   821→SERVICES
+   822→
+   823→BUSINESS
+   824→
+   825→The user should know what Bigman sells within seconds.
+   826→
+   827→==================================================
+   828→# 30. REMOVE GENERIC UI FEEL
+   829→==================================================
+   830→
+   831→The current interface should be refined to feel like a real electronics
+   832→retailer.
+   833→
+   834→Avoid excessive:
+   835→
+   836→glassmorphism
+   837→rounded containers
+   838→floating cards
+   839→gradients
+   840→huge empty spaces
+   841→generic icons
+   842→SaaS dashboard patterns.
+   843→
+   844→Use:
+   845→
+   846→strong product photography
+   847→clean white/neutral backgrounds
+   848→precise typography
+   849→subtle borders
+   850→controlled shadows
+   851→clear pricing
+   852→technical specification hierarchy
+   853→high-quality product cards.
+   854→
+   855→==================================================
+   856→# 31. HORIZONTAL SCROLL POLICY
+   857→==================================================
+   858→
+   859→The ONLY components allowed to horizontally scroll are intentional
+   860→components such as:
+   861→
+   862→category carousels
+   863→product carousels
+   864→comparison tables where unavoidable
+   865→mobile navigation strips
+   866→
+   867→The BODY and main document must NOT horizontally scroll.
+   868→
+   869→==================================================
+   870→# 32. ACCEPTANCE TEST
+   871→==================================================
+   872→
+   873→The implementation is NOT complete until:
+   874→
+   875→[ ] No horizontal scrollbar exists on desktop.
+   876→
+   877→[ ] No horizontal scrollbar exists on mobile.
+   878→
+   879→[ ] Main content is centered.
+   880→
+   881→[ ] Main content uses the available viewport appropriately.
+   882→
+   883→[ ] No section is accidentally constrained to a narrow column.
+   884→
+   885→[ ] Header aligns with main content.
+   886→
+   887→[ ] Search aligns with header grid.
+   888→
+   889→[ ] Navigation stays inside viewport.
+   890→
+   891→[ ] Hero uses intended width.
+   892→
+   893→[ ] Product grid uses available width.
+   894→
+   895→[ ] Product cards resize correctly.
+   896→
+   897→[ ] Images never cause overflow.
+   898→
+   899→[ ] Long product names wrap.
+   900→
+   901→[ ] Buttons never overflow.
+   902→
+   903→[ ] Footer never overflows.
+   904→
+   905→[ ] 320px mobile works.
+   906→
+   907→[ ] 390px mobile works.
+   908→
+   909→[ ] 768px tablet works.
+   910→
+   911→[ ] 1024px desktop works.
+   912→
+   913→[ ] 1440px desktop works.
+   914→
+   915→[ ] 1920px desktop works.
+   916→
+   917→[ ] 2560px ultrawide works.
+   918→
+   919→==================================================
+   920→# 33. REQUIRED DEBUGGING APPROACH
+   921→==================================================
+   922→
+   923→Do not randomly modify CSS until the screenshot looks better.
+   924→
+   925→Follow:
+   926→
+   927→1. Identify overflow element.
+   928→2. Identify parent causing constraint.
+   929→3. Identify intrinsic/min-width issue.
+   930→4. Fix layout architecture.
+   931→5. Establish container system.
+   932→6. Establish responsive grid.
+   933→7. Fix header.
+   934→8. Fix hero.
+   935→9. Fix product grid.
+   936→10. Fix images.
+   937→11. Fix mobile.
+   938→12. Run visual regression.
+   939→
+   940→==================================================
+   941→# 34. FINAL QUALITY BAR
+   942→==================================================
+   943→
+   944→The Bigman storefront should feel like:
+   945→
+   946→A premium computer retailer
+   947→+
+   948→A modern electronics marketplace
+   949→+
+   950→A trusted Kenyan technology business.
+   951→
+   952→It should be:
+   953→
+   954→FAST
+   955→CLEAN
+   956→RESPONSIVE
+   957→PRODUCT-FIRST
+   958→MOBILE-FIRST
+   959→ACCESSIBLE
+   960→HIGH-CONVERSION
+   961→
+   962→Most importantly:
+   963→
+   964→THE DESIGN MUST USE THE VIEWPORT CORRECTLY.
+   965→
+   966→DO NOT HIDE OVERFLOW.
+   967→
+   968→FIX THE SOURCE OF THE OVERFLOW.
+   969→
+   970→
+   971→Yes. Looking at the screenshot, I would **not treat this as just a CSS overflow problem**. There are actually **two UI/layout problems happening at the same time**:
+   972→
+   973→1. **The main storefront is being constrained to roughly the left third of the viewport**, leaving a huge unused white area.
+   974→2. **At least one child/navigation/container is wider than its parent**, creating the horizontal scrollbar.
+   975→
+   976→The worst thing to do is simply add `overflow-x: hidden`. That hides the symptom while leaving the broken layout.
+   977→
+   978→## What I would tell the Staff Engineers
+   979→
+   980→The goal should be:
+   981→
+   982→> **Fix the layout system, not the scrollbar.**
+   983→
+   984→The storefront should have a predictable responsive shell:
+   985→
+   986→```text
+   987→┌──────────────────────────────────────────────────────────────┐
+   988→│ Utility Bar                                                   │
+   989→├──────────────────────────────────────────────────────────────┤
+   990→│ Logo        Search                         Account Cart       │
+   991→├──────────────────────────────────────────────────────────────┤
+   992→│ Shop  Laptops  Gaming  Accessories  ...                       │
+   993→├──────────────────────────────────────────────────────────────┤
+   994→│                                                              │
+   995→│                    FULL-WIDTH CONTENT                        │
+   996→│                                                              │
+   997→└──────────────────────────────────────────────────────────────┘
+   998→```
+   999→
+  1000→Not:
+  1001→
+  1002→```text
+  1003→┌───────────────────────┬──────────────────────────────────────┐
+  1004→│                       │                                      │
+  1005→│   Bigman content      │           HUGE EMPTY AREA            │
+  1006→│                       │                                      │
+  1007→└───────────────────────┴──────────────────────────────────────┘
+  1008→                         ↳ horizontal overflow
+  1009→```
+  1010→
+  1011→---
+  1012→
+  1013→# Use this prompt with your Staff Engineers / coding agent
+  1014→
+  1015→```text
+  1016→# BIGMAN COMMERCE
+  1017→# PRINCIPAL UI/UX + FRONTEND LAYOUT CORRECTION
+  1018→# RESPONSIBILITY: STAFF FRONTEND ENGINEERING + SENIOR PRODUCT DESIGN
+  1019→
+  1020→We have a serious responsive layout issue in the current Bigman Commerce
+  1021→storefront.
+  1022→
+  1023→The attached screenshot demonstrates the problem.
+  1024→
+  1025→DO NOT simply add:
+  1026→
+  1027→overflow-x: hidden;
+  1028→
+  1029→That is NOT an acceptable solution.
+  1030→
+  1031→The objective is to identify the element causing the overflow, correct
+  1032→the underlying layout architecture, and redesign the storefront shell so
+  1033→that it behaves correctly from mobile through ultrawide desktop displays.
+  1034→
+  1035→The result must feel like a professional modern electronics retailer,
+  1036→not a partially constrained developer preview.
+  1037→
+  1038→==================================================
+  1039→# 1. CURRENT PROBLEMS OBSERVED
+  1040→==================================================
+  1041→
+  1042→The screenshot shows:
+  1043→
+  1044→1. Main content occupying only a narrow portion of the viewport.
+  1045→2. Large unused whitespace on the right side.
+  1046→3. Horizontal scrollbar appearing.
+  1047→4. Navigation extending beyond its intended container.
+  1048→5. Hero/content sections not respecting the viewport/container system.
+  1049→6. Product sections appearing compressed into the left side.
+  1050→7. Product cards are too narrow.
+  1051→8. The overall page lacks a coherent maximum-width/responsive layout.
+  1052→9. Header and navigation do not appear to share the same layout grid.
+  1053→10. Some child element is wider than its containing block.
+  1054→11. The visual hierarchy is broken because the storefront does not use
+  1055→    the available viewport correctly.
+  1056→
+  1057→Treat these as layout-system issues.
+  1058→
+  1059→==================================================
+  1060→# 2. FIRST TASK: FIND THE REAL OVERFLOW SOURCE
+  1061→==================================================
+  1062→
+  1063→Before changing styles, inspect the DOM.
+  1064→
+  1065→Find every element whose:
+  1066→
+  1067→scrollWidth > clientWidth
+  1068→
+  1069→or:
+  1070→
+  1071→getBoundingClientRect().right > viewport width
+  1072→
+  1073→Temporarily instrument the page to identify the offending element.
+  1074→
+  1075→Use a development-only diagnostic such as:
+  1076→
+  1077→document.querySelectorAll('*').forEach((element) => {
+  1078→  const rect = element.getBoundingClientRect();
+  1079→
+  1080→  if (
+  1081→    rect.right > document.documentElement.clientWidth + 1 ||
+  1082→    rect.left < -1
+  1083→  ) {
+  1084→    console.log('OVERFLOW:', element, rect);
+  1085→  }
+  1086→});
+  1087→
+  1088→Do not leave diagnostic code in production.
+  1089→
+  1090→Identify the actual root cause.
+  1091→
+  1092→==================================================
+  1093→# 3. INVESTIGATE THESE COMMON CAUSES
+  1094→==================================================
+  1095→
+  1096→Inspect the entire application for:
+  1097→
+  1098→width: 100vw
+  1099→
+  1100→min-width
+  1101→
+  1102→fixed pixel widths
+  1103→
+  1104→fixed navigation widths
+  1105→
+  1106→large negative margins
+  1107→
+  1108→absolute positioned elements
+  1109→
+  1110→transform: translateX()
+  1111→
+  1112→large box shadows
+  1113→
+  1114→large images
+  1115→
+  1116→unbounded flex children
+  1117→
+  1118→unbounded grid children
+  1119→
+  1120→long text without wrapping
+  1121→
+  1122→white-space: nowrap
+  1123→
+  1124→large SVGs
+  1125→
+  1126→iframes
+  1127→
+  1128→tables
+  1129→
+  1130→carousels
+  1131→
+  1132→product grids
+  1133→
+  1134→mega menus
+  1135→
+  1136→horizontal navigation
+  1137→
+  1138→buttons with fixed widths
+  1139→
+  1140→elements using calc() incorrectly
+  1141→
+  1142→children with width larger than parent
+  1143→
+  1144→Ensure the fix addresses the actual offending component.
+  1145→
+  1146→==================================================
+  1147→# 4. GLOBAL BOX MODEL
+  1148→==================================================
+  1149→
+  1150→Establish:
+  1151→
+  1152→html {
+  1153→  box-sizing: border-box;
+  1154→}
+  1155→
+  1156→*,
+  1157→*::before,
+  1158→*::after {
+  1159→  box-sizing: inherit;
+  1160→}
+  1161→
+  1162→html,
+  1163→body {
+  1164→  margin: 0;
+  1165→  padding: 0;
+  1166→  width: 100%;
+  1167→  max-width: 100%;
+  1168→}
+  1169→
+  1170→body {
+  1171→  overflow-x: clip;
+  1172→}
+  1173→
+  1174→IMPORTANT:
+  1175→
+  1176→overflow-x: clip is a final defensive boundary only.
+  1177→
+  1178→It must NOT be used as the primary fix.
+  1179→
+  1180→The page must already be structurally responsive.
+  1181→
+  1182→==================================================
+  1183→# 5. APPLICATION ROOT
+  1184→==================================================
+  1185→
+  1186→The application root must not have an accidental fixed width.
+  1187→
+  1188→Ensure:
+  1189→
+  1190→#root,
+  1191→#__next,
+  1192→main {
+  1193→  width: 100%;
+  1194→  max-width: 100%;
+  1195→  min-width: 0;
+  1196→}
+  1197→
+  1198→Inspect every parent container above the storefront.
+  1199→
+  1200→No parent should unintentionally use:
+  1201→
+  1202→width: 500px
+  1203→
+  1204→width: 1024px
+  1205→
+  1206→min-width: 1024px
+  1207→
+  1208→width: 100vw
+  1209→
+  1210→without a valid reason.
+  1211→
+  1212→==================================================
+  1213→# 6. CREATE A SINGLE STOREFRONT CONTAINER SYSTEM
+  1214→==================================================
+  1215→
+  1216→Do not allow every section to invent its own width.
+  1217→
+  1218→Create a central container:
+  1219→
+  1220→.container {
+  1221→  width: min(100% - 32px, 1440px);
+  1222→  margin-inline: auto;
+  1223→}
+  1224→
+  1225→For larger desktop:
+  1226→
+  1227→.container {
+  1228→  width: min(100% - 48px, 1440px);
+  1229→}
+  1230→
+  1231→The exact values may be adjusted based on the existing design system.
+  1232→
+  1233→The important principle:
+  1234→
+  1235→EVERY MAJOR STOREFRONT SECTION MUST USE THE SAME HORIZONTAL GRID.
+  1236→
+  1237→==================================================
+  1238→# 7. FULL-BLEED VS CONTAINER CONTENT
+  1239→==================================================
+  1240→
+  1241→Clearly distinguish:
+  1242→
+  1243→FULL-BLEED SECTIONS
+  1244→
+  1245→from:
+  1246→
+  1247→CONTAINERIZED CONTENT.
+  1248→
+  1249→Example:
+  1250→
+  1251→<section className="hero">
+  1252→  <div className="container">
+  1253→    ...
+  1254→  </div>
+  1255→</section>
+  1256→
+  1257→The background can span:
+  1258→
+  1259→100%
+  1260→
+  1261→while the content remains constrained to:
+  1262→
+  1263→max-width: 1440px.
+  1264→
+  1265→Do NOT create:
+  1266→
+  1267→<section className="hero container">
+  1268→
+  1269→if the visual design requires a full-width background.
+  1270→
+  1271→==================================================
+  1272→# 8. HEADER REDESIGN
+  1273→==================================================
+  1274→
+  1275→The current header/navigation must be rebuilt around the same container
+  1276→system.
+  1277→
+  1278→Structure:
+  1279→
+  1280→UTILITY BAR
+  1281→MAIN HEADER
+  1282→CATEGORY NAVIGATION
+  1283→
+  1284→All three must respect the viewport.
+  1285→
+  1286→Desktop:
+  1287→
+  1288→------------------------------------------------
+  1289→BIGMAN | SEARCH                    ACCOUNT CART
+  1290→------------------------------------------------
+  1291→SHOP | LAPTOPS | GAMING | ACCESSORIES | ...
+  1292→------------------------------------------------
+  1293→
+  1294→The search bar must be flexible.
+  1295→
+  1296→Do NOT use fixed widths that cause the navigation to overflow.
+  1297→
+  1298→Use:
+  1299→
+  1300→flex: 1;
+  1301→min-width: 0;
+  1302→
+  1303→where appropriate.
+  1304→
+  1305→==================================================
+  1306→# 9. SEARCH BAR
+  1307→==================================================
+  1308→
+  1309→The search bar should grow/shrink based on available space.
+  1310→
+  1311→Avoid:
+  1312→
+  1313→width: 700px;
+  1314→
+  1315→Use something equivalent to:
+  1316→
+  1317→flex: 1;
+  1318→min-width: 0;
+  1319→max-width: 720px;
+  1320→
+  1321→On mobile:
+  1322→
+  1323→width: 100%.
+  1324→
+  1325→==================================================
+  1326→# 10. CATEGORY NAVIGATION
+  1327→==================================================
+  1328→
+  1329→The category navigation is a likely overflow candidate.
+  1330→
+  1331→Desktop:
+  1332→
+  1333→Use a responsive flex/grid system.
+  1334→
+  1335→Do not allow categories to push the entire page wider.
+  1336→
+  1337→If the number of categories cannot fit:
+  1338→
+  1339→Use a controlled horizontal category scroller INSIDE the navigation
+  1340→container.
+  1341→
+  1342→The scroller must not expand the document width.
+  1343→
+  1344→For mobile:
+  1345→
+  1346→Use:
+  1347→
+  1348→overflow-x: auto;
+  1349→
+  1350→only on the navigation strip.
+  1351→
+  1352→The BODY itself must never horizontally scroll.
+  1353→
+  1354→==================================================
+  1355→# 11. HERO SECTION
+  1356→==================================================
+  1357→
+  1358→The hero should use the entire available viewport width.
+  1359→
+  1360→Do NOT allow the hero to occupy only a small left column unless that is
+  1361→intentionally part of a two-column composition.
+  1362→
+  1363→Recommended:
+  1364→
+  1365→.hero {
+  1366→  width: 100%;
+  1367→}
+  1368→
+  1369→.hero-inner {
+  1370→  width: min(100% - 32px, 1440px);
+  1371→  margin-inline: auto;
+  1372→}
+  1373→
+  1374→Desktop:
+  1375→
+  1376→grid-template-columns:
+  1377→minmax(0, 1fr) minmax(0, 1fr);
+  1378→
+  1379→or another deliberate ratio.
+  1380→
+  1381→CRITICAL:
+  1382→
+  1383→Use minmax(0, 1fr).
+  1384→
+  1385→Do NOT use:
+  1386→
+  1387→grid-template-columns: 1fr 1fr;
+  1388→
+  1389→without checking whether children have intrinsic minimum widths.
+  1390→
+  1391→==================================================
+  1392→# 12. GRID CHILDREN
+  1393→==================================================
+  1394→
+  1395→Every grid/flex child that contains potentially large content should
+  1396→allow itself to shrink.
+  1397→
+  1398→Use:
+  1399→
+  1400→min-width: 0;
+  1401→
+  1402→This is especially important for:
+  1403→
+  1404→hero content
+  1405→product cards
+  1406→search
+  1407→navigation
+  1408→filters
+  1409→product details
+  1410→comparison tables.
+  1411→
+  1412→==================================================
+  1413→# 13. PRODUCT GRID
+  1414→==================================================
+  1415→
+  1416→The current product cards are too compressed.
+  1417→
+  1418→Create a responsive product grid.
+  1419→
+  1420→Desktop:
+  1421→
+  1422→4 columns
+  1423→
+  1424→Large desktop:
+  1425→
+  1426→4–5 columns
+  1427→
+  1428→Tablet:
+  1429→
+  1430→2–3 columns
+  1431→
+  1432→Mobile:
+  1433→
+  1434→2 columns where product content remains usable
+  1435→
+  1436→Small mobile:
+  1437→
+  1438→1–2 columns depending on card complexity.
+  1439→
+  1440→Example:
+  1441→
+  1442→grid-template-columns:
+  1443→repeat(4, minmax(0, 1fr));
+  1444→
+  1445→Do NOT use fixed:
+  1446→
+  1447→grid-template-columns:
+  1448→repeat(4, 300px);
+  1449→
+  1450→because this creates overflow.
+  1451→
+  1452→==================================================
+  1453→# 14. PRODUCT CARD
+  1454→==================================================
+  1455→
+  1456→Product cards must be redesigned for electronics.
+  1457→
+  1458→Each card should have:
+  1459→
+  1460→IMAGE
+  1461→BRAND
+  1462→PRODUCT NAME
+  1463→KEY SPECS
+  1464→PRICE
+  1465→OLD PRICE
+  1466→CONDITION
+  1467→WARRANTY
+  1468→STOCK
+  1469→ADD TO CART
+  1470→
+  1471→But maintain visual hierarchy.
+  1472→
+  1473→Do not display every specification.
+  1474→
+  1475→Example:
+  1476→
+  1477→HP EliteBook 840 G8
+  1478→
+  1479→Core i7 • 16GB • 512GB SSD
+  1480→
+  1481→Grade A Refurbished
+  1482→
+  1483→KSh 49,999
+  1484→
+  1485→6 Month Warranty
+  1486→
+  1487→IN STOCK
+  1488→
+  1489→Add to Cart
+  1490→
+  1491→==================================================
+  1492→# 15. IMAGE CONSTRAINTS
+  1493→==================================================
+  1494→
+  1495→Images must NEVER be allowed to expand their parent.
+  1496→
+  1497→Global rule:
+  1498→
+  1499→img {
+  1500→  max-width: 100%;
+  1501→  height: auto;
+  1502→}
+  1503→
+  1504→For product media:
+  1505→
+  1506→width: 100%;
+  1507→aspect-ratio: 1 / 1;
+  1508→object-fit: contain;
+  1509→
+  1510→Use the previously defined image CDN architecture.
+  1511→
+  1512→Do not load huge original images.
+  1513→
+  1514→==================================================
+  1515→# 16. PRODUCT IMAGE CONTAINER
+  1516→==================================================
+  1517→
+  1518→Product images should have a predictable aspect ratio.
+  1519→
+  1520→Example:
+  1521→
+  1522→.product-image {
+  1523→  aspect-ratio: 1 / 1;
+  1524→  width: 100%;
+  1525→  overflow: hidden;
+  1526→}
+  1527→
+  1528→The image:
+  1529→
+  1530→width: 100%;
+  1531→height: 100%;
+  1532→object-fit: contain;
+  1533→
+  1534→This prevents product images from changing card dimensions.
+  1535→
+  1536→==================================================
+  1537→# 17. SECTION WIDTHS
+  1538→==================================================
+  1539→
+  1540→Audit every homepage section:
+  1541→
+  1542→Trust bar
+  1543→Categories
+  1544→Featured products
+  1545→Deals
+  1546→Gaming
+  1547→Refurbished
+  1548→Laptop Finder
+  1549→Business
+  1550→Services
+  1551→Buying guides
+  1552→Footer
+  1553→
+  1554→Every section should either be:
+  1555→
+  1556→FULL BLEED
+  1557→
+  1558→or:
+  1559→
+  1560→CONTAINERIZED.
+  1561→
+  1562→No arbitrary widths.
+  1563→
+  1564→==================================================
+  1565→# 18. REMOVE THE LARGE EMPTY AREA
+  1566→==================================================
+  1567→
+  1568→The screenshot shows a massive unused area to the right of the
+  1569→storefront.
+  1570→
+  1571→Find the parent causing the constrained layout.
+  1572→
+  1573→Do not solve this by scaling the entire page.
+  1574→
+  1575→Do NOT:
+  1576→
+  1577→zoom
+  1578→transform: scale()
+  1579→set arbitrary width
+  1580→duplicate content
+  1581→
+  1582→Instead establish:
+  1583→
+  1584→width: 100%
+  1585→
+  1586→and:
+  1587→
+  1588→max-width: 1440px
+  1589→
+  1590→for the content container.
+  1591→
+  1592→The page should visually occupy the available viewport while maintaining
+  1593→reasonable reading/product widths.
+  1594→
+  1595→==================================================
+  1596→# 19. ULTRAWIDE DESKTOP
+  1597→==================================================
+  1598→
+  1599→The design must also work on:
+  1600→
+  1601→1440px
+  1602→1600px
+  1603→1920px
+  1604→2560px
+  1605→
+  1606→Do NOT stretch product cards infinitely.
+  1607→
+  1608→At large widths:
+  1609→
+  1610→keep the content centered.
+  1611→
+  1612→Example:
+  1613→
+  1614→viewport:
+  1615→2560px
+  1616→
+  1617→content:
+  1618→1440px
+  1619→
+  1620→remaining whitespace:
+  1621→
+  1622→distributed equally on both sides.
+  1623→
+  1624→This is intentional whitespace.
+  1625→
+  1626→The screenshot's current whitespace is NOT intentional because the
+  1627→actual storefront is incorrectly constrained to one side.
+  1628→
+  1629→==================================================
+  1630→# 20. TABLET
+  1631→==================================================
+  1632→
+  1633→Test:
+  1634→
+  1635→768px
+  1636→820px
+  1637→912px
+  1638→1024px
+  1639→
+  1640→Header must gracefully collapse.
+  1641→
+  1642→Product grid must reduce columns.
+  1643→
+  1644→Navigation must not cause body overflow.
+  1645→
+  1646→Hero should become:
+  1647→
+  1648→single column
+  1649→
+  1650→when two columns become too cramped.
+  1651→
+  1652→==================================================
+  1653→# 21. MOBILE
+  1654→==================================================
+  1655→
+  1656→Test:
+  1657→
+  1658→320px
+  1659→360px
+  1660→375px
+  1661→390px
+  1662→412px
+  1663→430px
+  1664→
+  1665→There must be:
+  1666→
+  1667→NO horizontal body scrolling.
+  1668→
+  1669→No clipped buttons.
+  1670→
+  1671→No overflowing text.
+  1672→
+  1673→No fixed desktop navigation.
+  1674→
+  1675→No desktop mega-menu forcing page width.
+  1676→
+  1677→No product card extending beyond viewport.
+  1678→
+  1679→==================================================
+  1680→# 22. MOBILE HEADER
+  1681→==================================================
+  1682→
+  1683→Mobile header:
+  1684→
+  1685→Logo
+  1686→Search
+  1687→Cart
+  1688→
+  1689→Then:
+  1690→
+  1691→Category/menu access
+  1692→
+  1693→Use a drawer for the full category navigation.
+  1694→
+  1695→Do not attempt to squeeze 15–20 categories into one row.
+  1696→
+  1697→==================================================
+  1698→# 23. MOBILE PRODUCT GRID
+  1699→==================================================
+  1700→
+  1701→Use:
+  1702→
+  1703→2 columns
+  1704→
+  1705→when the card remains usable.
+  1706→
+  1707→If the product content becomes too dense:
+  1708→
+  1709→switch to:
+  1710→
+  1711→1 column.
+  1712→
+  1713→Do not create cards narrower than practical touch targets and readable
+  1714→product information.
+  1715→
+  1716→==================================================
+  1717→# 24. BUTTONS
+  1718→==================================================
+  1719→
+  1720→Avoid fixed widths such as:
+  1721→
+  1722→width: 300px;
+  1723→
+  1724→Prefer:
+  1725→
+  1726→width: 100%;
+  1727→max-width: ...
+  1728→
+  1729→or:
+  1730→
+  1731→flex: 1;
+  1732→
+  1733→depending on context.
+  1734→
+  1735→Buttons must remain readable on mobile.
+  1736→
+  1737→==================================================
+  1738→# 25. TYPOGRAPHY
+  1739→==================================================
+  1740→
+  1741→Long product names must wrap.
+  1742→
+  1743→Avoid globally applying:
+  1744→
+  1745→white-space: nowrap;
+  1746→
+  1747→Only use nowrap where intentionally required.
+  1748→
+  1749→For product names:
+  1750→
+  1751→display: -webkit-box;
+  1752→-webkit-line-clamp: 2;
+  1753→-webkit-box-orient: vertical;
+  1754→overflow: hidden;
+  1755→
+  1756→This keeps product grids aligned.
+  1757→
+  1758→==================================================
+  1759→# 26. FOOTER
+  1760→==================================================
+  1761→
+  1762→Footer must use the same container system.
+  1763→
+  1764→Desktop:
+  1765→
+  1766→multiple columns.
+  1767→
+  1768→Tablet:
+  1769→
+  1770→2 columns.
+  1771→
+  1772→Mobile:
+  1773→
+  1774→accordion or stacked sections.
+  1775→
+  1776→Never allow footer content to establish document width.
+  1777→
+  1778→==================================================
+  1779→# 27. DESIGN SYSTEM
+  1780→==================================================
+  1781→
+  1782→Create centralized tokens:
+  1783→
+  1784→--container-max
+  1785→--page-padding
+  1786→--section-spacing
+  1787→--grid-gap
+  1788→--card-radius
+  1789→--button-height
+  1790→--header-height
+  1791→
+  1792→Do not scatter arbitrary values throughout components.
+  1793→
+  1794→==================================================
+  1795→# 28. RESPONSIVE BREAKPOINTS
+  1796→==================================================
+  1797→
+  1798→Use a small number of deliberate breakpoints.
+  1799→
+  1800→Do not create:
+  1801→
+  1802→17 different breakpoints.
+  1803→
+  1804→Prefer something similar to:
+  1805→
+  1806→mobile
+  1807→tablet
+  1808→desktop
+  1809→large desktop
+  1810→
+  1811→Adjust based on actual component behavior rather than device names.
+  1812→
+  1813→==================================================
+  1814→# 29. VISUAL HIERARCHY
+  1815→==================================================
+  1816→
+  1817→After fixing the technical overflow, redesign the visual hierarchy.
+  1818→
+  1819→The homepage should communicate:
+  1820→
+  1821→BIGMAN
+  1822→
+  1823→COMPUTERS + TECHNOLOGY
+  1824→
+  1825→SHOP
+  1826→
+  1827→GAMING
+  1828→
+  1829→REFURBISHED
+  1830→
+  1831→ACCESSORIES
+  1832→
+  1833→DEALS
+  1834→
+  1835→SERVICES
+  1836→
+  1837→BUSINESS
+  1838→
+  1839→The user should know what Bigman sells within seconds.
+  1840→
+  1841→==================================================
+  1842→# 30. REMOVE GENERIC UI FEEL
+  1843→==================================================
+  1844→
+  1845→The current interface should be refined to feel like a real electronics
+  1846→retailer.
+  1847→
+  1848→Avoid excessive:
+  1849→
+  1850→glassmorphism
+  1851→rounded containers
+  1852→floating cards
+  1853→gradients
+  1854→huge empty spaces
+  1855→generic icons
+  1856→SaaS dashboard patterns.
+  1857→
+  1858→Use:
+  1859→
+  1860→strong product photography
+  1861→clean white/neutral backgrounds
+  1862→precise typography
+  1863→subtle borders
+  1864→controlled shadows
+  1865→clear pricing
+  1866→technical specification hierarchy
+  1867→high-quality product cards.
+  1868→
+  1869→==================================================
+  1870→# 31. HORIZONTAL SCROLL POLICY
+  1871→==================================================
+  1872→
+  1873→The ONLY components allowed to horizontally scroll are intentional
+  1874→components such as:
+  1875→
+  1876→category carousels
+  1877→product carousels
+  1878→comparison tables where unavoidable
+  1879→mobile navigation strips
+  1880→
+  1881→The BODY and main document must NOT horizontally scroll.
+  1882→
+  1883→==================================================
+  1884→# 32. ACCEPTANCE TEST
+  1885→==================================================
+  1886→
+  1887→The implementation is NOT complete until:
+  1888→
+  1889→[ ] No horizontal scrollbar exists on desktop.
+  1890→
+  1891→[ ] No horizontal scrollbar exists on mobile.
+  1892→
+  1893→[ ] Main content is centered.
+  1894→
+  1895→[ ] Main content uses the available viewport appropriately.
+  1896→
+  1897→[ ] No section is accidentally constrained to a narrow column.
+  1898→
+  1899→[ ] Header aligns with main content.
+  1900→
+  1901→[ ] Search aligns with header grid.
+  1902→
+  1903→[ ] Navigation stays inside viewport.
+  1904→
+  1905→[ ] Hero uses intended width.
+  1906→
+  1907→[ ] Product grid uses available width.
+  1908→
+  1909→[ ] Product cards resize correctly.
+  1910→
+  1911→[ ] Images never cause overflow.
+  1912→
+  1913→[ ] Long product names wrap.
+  1914→
+  1915→[ ] Buttons never overflow.
+  1916→
+  1917→[ ] Footer never overflows.
+  1918→
+  1919→[ ] 320px mobile works.
+  1920→
+  1921→[ ] 390px mobile works.
+  1922→
+  1923→[ ] 768px tablet works.
+  1924→
+  1925→[ ] 1024px desktop works.
+  1926→
+  1927→[ ] 1440px desktop works.
+  1928→
+  1929→[ ] 1920px desktop works.
+  1930→
+  1931→[ ] 2560px ultrawide works.
+  1932→
+  1933→==================================================
+  1934→# 33. REQUIRED DEBUGGING APPROACH
+  1935→==================================================
+  1936→
+  1937→Do not randomly modify CSS until the screenshot looks better.
+  1938→
+  1939→Follow:
+  1940→
+  1941→1. Identify overflow element.
+  1942→2. Identify parent causing constraint.
+  1943→3. Identify intrinsic/min-width issue.
+  1944→4. Fix layout architecture.
+  1945→5. Establish container system.
+  1946→6. Establish responsive grid.
+  1947→7. Fix header.
+  1948→8. Fix hero.
+  1949→9. Fix product grid.
+  1950→10. Fix images.
+  1951→11. Fix mobile.
+  1952→12. Run visual regression.
+  1953→
+  1954→==================================================
+  1955→# 34. FINAL QUALITY BAR
+  1956→==================================================
+  1957→
+  1958→The Bigman storefront should feel like:
+  1959→
+  1960→A premium computer retailer
+  1961→+
+  1962→A modern electronics marketplace
+  1963→+
+  1964→A trusted Kenyan technology business.
+  1965→
+  1966→It should be:
+  1967→
+  1968→FAST
+  1969→CLEAN
+  1970→RESPONSIVE
+  1971→PRODUCT-FIRST
+  1972→MOBILE-FIRST
+  1973→ACCESSIBLE
+  1974→HIGH-CONVERSION
+  1975→
+  1976→Most importantly:
+  1977→
+  1978→THE DESIGN MUST USE THE VIEWPORT CORRECTLY.
+  1979→
+  1980→DO NOT HIDE OVERFLOW.
+  1981→
+  1982→FIX THE SOURCE OF THE OVERFLOW.
+  1983→```
+  1984→
+  1985→## The visual direction I'd change from your screenshot
+  1986→
+  1987→Your current page has the right **general ingredients**, but the composition needs to become much more intentional.
+  1988→
+  1989→### Current
+  1990→
+  1991→```text
+  1992→Header
+  1993→────────────────────────────────
+  1994→
+  1995→Hero
+  1996→███████████████                        
+  1997→
+  1998→Trust
+  1999→███████████████
+  2000→
+
+[showing lines 1-2000 of 2097; use offset=2001 with limit to continue reading]
