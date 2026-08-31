@@ -1,8 +1,1 @@
-<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="630" fill="#1a1a2e"/>
-  <rect x="80" y="200" width="280" height="280" rx="40" fill="#2D2D2D" stroke="#FFFFFF" stroke-width="6"/>
-  <text x="220" y="400" text-anchor="middle" font-family="system-ui" font-weight="800" font-size="200" fill="#FFFFFF">B</text>
-  <text x="440" y="320" font-family="system-ui" font-weight="800" font-size="80" fill="#FFFFFF">BIGMAN</text>
-  <text x="440" y="400" font-family="system-ui" font-weight="400" font-size="40" fill="#0d9488">COMPUTERS</text>
-  <text x="440" y="460" font-family="system-ui" font-weight="300" font-size="28" fill="#999999">Technology that works for you</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#1a1a2e"/><rect width="280" height="280" x="80" y="200" fill="#2D2D2D" stroke="#FFF" stroke-width="6" rx="40"/><text x="220" y="400" fill="#FFF" font-family="system-ui" font-size="200" font-weight="800" text-anchor="middle">B</text><text x="440" y="320" fill="#FFF" font-family="system-ui" font-size="80" font-weight="800">BIGMAN</text><text x="440" y="400" fill="#0d9488" font-family="system-ui" font-size="40" font-weight="400">COMPUTERS</text><text x="440" y="460" fill="#999" font-family="system-ui" font-size="28" font-weight="300">Technology that works for you</text></svg>
