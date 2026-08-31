@@ -14,14 +14,15 @@ interface Props {
   brand?: string
   specs: Record<string, string>
   outOfStock: boolean
+  image?: string
 }
 
 export default function ProductActions({
-  productId, name, price, condition, conditionGrade, brand, specs, outOfStock,
+  productId, name, price, condition, conditionGrade, brand, specs, outOfStock, image,
 }: Props) {
   const { addToCart, toggleWishlist, wishlist, addToCompare, compareList } = useStore()
 
-  const isWished = wishlist.includes(productId)
+  const isWished = wishlist.some(w => w.productId === productId)
   const isComparing = compareList.some(c => c.productId === productId)
   const compareFull = compareList.length >= 4
 
@@ -29,12 +30,13 @@ export default function ProductActions({
     addToCart({
       productId, name, price, quantity: 1,
       condition, conditionGrade,
+      image,
     })
   }
 
   const handleCompare = () => {
     if (isComparing) return
-    addToCompare({ productId, name, price, brand, specs })
+    addToCompare({ productId, name, price, brand, specs, image })
   }
 
   return (
@@ -53,7 +55,7 @@ export default function ProductActions({
         variant="outline"
         size="lg"
         className="h-12 w-12 px-0"
-        onClick={() => toggleWishlist(productId)}
+        onClick={() => toggleWishlist({ productId, name, price, image, slug: undefined, brand })}
         aria-label={isWished ? 'Remove from wishlist' : 'Add to wishlist'}
       >
         <Heart className={cn('h-5 w-5', isWished && 'fill-red-500 text-red-500')} />

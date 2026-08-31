@@ -73,9 +73,9 @@ export default function Header({ categories: propCategories }: HeaderProps) {
   useEffect(() => {
     if (propCategories && propCategories.length > 0) return
     fetch('/api/categories').then(r => r.json()).then(data => {
-      if (Array.isArray(data)) setFetchedCategories(data)
+      setFetchedCategories(data.categories || [])
     }).catch(() => {})
-  }, [propCategories])
+  }, [(propCategories?.length ?? 0)])
   const [shopMegaOpen, setShopMegaOpen] = useState(false)
   const router = useRouter()
   const [searchQ, setSearchQ] = useState('')

@@ -61,8 +61,14 @@ export default function ComparePage() {
                   {compareList.map(item => (
                     <th key={item.productId} className="text-left pb-4 px-4 min-w-[200px]">
                       <div className="relative">
-                        <div className="w-full aspect-[4/3] bg-secondary/40 rounded-lg mb-3 flex items-center justify-center">
-                          <span className="text-3xl font-bold text-muted-foreground/20">{item.name[0]}</span>
+                        <div className="w-full aspect-[4/3] bg-secondary/40 rounded-lg mb-3 overflow-hidden">
+                          {item.image ? (
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="text-3xl font-bold text-muted-foreground/20">{item.name[0]}</span>
+                            </div>
+                          )}
                         </div>
                         <Link href={`/product/${item.slug || item.productId}`} className="text-sm font-semibold hover:text-accent transition-colors line-clamp-2">
                           {item.name}

@@ -19,7 +19,7 @@ export default function ProductCard({ product }: Props) {
   const effectivePrice = product.salePrice || product.basePrice
   const discount = getDiscount(effectivePrice, product.compareAtPrice)
   const stock = stockStatus(product.stockCount, product.trackInventory)
-  const isWished = wishlist.includes(product.id)
+  const isWished = wishlist.some(w => w.productId === product.id)
   const isComparing = compareList.some(c => c.productId === product.id)
   const isGaming = product.isGaming
   const isRefurb = product.condition === 'REFURBISHED'
@@ -36,6 +36,7 @@ export default function ProductCard({ product }: Props) {
     addToCart({
       productId: product.id, name: product.name, price: effectivePrice,
       quantity: 1, condition: product.condition, conditionGrade: product.conditionGrade || undefined,
+      image: primaryImage?.url || undefined,
     })
   }
 
@@ -43,6 +44,7 @@ export default function ProductCard({ product }: Props) {
     addToCompare({
       productId: product.id, slug: product.slug, name: product.name, price: effectivePrice,
       brand: product.brand?.name, specs,
+      image: primaryImage?.url || undefined,
     })
   }
 
@@ -101,7 +103,7 @@ export default function ProductCard({ product }: Props) {
         {/* Quick actions — top-right */}
         <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-1 group-hover:translate-x-0">
           <Button variant="secondary" size="icon" className="h-7 w-7 rounded-full shadow-md border border-border/50"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(product.id) }} aria-label="Add to wishlist">
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist({ productId: product.id, name: product.name, price: effectivePrice, image: primaryImage?.url || undefined, slug: product.slug, brand: product.brand?.name || undefined }) }} aria-label="Add to wishlist">
             <Heart className={cn('h-3.5 w-3.5', isWished && 'fill-red-500 text-red-500')} />
           </Button>
           <Button variant="secondary" size="icon" className="h-7 w-7 rounded-full shadow-md border border-border/50"

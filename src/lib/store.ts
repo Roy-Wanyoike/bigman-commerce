@@ -31,8 +31,10 @@ interface StoreState {
   cartCount: () => number
 
   // Wishlist
-  wishlist: string[]
-  toggleWishlist: (productId: string) => void
+  wishlist: { productId: string; name: string; price: number; image?: string; slug?: string; brand?: string }[]
+  toggleWishlist: (item: { productId: string; name: string; price: number; image?: string; slug?: string; brand?: string }) => void
+  removeFromWishlist: (productId: string) => void
+  clearWishlist: () => void
 
   // Compare
   compareList: CompareItem[]
@@ -72,9 +74,13 @@ export const useStore = create<StoreState>((set, get) => ({
   cartCount: () => get().cart.reduce((sum, c) => sum + c.quantity, 0),
 
   wishlist: [],
-  toggleWishlist: (productId) => set((s) => ({
-    wishlist: s.wishlist.includes(productId) ? s.wishlist.filter(id => id !== productId) : [...s.wishlist, productId]
+  toggleWishlist: (item) => set((s) => ({
+    wishlist: s.wishlist.find(w => w.productId === item.productId)
+      ? s.wishlist.filter(w => w.productId !== item.productId)
+      : [...s.wishlist, item]
   })),
+  removeFromWishlist: (productId) => set((s) => ({ wishlist: s.wishlist.filter(w => w.productId !== productId) })),
+  clearWishlist: () => set({ wishlist: [] }),
 
   compareList: [],
   addToCompare: (item) => set((s) => {

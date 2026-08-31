@@ -16,7 +16,6 @@ import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { useStore } from '@/lib/store'
 import { formatPrice } from '@/lib/prices'
-import { generateOrderNumber } from '@/lib/security'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
 import OrderSummary from '@/components/bigman/OrderSummary'
@@ -282,13 +281,14 @@ function StepDelivery({
 }
 
 function StepPayment({
-  data, updateData, errors, onPay, paying
+  data, updateData, errors, onPay, paying, payError
 }: {
   data: Partial<CheckoutData>
   updateData: (patch: Partial<CheckoutData>) => void
   errors: Record<string, string>
   onPay: () => void
   paying: boolean
+  payError?: string
 }) {
   return (
     <div className="space-y-6">
@@ -352,6 +352,9 @@ function StepPayment({
             <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             Secured by Safaricom M-Pesa
           </div>
+          {payError && (
+            <p className="text-sm text-destructive text-center bg-destructive/10 rounded-lg px-3 py-2">{payError}</p>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -460,6 +463,7 @@ export default function CheckoutClient() {
   const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [paying, setPaying] = useState(false)
+  const [payError, setPayError] = useState('')
   const [data, setData] = useState<Partial<CheckoutData>>(getInitialState)
 
   const deliveryFee = data.deliveryMethod === 'courier' ? COURIER_FEE : PICKUP_FEE
@@ -526,23 +530,67 @@ export default function CheckoutClient() {
     setStep(s => Math.max(s - 1, 1))
   }
 
-  function handlePay() {
+  async function handlePay() {
     if (!validateStep(3)) return
     setPaying(true)
-    setTimeout(() => {
-      const orderNum = generateOrderNumber()
-      updateData({ orderNumber: orderNum })
+    setPayError('')
+
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const dFee = data.deliveryMethod === 'courier' ? COURIER_FEE : PICKUP_FEE
+
+    const payload = {
+      items: cart.map(item => ({
+        productId: item.productId,
+        productName: item.name,
+        productSlug: '',
+        brandName: '',
+        condition: item.condition || 'NEW',
+        unitPrice: item.price,
+        quantity: item.quantity,
+        totalPrice: item.price * item.quantity,
+      })),
+      customerName: data.fullName ?? '',
+      customerEmail: data.email ?? '',
+      customerPhone: data.phone ?? '',
+      deliveryMethod: data.deliveryMethod ?? 'pickup',
+      deliveryCounty: data.county,
+      deliveryAddress: data.address,
+      courierPhone: data.courierPhone,
+      mpesaPhone: data.mpesaPhone ?? '',
+      subtotal,
+      deliveryFee: dFee,
+      totalAmount: subtotal + dFee,
+    }
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      const json = await res.json()
+
+      if (!res.ok) {
+        const msg = json.errors?._form?.[0] || 'Something went wrong. Please try again.'
+        throw new Error(msg)
+      }
+
+      updateData({ orderNumber: json.order.orderNumber })
       clearCart()
       setPaying(false)
       setStep(4)
-    }, 2000)
+    } catch (err) {
+      setPaying(false)
+      setPayError(err instanceof Error ? err.message : 'Failed to place order. Please try again.')
+    }
   }
 
   function renderStepContent(): ReactNode {
     switch (step) {
       case 1: return <StepContact data={data} updateData={updateData} errors={errors} />
       case 2: return <StepDelivery data={data} updateData={updateData} errors={errors} />
-      case 3: return <StepPayment data={data} updateData={updateData} errors={errors} onPay={handlePay} paying={paying} />
+      case 3: return <StepPayment data={data} updateData={updateData} errors={errors} onPay={handlePay} paying={paying} payError={payError} />
       case 4: return <StepConfirmation data={data} />
       default: return null
     }

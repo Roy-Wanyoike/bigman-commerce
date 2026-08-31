@@ -38,8 +38,14 @@ export default function CartClient() {
               {cart.map(item => (
                 <Card key={`${item.productId}-${item.condition}`} className="border-border/60">
                   <CardContent className="p-4 flex gap-4">
-                    <div className="w-20 h-20 bg-secondary rounded-lg flex items-center justify-center shrink-0">
-                      <span className="text-2xl font-bold text-muted-foreground/20">{item.name[0]}</span>
+                    <div className="w-20 h-20 bg-secondary rounded-lg overflow-hidden shrink-0">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-2xl font-bold text-muted-foreground/20">{item.name[0]}</span>
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
