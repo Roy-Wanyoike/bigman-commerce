@@ -18,11 +18,13 @@ import {
   Menu,
   ChevronLeft,
   Upload,
+  ClipboardList,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin/orders', label: 'Orders', icon: ClipboardList },
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/products/import', label: 'Import CSV', icon: Upload },
   { href: '/admin/observations', label: 'Observations', icon: Eye },

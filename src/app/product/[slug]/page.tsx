@@ -18,6 +18,7 @@ import { ShieldCheck, Truck, RotateCcw, ChevronRight } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
+import ProductReviews from '@/components/bigman/ProductReviews'
 
 // ============================================================
 // HELPERS
@@ -378,6 +379,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               brand={product.brand?.name}
               specs={specs}
               outOfStock={outOfStock}
+              image={images[0]?.url || undefined}
             />
 
             {/* Trust signals */}
@@ -486,6 +488,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </section>
         )}
+
+        {/* ===== REVIEWS ===== */}
+        <div className="mt-10 md:mt-14 mb-8">
+          <ProductReviews productId={product.id} />
+        </div>
       </div>
       </main>
       <BigmanFooter categories={categoryTree} />

@@ -7,8 +7,9 @@ import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { User, Mail, Phone, Shield, Package, LogOut, CalendarDays } from 'lucide-react'
+import { User, Shield, Package } from 'lucide-react'
 import { AccountActions } from './AccountActions'
+import ProfileEditor from './ProfileEditor'
 
 export const metadata = {
   title: 'My Account | Bigman Computers',
@@ -96,34 +97,7 @@ export default async function AccountPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      <User className="h-3.5 w-3.5" /> Name
-                    </div>
-                    <p className="text-sm font-medium">{user.name || 'Not set'}</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      <Mail className="h-3.5 w-3.5" /> Email
-                    </div>
-                    <p className="text-sm font-medium">{user.email}</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      <Phone className="h-3.5 w-3.5" /> Phone
-                    </div>
-                    <p className="text-sm font-medium">{user.phone || 'Not set'}</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      <CalendarDays className="h-3.5 w-3.5" /> Member since
-                    </div>
-                    <p className="text-sm font-medium">
-                      {user.createdAt.toLocaleDateString('en-KE', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
-                  </div>
-                </div>
+                <ProfileEditor user={{ name: user.name, email: user.email, phone: user.phone, county: user.county, address: user.address }} />
 
                 <div className="mt-6 pt-6 border-t border-border/60">
                   <AccountActions />
@@ -156,7 +130,7 @@ export default async function AccountPage() {
                       <div key={order.id} className="flex items-center justify-between p-4 rounded-lg border border-border/60 hover:bg-secondary/30 transition-colors">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-semibold">{order.orderNumber}</span>
+                            <Link href={`/account/orders/${order.id}`} className="text-sm font-semibold text-accent hover:underline">{order.orderNumber}</Link>
                             <Badge variant="outline" className={`text-[10px] border ${statusColors[order.status] || ''}`}>
                               {order.status}
                             </Badge>
