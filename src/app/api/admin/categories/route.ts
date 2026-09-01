@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { getServerSession } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface CategoryNode {
@@ -40,6 +41,10 @@ async function buildTree(): Promise<CategoryNode[]> {
 }
 
 export async function GET() {
+  const session = await getServerSession()
+  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const tree = await buildTree()
     return NextResponse.json({ categories: tree })
@@ -50,6 +55,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await getServerSession()
+  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const body = await req.json()
     const {
