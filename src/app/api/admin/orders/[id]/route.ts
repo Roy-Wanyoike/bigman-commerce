@@ -36,7 +36,7 @@ export async function PATCH(
 
     const { status, paymentStatus, deliveryStatus, trackingNumber, notes } = parsed.data
 
-    const data: any = {}
+    const data: Record<string, unknown> = {}
     if (status !== undefined) data.status = status
     if (paymentStatus !== undefined) data.paymentStatus = paymentStatus
     if (deliveryStatus !== undefined) data.deliveryStatus = deliveryStatus

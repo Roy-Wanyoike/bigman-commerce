@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Gamepad2, Monitor, Keyboard, Mouse, Headphones, Cpu, ChevronRight, SlidersHorizontal, ArrowUpDown } from 'lucide-react'
+import { Gamepad2, Monitor, Keyboard, Mouse, Headphones, Cpu, ChevronRight, SlidersHorizontal, ArrowUpDown, Sparkles, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -64,6 +64,28 @@ export default function GamingClient({ products }: Props) {
                 <span className="text-sm font-medium whitespace-nowrap">{cat.name}</span>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Gaming PC Builder CTA */}
+      <section className="py-10 md:py-14 bg-gradient-to-r from-gaming/10 via-accent/5 to-gaming/10 border-t border-border/60">
+        <div className="container-main">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 md:p-8 rounded-2xl border border-gaming/20 bg-gaming/5">
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+                <Sparkles className="h-7 w-7 text-accent" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">Build Your Custom Gaming PC</h3>
+                <p className="text-sm text-muted-foreground mt-0.5">Choose compatible components and get a custom build tailored to your budget and performance needs.</p>
+              </div>
+            </div>
+            <Link href="/gaming/builder" className="shrink-0">
+              <Button className="bg-accent text-accent-foreground hover:bg-accent/85 font-semibold">
+                Start Building <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
