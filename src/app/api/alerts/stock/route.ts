@@ -35,6 +35,17 @@ export async function POST(request: Request) {
       )
     }
 
+    // Prevent duplicate waiting alerts for the same email + product
+    const existing = await db.stockAlert.findFirst({
+      where: { productId, customerEmail, status: 'WAITING' },
+    })
+    if (existing) {
+      return NextResponse.json(
+        { success: false, message: 'You already have an active stock alert for this product.' },
+        { status: 409 }
+      )
+    }
+
     await db.stockAlert.create({
       data: {
         productId,
