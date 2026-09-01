@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   ChevronRight, SlidersHorizontal, ArrowUpDown, Laptop, Monitor, Gamepad2, Apple, RotateCcw,
@@ -515,7 +515,17 @@ export function StoreLocation() {
 // ============================================================
 // FOOTER — Rich, structured footer
 // ============================================================
-export function BigmanFooter({ categories }: { categories: CategoryNode[] }) {
+export function BigmanFooter({ categories: propCategories }: { categories: CategoryNode[] }) {
+  const [fetchedCategories, setFetchedCategories] = useState<CategoryNode[] | null>(null)
+
+  useEffect(() => {
+    if (propCategories && propCategories.length > 0) return
+    fetch('/api/categories').then(r => r.json()).then(data => {
+      setFetchedCategories(data.categories || [])
+    }).catch(() => {})
+  }, [(propCategories?.length ?? 0)])
+
+  const categories = propCategories && propCategories.length > 0 ? propCategories : (fetchedCategories || [])
   const mainCats = categories.filter(c => !c.parentId)
   return (
     <footer className="bg-primary text-primary-foreground mt-auto">
