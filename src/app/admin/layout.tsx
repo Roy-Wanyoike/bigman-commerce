@@ -20,6 +20,13 @@ import {
   Upload,
   ClipboardList,
   MessageSquare,
+  Tag,
+  Users,
+  Wrench,
+  Search,
+  Bell,
+  Mail,
+  FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -31,6 +38,14 @@ const navItems = [
   { href: '/admin/observations', label: 'Observations', icon: Eye },
   { href: '/admin/reviews', label: 'Reviews', icon: MessageSquare },
   { href: '/admin/categories', label: 'Categories', icon: FolderTree },
+  { href: '/admin/brands', label: 'Brands', icon: Tag },
+  { href: '/admin/promotions', label: 'Promotions', icon: Tag },
+  { href: '/admin/services', label: 'Services', icon: Wrench },
+  { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/alerts', label: 'Alerts', icon: Bell },
+  { href: '/admin/contact', label: 'Contact', icon: Mail },
+  { href: '/admin/quotes', label: 'B2B Quotes', icon: FileText },
+  { href: '/admin/synonyms', label: 'Synonyms', icon: Search },
 ]
 
 function SidebarNav({ onClick }: { onClick?: () => void }) {

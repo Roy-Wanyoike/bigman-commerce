@@ -203,6 +203,7 @@ model Product {
   alerts          PriceAlert[]
   stockAlerts     StockAlert[]
   productImages   ProductImage[]
+  gamingComponents GamingBuildComponent[]
 
   @@index([brandId])
   @@index([businessUnitId])
@@ -459,7 +460,10 @@ model GamingBuildComponent {
   sortOrder       Int     @default(0)
   createdAt       DateTime @default(now())
 
+  product         Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
   @@index([componentType])
+  @@index([productId])
 }
 
 // ============================================================
