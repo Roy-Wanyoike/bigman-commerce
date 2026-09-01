@@ -1,7 +1,12 @@
 import { db } from '@/lib/db'
+import { getServerSession } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
+  const session = await getServerSession()
+  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const sp = req.nextUrl.searchParams
     const source = sp.get('source')
@@ -40,6 +45,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await getServerSession()
+  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const body = await req.json()
     const {

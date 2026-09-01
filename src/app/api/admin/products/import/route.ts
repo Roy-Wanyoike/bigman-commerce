@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getServerSession } from '@/lib/auth'
 import Papa from 'papaparse'
 
 const MAX_ROWS = 500
@@ -92,6 +93,10 @@ async function generateUniqueSlug(name: string): Promise<string> {
 }
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession()
+  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null
