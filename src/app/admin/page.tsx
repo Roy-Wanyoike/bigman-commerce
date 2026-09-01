@@ -22,6 +22,8 @@ import {
   Eye,
   ArrowRight,
   Loader2,
+  ShoppingCart,
+  DollarSign,
 } from 'lucide-react'
 import { formatPrice } from '@/lib/prices'
 
@@ -42,6 +44,20 @@ interface ProductRow {
   condition: string
   createdAt: string
   brand?: { name: string } | null
+}
+
+interface OrderRow {
+  id: string
+  orderNumber: string
+  customerName: string
+  customerEmail: string
+  totalAmount: number
+  currency: string
+  status: string
+  paymentStatus: string
+  deliveryStatus: string
+  createdAt: string
+  orderItems: unknown[]
 }
 
 interface ObservationRow {
@@ -78,18 +94,21 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentProducts, setRecentProducts] = useState<ProductRow[]>([])
   const [recentObservations, setRecentObservations] = useState<ObservationRow[]>([])
+  const [recentOrders, setRecentOrders] = useState<OrderRow[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       try {
-        const [productsRes, obsRes] = await Promise.all([
+        const [productsRes, obsRes, ordersRes] = await Promise.all([
           fetch('/api/admin/products?pageSize=100').then((r) => r.json()),
           fetch('/api/admin/observations?pageSize=5').then((r) => r.json()),
+          fetch('/api/admin/orders?limit=100').then((r) => r.json()),
         ])
 
         const products = productsRes.products || []
         const observations = obsRes.observations || []
+        const orders = ordersRes.orders || []
 
         const s: DashboardStats = {
           total: products.length,
@@ -101,6 +120,7 @@ export default function AdminDashboard() {
         setStats(s)
         setRecentProducts(products.slice(0, 10))
         setRecentObservations(observations)
+        setRecentOrders(orders.slice(0, 5))
       } catch (e) {
         console.error(e)
       } finally {
@@ -126,6 +146,32 @@ export default function AdminDashboard() {
     { label: 'Archived', value: stats?.archived ?? 0, icon: Archive, color: 'text-gray-600', bg: 'bg-gray-50' },
   ]
 
+  const totalRevenue = recentOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0)
+  const pendingOrders = recentOrders.filter(o => o.status === 'PENDING').length
+  const deliveredOrders = recentOrders.filter(o => o.status === 'DELIVERED').length
+
+  const orderStatCards = [
+    { label: 'Total Orders', value: recentOrders.length, icon: ShoppingCart, color: 'text-blue-700', bg: 'bg-blue-50' },
+    { label: 'Revenue', value: formatPrice(totalRevenue), icon: DollarSign, color: 'text-emerald-700', bg: 'bg-emerald-50' },
+    { label: 'Pending Orders', value: pendingOrders, icon: Clock, color: 'text-orange-700', bg: 'bg-orange-50' },
+    { label: 'Delivered', value: deliveredOrders, icon: CheckCircle2, color: 'text-violet-700', bg: 'bg-violet-50' },
+  ]
+
+  const orderStatusColor: Record<string, string> = {
+    PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    CONFIRMED: 'bg-blue-100 text-blue-800 border-blue-200',
+    PROCESSING: 'bg-blue-100 text-blue-800 border-blue-200',
+    SHIPPED: 'bg-purple-100 text-purple-800 border-purple-200',
+    DELIVERED: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    CANCELLED: 'bg-red-100 text-red-800 border-red-200',
+  }
+
+  const paymentStatusColor: Record<string, string> = {
+    PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    COMPLETED: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    FAILED: 'bg-red-100 text-red-800 border-red-200',
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -136,6 +182,28 @@ export default function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
         {statCards.map((card) => {
+          const Icon = card.icon
+          return (
+            <Card key={card.label}>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className={`rounded-lg p-2 ${card.bg}`}>
+                    <Icon className={`size-4 ${card.color}`} />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{card.value}</p>
+                    <p className="text-xs text-muted-foreground">{card.label}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
+
+      {/* Order Stats Grid */}
+      <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
+        {orderStatCards.map((card) => {
           const Icon = card.icon
           return (
             <Card key={card.label}>
@@ -259,6 +327,77 @@ export default function AdminDashboard() {
                     </TableCell>
                     <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
                       {new Date(o.observedDate).toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      {/* Recent Orders */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-base font-semibold">Recent Orders</CardTitle>
+          <Link href="/admin/orders">
+            <Button variant="outline" size="sm">
+              View All <ArrowRight className="ml-1 size-3" />
+            </Button>
+          </Link>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order #</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Payment</TableHead>
+                <TableHead className="hidden sm:table-cell">Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {recentOrders.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    No orders yet.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                recentOrders.map((o) => (
+                  <TableRow key={o.id}>
+                    <TableCell>
+                      <Link
+                        href={`/admin/orders/${o.id}`}
+                        className="font-medium text-sm hover:underline"
+                      >
+                        {o.orderNumber}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      <div>{o.customerName}</div>
+                      <div className="text-xs text-muted-foreground">{o.customerEmail}</div>
+                    </TableCell>
+                    <TableCell className="text-sm font-medium">{formatPrice(o.totalAmount)}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={orderStatusColor[o.status] || ''}
+                      >
+                        {o.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={paymentStatusColor[o.paymentStatus] || ''}
+                      >
+                        {o.paymentStatus}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                      {new Date(o.createdAt).toLocaleDateString()}
                     </TableCell>
                   </TableRow>
                 ))

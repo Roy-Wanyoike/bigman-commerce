@@ -19,6 +19,7 @@ import ReactMarkdown from 'react-markdown'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
 import ProductReviews from '@/components/bigman/ProductReviews'
+import AlertButtons from '@/components/bigman/AlertButtons'
 
 // ============================================================
 // HELPERS
@@ -397,6 +398,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <span className="text-[11px] text-muted-foreground">Easy Returns</span>
               </div>
             </div>
+
+            {/* Price & Stock Alerts */}
+            <AlertButtons productId={product.id} currentPrice={effectivePrice} isOutOfStock={outOfStock} productName={product.name} />
           </div>
         </div>
 

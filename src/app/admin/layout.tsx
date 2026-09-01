@@ -19,6 +19,7 @@ import {
   ChevronLeft,
   Upload,
   ClipboardList,
+  MessageSquare,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -28,6 +29,7 @@ const navItems = [
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/products/import', label: 'Import CSV', icon: Upload },
   { href: '/admin/observations', label: 'Observations', icon: Eye },
+  { href: '/admin/reviews', label: 'Reviews', icon: MessageSquare },
   { href: '/admin/categories', label: 'Categories', icon: FolderTree },
 ]
 
