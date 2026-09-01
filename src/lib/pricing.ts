@@ -27,16 +27,16 @@ interface BulkQuoteItem {
  *  2. Staff → wholesalePrice
  *  3. Everyone else → salePrice (if active) or basePrice
  */
-export function getB2BPrice(product: PriceableProduct, userRole: string): number {
+export function getB2BPrice(product: PriceableProduct, userRole: string, isVerifiedBusiness?: boolean): number {
   // Verified business users get corporate pricing
-  if (userRole === 'VERIFIED_BUSINESS' || userRole === 'CORPORATE') {
+  if (isVerifiedBusiness || userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
     if (product.corporatePrice != null && product.corporatePrice > 0) {
       return product.corporatePrice
     }
   }
 
   // Staff get wholesale pricing
-  if (userRole === 'STAFF' || userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
+  if (userRole === 'STAFF') {
     if (product.wholesalePrice != null && product.wholesalePrice > 0) {
       return product.wholesalePrice
     }

@@ -38,6 +38,17 @@ export async function POST(request: Request) {
 
     const currentPrice = product.salePrice ?? product.basePrice
 
+    // Prevent duplicate active alerts for the same email + product
+    const existing = await db.priceAlert.findFirst({
+      where: { productId, customerEmail, status: 'ACTIVE' },
+    })
+    if (existing) {
+      return NextResponse.json(
+        { success: false, message: 'You already have an active price alert for this product.' },
+        { status: 409 }
+      )
+    }
+
     await db.priceAlert.create({
       data: {
         productId,
