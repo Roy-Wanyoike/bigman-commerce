@@ -19,6 +19,7 @@ import { formatPrice } from '@/lib/prices'
 import type { Product, CategoryNode, Brand, ServiceItem } from './types'
 import { useCases, budgetPages } from './types'
 import { cn } from '@/lib/utils'
+import { WHATSAPP_URL, TEL_LINK, PHONE_DISPLAY } from '@/lib/constants'
 
 const catIcons: Record<string, React.ComponentType<{className?: string}>> = {
   laptops: Laptop, desktops: Monitor, gaming: Gamepad2, 'mac-apple': Apple,
@@ -470,7 +471,7 @@ export function StoreLocation() {
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-4.5 w-4.5 text-accent shrink-0" />
-                <div className="text-sm">+254 722 450 610</div>
+                <div className="text-sm">{PHONE_DISPLAY}</div>
               </div>
               <div className="flex items-center gap-3">
                 <MessageCircle className="h-4.5 w-4.5 text-accent shrink-0" />
@@ -482,12 +483,12 @@ export function StoreLocation() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <a href="https://wa.me/254722450610">
+              <a href={WHATSAPP_URL}>
                 <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium">
                   <MessageCircle className="h-4 w-4 mr-1.5" /> WhatsApp Us
                 </Button>
               </a>
-              <a href="tel:+254722450610">
+              <a href={TEL_LINK}>
                 <Button variant="outline" className="font-medium">
                   <Phone className="h-4 w-4 mr-1.5" /> Call Now
                 </Button>
@@ -547,7 +548,7 @@ export function BigmanFooter({ categories: propCategories }: { categories: Categ
             </p>
             <div className="space-y-2 text-sm text-primary-foreground/60">
               <div className="flex items-center gap-2.5"><MapPin className="h-3.5 w-3.5 shrink-0" /> Rahimtulla Trust Building, Moi Avenue</div>
-              <div className="flex items-center gap-2.5"><Phone className="h-3.5 w-3.5 shrink-0" /> +254 722 450 610</div>
+              <div className="flex items-center gap-2.5"><Phone className="h-3.5 w-3.5 shrink-0" /> {PHONE_DISPLAY}</div>
               <div className="flex items-center gap-2.5"><Clock className="h-3.5 w-3.5 shrink-0" /> Mon-Sat: 8am-6pm</div>
             </div>
           </div>

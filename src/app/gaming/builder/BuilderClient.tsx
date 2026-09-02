@@ -400,7 +400,6 @@ export function BuilderClient() {
                           <CardContent className="p-3 flex items-center gap-3">
                             {img && (
                               <div className="w-14 h-14 rounded-lg bg-zinc-800 overflow-hidden flex-shrink-0">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={img} alt={comp.product.name} className="w-full h-full object-cover" />
                               </div>
                             )}
@@ -440,7 +439,6 @@ export function BuilderClient() {
                           <CardContent className="p-3 flex items-center gap-3">
                             {img && (
                               <div className="w-14 h-14 rounded-lg bg-zinc-800 overflow-hidden flex-shrink-0">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={img} alt={p.name} className="w-full h-full object-cover" />
                               </div>
                             )}

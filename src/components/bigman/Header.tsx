@@ -19,6 +19,7 @@ import { useStore } from '@/lib/store'
 import { formatPrice } from '@/lib/prices'
 import type { CategoryNode } from './types'
 import { cn } from '@/lib/utils'
+import { WHATSAPP_URL, TEL_LINK, PHONE_DISPLAY } from '@/lib/constants'
 
 const iconMap: Record<string, LucideIcon> = {
   Laptop, Monitor, Gamepad2, Apple: Building2, Server: Building2, Printer, Mouse,
@@ -158,7 +159,7 @@ export default function Header({ categories: propCategories }: HeaderProps) {
             <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Warranty Available</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="tel:+254722450610" className="hover:text-primary-foreground transition-colors">+254 722 450 610</a>
+            <a href={TEL_LINK} className="hover:text-primary-foreground transition-colors">{PHONE_DISPLAY}</a>
             <a href="#" className="hover:text-primary-foreground transition-colors">Track Order</a>
             <a href="#" className="hover:text-primary-foreground transition-colors">Support</a>
           </div>
@@ -500,10 +501,10 @@ function MobileCategoryDrawer({ categories }: { categories: CategoryNode[] }) {
 
       {/* Contact footer */}
       <div className="border-t border-border p-4 space-y-2">
-        <a href="https://wa.me/254722450610" className="flex items-center justify-center gap-2 w-full py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors">
+        <a href={WHATSAPP_URL} className="flex items-center justify-center gap-2 w-full py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors">
           <MessageCircle className="h-4 w-4" /> Chat on WhatsApp
         </a>
-        <a href="tel:+254722450610" className="flex items-center justify-center gap-2 w-full py-2.5 border border-border rounded-lg text-sm font-medium hover:bg-secondary transition-colors">
+        <a href={TEL_LINK} className="flex items-center justify-center gap-2 w-full py-2.5 border border-border rounded-lg text-sm font-medium hover:bg-secondary transition-colors">
           <Phone className="h-4 w-4" /> Call Us
         </a>
       </div>

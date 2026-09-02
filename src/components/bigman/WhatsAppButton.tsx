@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { MessageCircle, X, Phone, Mail, Clock, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { WHATSAPP_URL, TEL_LINK, EMAIL_LINK } from '@/lib/constants'
 
-const WHATSAPP_NUMBER = '254722450610'
 const WHATSAPP_MESSAGE = 'Hi Bigman Computers! I need help with...'
 
 export default function WhatsAppButton() {
@@ -17,7 +17,7 @@ export default function WhatsAppButton() {
     return () => clearTimeout(timer)
   }, [])
 
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
+  const whatsappUrl = `${WHATSAPP_URL}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
 
   return (
     <>
@@ -73,14 +73,14 @@ export default function WhatsAppButton() {
                   <span className="text-foreground/80 group-hover:text-foreground">Chat on WhatsApp</span>
                 </a>
                 <a
-                  href="tel:+254722450610"
+                  href={TEL_LINK}
                   className="flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-secondary/50 transition-colors text-sm group"
                 >
                   <Phone className="h-4 w-4 text-accent" />
                   <span className="text-foreground/80 group-hover:text-foreground">Call Us</span>
                 </a>
                 <a
-                  href="mailto:info@bigmancomputers.co.ke"
+                  href={EMAIL_LINK}
                   className="flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-secondary/50 transition-colors text-sm group"
                 >
                   <Mail className="h-4 w-4 text-muted-foreground" />
