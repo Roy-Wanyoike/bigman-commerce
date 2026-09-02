@@ -80,7 +80,7 @@ export default function WhatsAppButton() {
                   <span className="text-foreground/80 group-hover:text-foreground">Call Us</span>
                 </a>
                 <a
-                  href="mailto:info@bigman.co.ke"
+                  href="mailto:info@bigmancomputers.co.ke"
                   className="flex items-center gap-2.5 p-2.5 rounded-lg hover:bg-secondary/50 transition-colors text-sm group"
                 >
                   <Mail className="h-4 w-4 text-muted-foreground" />

@@ -89,8 +89,8 @@ export default async function B2BPage() {
                     <a href="mailto:business@bigmancomputers.co.ke" className="flex items-center gap-1.5 hover:text-primary transition-colors">
                       <Mail className="h-4 w-4" /> business@bigmancomputers.co.ke
                     </a>
-                    <a href="tel:+254700000000" className="flex items-center gap-1.5 hover:text-primary transition-colors">
-                      <Phone className="h-4 w-4" /> +254 700 000 000
+                    <a href="tel:+254722450610" className="flex items-center gap-1.5 hover:text-primary transition-colors">
+                      <Phone className="h-4 w-4" /> +254 722 450 610
                     </a>
                   </div>
                 </div>
