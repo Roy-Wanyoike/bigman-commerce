@@ -18,6 +18,7 @@ import { ShieldCheck, Truck, RotateCcw, ChevronRight } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
+import type { CategoryNode } from '@/components/bigman/types'
 import ProductReviews from '@/components/bigman/ProductReviews'
 import AlertButtons from '@/components/bigman/AlertButtons'
 
@@ -157,7 +158,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     include: { children: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } } },
     orderBy: { sortOrder: 'asc' },
   })
-  function buildTree(parentId: string | null = null): any[] {
+  function buildTree(parentId: string | null = null): CategoryNode[] {
     return allCategories.filter(c => c.parentId === parentId).map(c => ({
       ...c, children: buildTree(c.id),
     }))

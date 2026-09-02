@@ -22,13 +22,14 @@ import ProductCard from '@/components/bigman/ProductCard'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
 import { formatPrice } from '@/lib/prices'
+import type { LucideIcon } from 'lucide-react'
 import type { CategoryNode, Product } from '@/components/bigman/types'
 import { cn } from '@/lib/utils'
 
 // ============================================================
 // ICON MAP for subcategory cards
 // ============================================================
-const catIcons: Record<string, any> = {
+const catIcons: Record<string, LucideIcon> = {
   laptops: Laptop, desktops: Monitor, gaming: Gamepad2, 'mac-apple': Apple,
   workstations: Cpu, monitors: Monitor, printers: Printer, accessories: Wrench,
   parts: Wrench, hardware: Cpu, storage: HardDrive, 'ram-memory': HardDrive,
@@ -182,7 +183,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug?: stri
 
   // Update document title
   useEffect(() => {
-    const seoTitle = (currentCategory as any)?.seoTitle
+    const seoTitle = currentCategory?.seoTitle
     document.title = seoTitle
       ? `${seoTitle} | Bigman Computers`
       : slugs.length > 0
@@ -215,7 +216,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug?: stri
 
   const categoryName = currentCategory?.name || (slugs.length > 0 ? slugs[slugs.length - 1] : 'All Products')
   const categoryDesc = currentCategory?.description
-  const categoryImage = (currentCategory as any)?.image
+  const categoryImage = currentCategory?.image
   const subcategories = currentCategory?.children?.length ? currentCategory.children : []
 
   // ---- Pagination pages to show ----
