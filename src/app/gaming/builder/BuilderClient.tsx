@@ -59,9 +59,22 @@ const SLOT_CONFIG: SlotConfig[] = [
   { key: 'COOLING', label: 'Cooling', icon: Fan, color: 'text-teal-400' },
 ]
 
+interface ApiProduct {
+  id: string
+  name: string
+  slug: string
+  basePrice: number
+  salePrice: number | null
+  thumbnail: string | null
+  images: string | null
+  specifications: string | null
+  brand: { name: string } | null
+  productImages: { url: string; altText: string | null }[]
+}
+
 export function BuilderClient() {
   const [components, setComponents] = useState<GroupedComponents>({})
-  const [allProducts, setAllProducts] = useState<any[]>([])
+  const [allProducts, setAllProducts] = useState<ApiProduct[]>([])
   const [selected, setSelected] = useState<Record<string, BuildComponent>>({})
   const [activeSlot, setActiveSlot] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -116,7 +129,7 @@ export function BuilderClient() {
     setActiveSlot(null)
   }
 
-  function handlePickFromProducts(product: any) {
+  function handlePickFromProducts(product: ApiProduct) {
     if (!activeSlot) return
     const synthetic: BuildComponent = {
       id: `custom-${product.id}`,
@@ -414,7 +427,7 @@ export function BuilderClient() {
                   <p className="text-sm text-zinc-500 text-center py-8">No products found for this component type.</p>
                 ) : (
                   <div className="space-y-2">
-                    {slotProducts.slice(0, 20).map((p: any) => {
+                    {slotProducts.slice(0, 20).map((p: ApiProduct) => {
                       const isPicked = selected[activeSlot!]?.productId === p.id
                       const img = p.thumbnail || (p.images ? JSON.parse(p.images)[0] : '') || p.productImages?.[0]?.url
                       const price = p.salePrice ?? p.basePrice

@@ -18,9 +18,19 @@ import { ShieldCheck, Truck, RotateCcw, ChevronRight } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
-import type { CategoryNode } from '@/components/bigman/types'
+import type { CategoryNode, Product } from '@/components/bigman/types'
 import ProductReviews from '@/components/bigman/ProductReviews'
 import AlertButtons from '@/components/bigman/AlertButtons'
+
+interface ProductImageRow {
+  status: string
+  inventoryUnitId: string | null
+  isPrimary: boolean
+  sortOrder: number
+  url: string
+  altText: string | null
+  imageType: string | null
+}
 
 // ============================================================
 // HELPERS
@@ -52,14 +62,14 @@ function toTitleCase(str: string): string {
 }
 
 /** Gather product images: approved ProductImage table rows first, then fallback to JSON images field */
-function gatherImages(product: any): { url: string; altText?: string; caption?: string }[] {
+function gatherImages(product: { productImages?: ProductImageRow[]; images?: string | null; thumbnail?: string | null }): { url: string; altText?: string; caption?: string }[] {
   const images: { url: string; altText?: string; caption?: string }[] = []
 
   // 1. Approved product images from ProductImage table (non-unit-specific)
   if (product.productImages?.length) {
     const approved = product.productImages
-      .filter((pi: any) => pi.status === 'APPROVED' && !pi.inventoryUnitId)
-      .sort((a: any, b: any) => (a.isPrimary ? -1 : b.isPrimary ? 1 : a.sortOrder - b.sortOrder))
+      .filter((pi: ProductImageRow) => pi.status === 'APPROVED' && !pi.inventoryUnitId)
+      .sort((a: ProductImageRow, b: ProductImageRow) => (a.isPrimary ? -1 : b.isPrimary ? 1 : a.sortOrder - b.sortOrder))
     for (const pi of approved) {
       images.push({ url: pi.url, altText: pi.altText || undefined, caption: pi.imageType || undefined })
     }
@@ -489,7 +499,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </Link>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 min-w-0">
-              {crossSellProducts.map(p => <ProductCard key={p.id} product={p as any} />)}
+              {crossSellProducts.map(p => <ProductCard key={p.id} product={p as unknown as Product} />)}
             </div>
           </section>
         )}

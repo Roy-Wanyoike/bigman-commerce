@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import ProductCard from '@/components/bigman/ProductCard'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
+import type { Product } from '@/components/bigman/types'
 
 const PAGE_SIZE = 20
 const SORT_OPTIONS = [
@@ -18,7 +19,7 @@ const SORT_OPTIONS = [
 
 export default function BrandPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
-  const [products, setProducts] = useState<any[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [brandInfo, setBrandInfo] = useState<{ name: string; description: string | null } | null>(null)
@@ -107,7 +108,7 @@ export default function BrandPage({ params }: { params: Promise<{ slug: string }
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-w-0">
-              {products.map((p: any) => (
+              {products.map((p: Product) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
