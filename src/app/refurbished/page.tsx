@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import RefurbishedClient from './RefurbishedClient'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
+import type { CategoryNode } from '@/components/bigman/types'
 
 export const metadata = {
   title: 'Refurbished Store | Bigman Computers',
@@ -30,7 +31,7 @@ export default async function RefurbishedPage() {
     }),
   ])
 
-  function buildTree(parentId: string | null = null): any[] {
+  function buildTree(parentId: string | null = null): CategoryNode[] {
     return categories.filter(c => c.parentId === parentId).map(c => ({ ...c, children: buildTree(c.id) }))
   }
 

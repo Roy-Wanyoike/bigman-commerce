@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav, ServicesSection } from '@/components/bigman/Sections'
+import type { CategoryNode } from '@/components/bigman/types'
 
 export const metadata = {
   title: 'Services | Bigman Computers',
@@ -15,7 +16,7 @@ export default async function ServicesPage() {
     db.serviceProduct.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),
   ])
 
-  function buildTree(parentId: string | null = null): any[] {
+  function buildTree(parentId: string | null = null): CategoryNode[] {
     return categories.filter(c => c.parentId === parentId).map(c => ({ ...c, children: buildTree(c.id) }))
   }
 

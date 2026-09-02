@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { BuilderClient } from './BuilderClient'
 import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
+import type { CategoryNode } from '@/components/bigman/types'
 
 export const metadata = {
   title: 'Gaming PC Builder | Bigman Computers',
@@ -16,7 +17,7 @@ export default async function GamingBuilderPage() {
     orderBy: { sortOrder: 'asc' },
   })
 
-  function buildTree(parentId: string | null = null): any[] {
+  function buildTree(parentId: string | null = null): CategoryNode[] {
     return categories
       .filter((c) => c.parentId === parentId)
       .map((c) => ({ ...c, children: buildTree(c.id) }))

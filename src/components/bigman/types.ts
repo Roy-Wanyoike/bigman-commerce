@@ -4,6 +4,7 @@ export interface CategoryNode {
   slug: string
   description: string | null
   image: string | null
+  seoTitle: string | null
   parentId: string | null
   sortOrder: number
   isActive: boolean
