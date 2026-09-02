@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     const page = parseInt(sp.get('page') || '1')
     const limit = parseInt(sp.get('limit') || '20')
 
-    const where: any = {}
+    const where: Record<string, unknown> = {}
 
     if (status === 'pending') {
       where.isPublished = false

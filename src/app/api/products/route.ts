@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       searchTerms = [...new Set(searchTerms)]
     }
 
-    const where: any = { status: { in: ['PUBLISHED'] } }
+    const where: Record<string, unknown> = { status: { in: ['PUBLISHED'] } }
 
     if (category) {
       const cat = await db.category.findFirst({ where: { slug: category, isActive: true } })
@@ -55,9 +55,10 @@ export async function GET(req: NextRequest) {
     if (featured === 'true') where.isFeatured = true
     if (refurbished === 'true') where.condition = 'REFURBISHED'
     if (minPrice || maxPrice) {
-      where.basePrice = {}
-      if (minPrice) where.basePrice.gte = parseFloat(minPrice)
-      if (maxPrice) where.basePrice.lte = parseFloat(maxPrice)
+      const priceFilter: Record<string, number> = {}
+      if (minPrice) priceFilter.gte = parseFloat(minPrice)
+      if (maxPrice) priceFilter.lte = parseFloat(maxPrice)
+      where.basePrice = priceFilter
     }
     if (search) {
       where.OR = searchTerms.flatMap(term => [
@@ -66,7 +67,7 @@ export async function GET(req: NextRequest) {
       ])
     }
 
-    const orderBy: any = {}
+    const orderBy: Record<string, string> = {}
     if (sort === 'price-asc') orderBy.basePrice = 'asc'
     else if (sort === 'price-desc') orderBy.basePrice = 'desc'
     else if (sort === 'newest') orderBy.createdAt = 'desc'
