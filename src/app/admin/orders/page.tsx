@@ -135,7 +135,6 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, paymentFilter, search, page])
 
   const handleSearch = () => {
