@@ -91,7 +91,7 @@ export async function PUT(
 
     // Track price changes
     const priceFields = ['basePrice', 'salePrice', 'costPrice', 'compareAtPrice', 'wholesalePrice', 'corporatePrice', 'bundlePrice'] as const
-    const priceHistories: any[] = []
+    const priceHistories: Array<{ productId: string; previousPrice: number | null; newPrice: number; priceField: string; currency: string; reason: string }> = []
     for (const field of priceFields) {
       const newVal = body[field]
       const oldVal = existing[field as keyof typeof existing]

@@ -16,13 +16,14 @@ export async function GET(req: NextRequest) {
     const page = parseInt(sp.get('page') || '1')
     const pageSize = parseInt(sp.get('pageSize') || '20')
 
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     if (source) where.source = source
     if (category) where.productCategory = category
     if (startDate || endDate) {
-      where.observedDate = {}
-      if (startDate) where.observedDate.gte = new Date(startDate)
-      if (endDate) where.observedDate.lte = new Date(endDate)
+      const dateFilter: Record<string, Date> = {}
+      if (startDate) dateFilter.gte = new Date(startDate)
+      if (endDate) dateFilter.lte = new Date(endDate)
+      where.observedDate = dateFilter
     }
 
     const skip = (page - 1) * pageSize

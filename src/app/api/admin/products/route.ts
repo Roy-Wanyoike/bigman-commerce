@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     const page = parseInt(sp.get('page') || '1')
     const pageSize = parseInt(sp.get('pageSize') || '20')
 
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     if (status) where.status = status
     if (condition) where.condition = condition
     if (brandId) where.brandId = brandId
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       ]
     }
 
-    const orderBy: any = {}
+    const orderBy: Record<string, string> = {}
     if (sort === 'createdAt' || sort === 'updatedAt') orderBy[sort] = order
     else if (sort === 'basePrice') orderBy.basePrice = order
     else if (sort === 'name') orderBy.name = order

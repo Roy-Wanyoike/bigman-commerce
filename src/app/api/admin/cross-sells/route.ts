@@ -106,9 +106,10 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ success: true, data: crossSell }, { status: 201 })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e)
-    if (e?.code === 'P2002') {
+    const code = e instanceof Error && 'code' in e ? (e as Error & { code: string }).code : undefined
+    if (code === 'P2002') {
       return NextResponse.json({ success: false, error: 'This cross-sell relationship already exists' }, { status: 409 })
     }
     return NextResponse.json({ success: false, error: 'Failed to create cross-sell' }, { status: 500 })

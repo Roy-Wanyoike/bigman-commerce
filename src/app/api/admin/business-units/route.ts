@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     const search = req.nextUrl.searchParams.get('search')
 
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     if (search) {
       where.OR = [
         { name: { contains: search } },

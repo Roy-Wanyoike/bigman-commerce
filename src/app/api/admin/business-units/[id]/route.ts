@@ -72,7 +72,7 @@ export async function PUT(
     const { name, description, isActive } = parsed.data
 
     // If name is being changed, check uniqueness and update slug
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
     if (name !== undefined) {
       const newSlug = slugify(name)
       const slugTaken = await db.businessUnit.findFirst({
