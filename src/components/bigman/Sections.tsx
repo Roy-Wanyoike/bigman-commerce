@@ -20,7 +20,7 @@ import type { Product, CategoryNode, Brand, ServiceItem } from './types'
 import { useCases, budgetPages } from './types'
 import { cn } from '@/lib/utils'
 
-const catIcons: Record<string, any> = {
+const catIcons: Record<string, React.ComponentType<{className?: string}>> = {
   laptops: Laptop, desktops: Monitor, gaming: Gamepad2, 'mac-apple': Apple,
   workstations: Cpu, monitors: Monitor, printers: Printer, accessories: Wrench,
   parts: Wrench, hardware: Cpu, storage: HardDrive, 'ram-memory': MemoryStick,
@@ -553,17 +553,17 @@ export function BigmanFooter({ categories: propCategories }: { categories: Categ
           </div>
 
           {/* Category link columns */}
-          {mainCats.slice(0, 9).reduce((acc: any[], cat, i) => {
+          {mainCats.slice(0, 9).reduce<{ title: string; links: { name: string; slug: string }[] }[]>((acc, cat, i) => {
             const colIdx = Math.floor(i / 3)
-            if (!acc[colIdx]) acc[colIdx] = { title: '', links: [] as { name: string; slug: string }[] }
+            if (!acc[colIdx]) acc[colIdx] = { title: '', links: [] }
             acc[colIdx].title = i % 3 === 0 ? cat.name : ''
             acc[colIdx].links.push({ name: cat.name, slug: cat.slug })
             return acc
-          }, []).map((col: any, i: number) => (
+          }, []).map((col, i: number) => (
             <div key={i}>
               <h4 className="font-semibold text-sm mb-3">{col.title || 'Categories'}</h4>
               <ul className="space-y-2">
-                {col.links.map((link: any) => (
+                {col.links.map((link) => (
                   <li key={link.slug}>
                     <Link href={`/shop/${link.slug}`} className="text-sm text-primary-foreground/55 hover:text-primary-foreground transition-colors">{link.name}</Link>
                   </li>

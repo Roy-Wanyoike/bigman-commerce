@@ -10,6 +10,7 @@ import {
   MapPin, Truck, Shield, CreditCard, Percent, RotateCcw, MemoryStick,
   Store, Headphones, Keyboard, Cable, Box, Package,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -19,7 +20,7 @@ import { formatPrice } from '@/lib/prices'
 import type { CategoryNode } from './types'
 import { cn } from '@/lib/utils'
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   Laptop, Monitor, Gamepad2, Apple: Building2, Server: Building2, Printer, Mouse,
   Wrench, Cpu, HardDrive, MemoryStick, Wifi, Zap, Code, Percent, RotateCcw, Building2,
   Headphones, Keyboard, Cable, Box, Package,
@@ -47,7 +48,7 @@ const mobileQuickLinks = [
 ]
 
 /* Column definitions for the Shop mega menu */
-type MegaColumn = { title: string; icon: any; keywords: string[] }
+type MegaColumn = { title: string; icon: LucideIcon; keywords: string[] }
 const megaColumns: MegaColumn[] = [
   { title: 'Computers', icon: Laptop, keywords: ['laptop', 'desktop', 'all-in-one', 'mini-pc', 'server', 'workstation', 'monitor', 'printer', 'apple', 'macbook', 'imac'] },
   { title: 'Components', icon: Cpu, keywords: ['cpu', 'processor', 'ram', 'memory', 'storage', 'ssd', 'hdd', 'hard-drive', 'harddrive', 'gpu', 'graphics-card', 'motherboard', 'power-supply', 'psu', 'case', 'cooling', 'fan'] },
@@ -79,7 +80,12 @@ export default function Header({ categories: propCategories }: HeaderProps) {
   const [shopMegaOpen, setShopMegaOpen] = useState(false)
   const router = useRouter()
   const [searchQ, setSearchQ] = useState('')
-  const [searchResults, setSearchResults] = useState<any>(null)
+  interface SearchResults {
+    products?: { id: string; name: string; slug: string; basePrice: number; condition: string }[]
+    categories?: { id: string; name: string; slug: string }[]
+  }
+
+  const [searchResults, setSearchResults] = useState<SearchResults | null>(null)
   const [searching, setSearching] = useState(false)
   const megaTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
   const searchRef = useRef<HTMLDivElement>(null)
@@ -217,10 +223,10 @@ export default function Header({ categories: propCategories }: HeaderProps) {
               {/* Search dropdown */}
               {searchResults && (
                 <div className="absolute top-full left-0 right-0 mt-1.5 bg-popover border border-border rounded-xl shadow-2xl mega-menu-enter z-50 max-h-[420px] overflow-y-auto" role="listbox">
-                  {searchResults.products?.length > 0 && (
+                  {(searchResults.products?.length ?? 0) > 0 && (
                     <div className="p-2">
                       <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2.5 py-1.5">Products</div>
-                      {searchResults.products.slice(0, 6).map((p: any) => (
+                      {searchResults.products!.slice(0, 6).map((p) => (
                         <Link key={p.id} href={`/product/${p.slug}`} className="flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-accent/5 transition-colors"
                           onClick={() => setSearchResults(null)}>
                           <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center shrink-0">
@@ -233,17 +239,17 @@ export default function Header({ categories: propCategories }: HeaderProps) {
                           {p.condition === 'REFURBISHED' && <Badge variant="outline" className="text-[9px] h-5 shrink-0 border-amber-300 text-amber-700">Refurb</Badge>}
                         </Link>
                       ))}
-                      {searchResults.products.length > 6 && (
+                      {searchResults.products!.length > 6 && (
                         <Link href={`/search?q=${encodeURIComponent(searchQ)}`} className="block text-center text-xs font-medium text-accent hover:underline py-2 mt-1" onClick={() => setSearchResults(null)}>
                           View all results →
                         </Link>
                       )}
                     </div>
                   )}
-                  {searchResults.categories?.length > 0 && (
+                  {(searchResults.categories?.length ?? 0) > 0 && (
                     <div className="p-2 border-t border-border/50">
                       <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2.5 py-1.5">Categories</div>
-                      {searchResults.categories.slice(0, 5).map((c: any) => (
+                      {searchResults.categories!.slice(0, 5).map((c) => (
                         <Link key={c.id} href={`/shop/${c.slug}`} className="flex items-center justify-between px-2.5 py-1.5 text-sm hover:bg-accent/5 rounded-md transition-colors"
                           onClick={() => setSearchResults(null)}>
                           <span>{c.name}</span>
@@ -252,7 +258,7 @@ export default function Header({ categories: propCategories }: HeaderProps) {
                       ))}
                     </div>
                   )}
-                  {(!searchResults.products?.length && !searchResults.categories?.length) && (
+                  {(!(searchResults.products?.length) && !(searchResults.categories?.length)) && (
                     <div className="p-6 text-center">
                       <p className="text-sm text-muted-foreground">No results for &quot;{searchQ}&quot;</p>
                       <p className="text-xs text-muted-foreground mt-1">Try different keywords or browse categories</p>
