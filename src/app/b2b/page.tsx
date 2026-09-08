@@ -2,6 +2,7 @@ import Header from '@/components/bigman/Header'
 import { BigmanFooter, MobileBottomNav } from '@/components/bigman/Sections'
 import B2BFormClient from './B2BFormClient'
 import { Building2, Shield, UserCheck, Banknote, Percent, FileText, ArrowRight, Phone, Mail } from 'lucide-react'
+import { TEL_LINK, PHONE_DISPLAY } from '@/lib/constants'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -89,8 +90,8 @@ export default async function B2BPage() {
                     <a href="mailto:business@bigmancomputers.co.ke" className="flex items-center gap-1.5 hover:text-primary transition-colors">
                       <Mail className="h-4 w-4" /> business@bigmancomputers.co.ke
                     </a>
-                    <a href="tel:+254722450610" className="flex items-center gap-1.5 hover:text-primary transition-colors">
-                      <Phone className="h-4 w-4" /> +254 722 450 610
+                    <a href={TEL_LINK} className="flex items-center gap-1.5 hover:text-primary transition-colors">
+                      <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
                     </a>
                   </div>
                 </div>
