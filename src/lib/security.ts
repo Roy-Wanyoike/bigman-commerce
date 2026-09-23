@@ -8,6 +8,48 @@
 import type { NextRequest } from 'next/server'
 
 // ------------------------------------------------------------------
+// Startup validation
+// ------------------------------------------------------------------
+
+/**
+ * Validate critical environment variables at startup.
+ * Call once in instrumentation or layout — app should refuse to boot without these.
+ */
+export function validateEnv(): void {
+  const missing: string[] = []
+
+  // Only enforce NEXTAUTH_SECRET at runtime, not during `next build`
+  // (Next.js sets NODE_ENV=production during build, but env vars may not all be present)
+  const isBuildTime = !!process.env.NEXT_BUILD_ID || !process.env.NEXTAUTH_URL
+
+  if (!process.env.NEXTAUTH_SECRET && process.env.NODE_ENV === 'production' && !isBuildTime) {
+    missing.push('NEXTAUTH_SECRET')
+  }
+  if (!process.env.DATABASE_URL && !isBuildTime) {
+    missing.push('DATABASE_URL')
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `[Bigman] FATAL: Missing required environment variables: ${missing.join(', ')}. ` +
+      'The application cannot start safely. Please set them in .env or your deployment config.'
+    )
+  }
+}
+
+/**
+ * Log a warning (non-fatal) for recommended env vars.
+ */
+export function warnMissingEnv(): void {
+  if (!process.env.NEXTAUTH_SECRET && process.env.NODE_ENV !== 'production') {
+    console.warn(
+      '[Bigman] WARNING: NEXTAUTH_SECRET is not set. JWTs are unsigned and forgeable. ' +
+      'Generate one with: openssl rand -base64 32'
+    )
+  }
+}
+
+// ------------------------------------------------------------------
 // Input sanitisation
 // ------------------------------------------------------------------
 
@@ -85,17 +127,22 @@ export function isAuthenticated(request: NextRequest): boolean {
  * Returns a plain object of security headers applied to every response.
  */
 export function createSecurityHeaders(): HeadersInit {
+  const isProd = process.env.NODE_ENV === 'production'
+
   return {
     'X-Frame-Options': 'DENY',
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'X-XSS-Protection': '0',
+    'X-Download-Options': 'noopen',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    // HSTS — only in production (would break local HTTP dev)
+    ...(isProd ? { 'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload' } : {}),
     'Content-Security-Policy': [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https: http: blob:",
+      "img-src 'self' data: https: blob:",
       "font-src 'self' https://fonts.gstatic.com",
       "connect-src 'self'",
       "frame-ancestors 'none'",

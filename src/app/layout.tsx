@@ -4,6 +4,16 @@ import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 import WhatsAppButton from "@/components/bigman/WhatsAppButton"
 import { Providers } from "@/components/Providers"
+import { validateEnv, warnMissingEnv } from "@/lib/security"
+
+// Startup validation — runs once when the server starts
+try {
+  validateEnv()
+} catch (e) {
+  console.error(e)
+  if (process.env.NODE_ENV === 'production') process.exit(1)
+}
+warnMissingEnv()
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] })

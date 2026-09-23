@@ -1,8 +1,19 @@
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /wishlist
+Disallow: /compare
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /account
+Disallow: /checkout
 
 User-agent: Twitterbot
 Allow: /
@@ -12,3 +23,12 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /wishlist
+Disallow: /compare
+
+Sitemap: https://bigmancomputers.co.ke/sitemap.xml

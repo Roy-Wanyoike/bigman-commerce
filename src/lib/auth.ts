@@ -55,6 +55,19 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.session-token'
+        : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -102,3 +115,36 @@ declare module 'next-auth/jwt' {
 
 export const auth = NextAuth(authOptions)
 export const getServerSession = () => nextAuthGetServerSession(authOptions)
+
+// ------------------------------------------------------------------
+// Admin auth guard helper — use in every /api/admin/* route handler
+// ------------------------------------------------------------------
+
+import { NextResponse } from 'next/server'
+
+/**
+ * Require an authenticated admin session. Returns a 401 response if not authorized,
+ * or null if authorized. Use as the first line in any admin route handler:
+ *
+ *   const rejection = await requireAdmin()
+ *   if (rejection) return rejection
+ */
+export async function requireAdmin(): Promise<NextResponse | null> {
+  try {
+    const session = await getServerSession()
+    if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+    return null
+  } catch (error) {
+    // If getServerSession throws (DB down, malformed JWT), return 401
+    console.error('[Auth] requireAdmin error:', error)
+    return NextResponse.json(
+      { success: false, error: 'Authentication error' },
+      { status: 401 }
+    )
+  }
+}
