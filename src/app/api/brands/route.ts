@@ -8,7 +8,7 @@ export async function GET() {
       include: { _count: { select: { products: { where: { status: 'PUBLISHED' } } } } },
       orderBy: { name: 'asc' },
     })
-    return NextResponse.json(brands)
+    return NextResponse.json({ success: true, data: brands })
   } catch {
     return NextResponse.json({ error: 'Failed to load brands' }, { status: 500 })
   }
