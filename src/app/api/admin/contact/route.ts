@@ -1,14 +1,12 @@
-import { getServerSession } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 
 export async function GET() {
   try {
-    const session = await getServerSession()
-    if (!session?.user?.role || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const rejection = await requireAdmin()
+    if (rejection) return rejection
 
     const filePath = path.join(process.cwd(), 'data', 'contact-submissions.json')
 

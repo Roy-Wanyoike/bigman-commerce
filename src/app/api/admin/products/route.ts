@@ -1,12 +1,54 @@
 import { db } from '@/lib/db'
-import { getServerSession } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod/v4'
+
+const createProductSchema = z.object({
+  name: z.string().min(1),
+  slug: z.string().optional(),
+  description: z.string().optional().nullable(),
+  shortDescription: z.string().optional().nullable(),
+  brandId: z.string().optional().nullable(),
+  businessUnitId: z.string().optional().nullable(),
+  condition: z.string().optional(),
+  basePrice: z.coerce.number(),
+  salePrice: z.coerce.number().optional().nullable(),
+  costPrice: z.coerce.number().optional().nullable(),
+  compareAtPrice: z.coerce.number().optional().nullable(),
+  wholesalePrice: z.coerce.number().optional().nullable(),
+  corporatePrice: z.coerce.number().optional().nullable(),
+  bundlePrice: z.coerce.number().optional().nullable(),
+  productType: z.string().optional(),
+  specifications: z.string().optional().nullable(),
+  images: z.string().optional().nullable(),
+  thumbnail: z.string().optional().nullable(),
+  videoUrl: z.string().optional().nullable(),
+  trackInventory: z.boolean().optional(),
+  stockCount: z.number().int().optional(),
+  lowStockThreshold: z.number().int().optional(),
+  warrantyMonths: z.number().int().optional().nullable(),
+  warrantyInfo: z.string().optional().nullable(),
+  weight: z.coerce.number().optional().nullable(),
+  dimensions: z.string().optional().nullable(),
+  status: z.string().optional(),
+  isFeatured: z.boolean().optional(),
+  isDeal: z.boolean().optional(),
+  isGaming: z.boolean().optional(),
+  dealLabel: z.string().optional().nullable(),
+  seoTitle: z.string().optional().nullable(),
+  seoDescription: z.string().optional().nullable(),
+  metaKeywords: z.string().optional().nullable(),
+  compatibleModels: z.string().optional().nullable(),
+  sku: z.string().optional().nullable(),
+  partNumber: z.string().optional().nullable(),
+  upc: z.string().optional().nullable(),
+  sortOrder: z.number().int().optional(),
+  categoryIds: z.array(z.string()).optional(),
+})
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession()
-  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-  }
+  const rejection = await requireAdmin()
+  if (rejection) return rejection
   try {
     const sp = req.nextUrl.searchParams
     const status = sp.get('status')
@@ -65,33 +107,33 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession()
-  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-  }
+  const rejection = await requireAdmin()
+  if (rejection) return rejection
   try {
     const body = await req.json()
-    const {
-      name, slug, description, shortDescription, brandId, businessUnitId,
-      condition, conditionGrade, conditionNote, basePrice, salePrice,
-      costPrice, compareAtPrice, wholesalePrice, corporatePrice, bundlePrice,
-      currency, productType, specifications, trackInventory, stockCount,
-      lowStockThreshold, warrantyMonths, warrantyInfo, weight, dimensions,
-      isFeatured, isDeal, isGaming, dealLabel, seoTitle, seoDescription, metaKeywords,
-      compatibleModels, sku, partNumber, upc, categoryIds,
-    } = body
+    const parsed = createProductSchema.safeParse(body)
 
-    if (!name || !basePrice) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'name and basePrice are required' }, { status: 400 }
+        { success: false, error: parsed.error.issues.map((i) => i.message).join(', ') },
+        { status: 400 }
       )
     }
+
+    const {
+      name, slug, description, shortDescription, brandId, businessUnitId,
+      condition, basePrice, salePrice, costPrice, compareAtPrice, wholesalePrice,
+      corporatePrice, bundlePrice, productType, specifications, trackInventory,
+      stockCount, lowStockThreshold, warrantyMonths, warrantyInfo, weight,
+      dimensions, isFeatured, isDeal, isGaming, dealLabel, seoTitle, seoDescription,
+      metaKeywords, compatibleModels, sku, partNumber, upc, categoryIds,
+    } = parsed.data
 
     const productSlug = slug || name.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '')
 
     const existing = await db.product.findUnique({ where: { slug: productSlug } })
     if (existing) {
-      return NextResponse.json({ error: 'Slug already exists' }, { status: 409 })
+      return NextResponse.json({ success: false, error: 'Slug already exists' }, { status: 409 })
     }
 
     const product = await db.product.create({
@@ -103,29 +145,26 @@ export async function POST(req: NextRequest) {
         brandId: brandId || null,
         businessUnitId: businessUnitId || null,
         condition: condition || 'NEW',
-        conditionGrade: conditionGrade || null,
-        conditionNote: conditionNote || null,
-        basePrice: parseFloat(basePrice),
-        salePrice: salePrice ? parseFloat(salePrice) : null,
-        costPrice: costPrice ? parseFloat(costPrice) : null,
-        compareAtPrice: compareAtPrice ? parseFloat(compareAtPrice) : null,
-        wholesalePrice: wholesalePrice ? parseFloat(wholesalePrice) : null,
-        corporatePrice: corporatePrice ? parseFloat(corporatePrice) : null,
-        bundlePrice: bundlePrice ? parseFloat(bundlePrice) : null,
-        currency: currency || 'KES',
+        basePrice,
+        salePrice: salePrice ?? null,
+        costPrice: costPrice ?? null,
+        compareAtPrice: compareAtPrice ?? null,
+        wholesalePrice: wholesalePrice ?? null,
+        corporatePrice: corporatePrice ?? null,
+        bundlePrice: bundlePrice ?? null,
         productType: productType || 'PHYSICAL',
-        specifications: specifications ? JSON.stringify(specifications) : null,
-        trackInventory: trackInventory !== undefined ? trackInventory : true,
-        stockCount: stockCount || 0,
-        lowStockThreshold: lowStockThreshold || 5,
-        warrantyMonths: warrantyMonths || null,
+        specifications: specifications || null,
+        trackInventory: trackInventory ?? true,
+        stockCount: stockCount ?? 0,
+        lowStockThreshold: lowStockThreshold ?? 5,
+        warrantyMonths: warrantyMonths ?? null,
         warrantyInfo: warrantyInfo || null,
-        weight: weight ? parseFloat(weight) : null,
-        dimensions: dimensions ? JSON.stringify(dimensions) : null,
+        weight: weight ?? null,
+        dimensions: dimensions || null,
         status: 'DRAFT',
-        isFeatured: isFeatured || false,
-        isDeal: isDeal || false,
-        isGaming: isGaming || false,
+        isFeatured: isFeatured ?? false,
+        isDeal: isDeal ?? false,
+        isGaming: isGaming ?? false,
         dealLabel: dealLabel || null,
         seoTitle: seoTitle || null,
         seoDescription: seoDescription || null,
@@ -145,18 +184,15 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    if (basePrice) {
-      await db.priceHistory.create({
-        data: {
-          productId: product.id,
-          previousPrice: null,
-          newPrice: parseFloat(basePrice),
-          priceField: 'basePrice',
-          currency: currency || 'KES',
-          reason: 'Product created',
-        },
-      })
-    }
+    await db.priceHistory.create({
+      data: {
+        productId: product.id,
+        previousPrice: null,
+        newPrice: basePrice,
+        priceField: 'basePrice',
+        reason: 'Product created',
+      },
+    })
 
     return NextResponse.json({ product }, { status: 201 })
   } catch (e) {
@@ -166,10 +202,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const session = await getServerSession()
-  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-  }
+  const rejection = await requireAdmin()
+  if (rejection) return rejection
   try {
     const body = await req.json()
     const { ids, status: newStatus, reason } = body

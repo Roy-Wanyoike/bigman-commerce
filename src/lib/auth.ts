@@ -1,5 +1,6 @@
 import type { NextAuthOptions } from 'next-auth'
 import NextAuth, { getServerSession as nextAuthGetServerSession } from 'next-auth'
+import { NextResponse } from 'next/server'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import bcrypt from 'bcryptjs'
@@ -120,8 +121,6 @@ export const getServerSession = () => nextAuthGetServerSession(authOptions)
 // Admin auth guard helper — use in every /api/admin/* route handler
 // ------------------------------------------------------------------
 
-import { NextResponse } from 'next/server'
-
 /**
  * Require an authenticated admin session. Returns a 401 response if not authorized,
  * or null if authorized. Use as the first line in any admin route handler:
@@ -132,19 +131,13 @@ import { NextResponse } from 'next/server'
 export async function requireAdmin(): Promise<NextResponse | null> {
   try {
     const session = await getServerSession()
-    if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+    if (!session?.user?.role || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
     return null
   } catch (error) {
     // If getServerSession throws (DB down, malformed JWT), return 401
     console.error('[Auth] requireAdmin error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Authentication error' },
-      { status: 401 }
-    )
+    return NextResponse.json({ success: false, error: 'Authentication error' }, { status: 401 })
   }
 }

@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { getServerSession } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod/v4'
 
@@ -14,10 +14,8 @@ const createSchema = z.object({
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession()
-    if (!session?.user?.role || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
+    const rejection = await requireAdmin()
+    if (rejection) return rejection
 
     const productId = req.nextUrl.searchParams.get('productId')
     if (!productId) {
@@ -68,10 +66,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession()
-    if (!session?.user?.role || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
+    const rejection = await requireAdmin()
+    if (rejection) return rejection
 
     const body = await req.json()
     const parsed = createSchema.safeParse(body)
