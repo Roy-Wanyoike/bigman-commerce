@@ -1,5 +1,6 @@
 import type { NextAuthOptions } from 'next-auth'
 import NextAuth, { getServerSession as nextAuthGetServerSession } from 'next-auth'
+import { NextResponse } from 'next/server'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import bcrypt from 'bcryptjs'
@@ -102,3 +103,17 @@ declare module 'next-auth/jwt' {
 
 export const auth = NextAuth(authOptions)
 export const getServerSession = () => nextAuthGetServerSession(authOptions)
+
+/**
+ * Returns a 401 NextResponse rejection if the user is not an admin,
+ * or null if the user is authorized. Use as:
+ *   const rejection = await requireAdmin()
+ *   if (rejection) return rejection
+ */
+export async function requireAdmin() {
+  const session = await getServerSession()
+  if (!session?.user?.role || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
+  return null
+}

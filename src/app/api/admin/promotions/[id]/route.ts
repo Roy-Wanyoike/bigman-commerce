@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { getServerSession } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod/v4'
 
@@ -19,10 +19,8 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession()
-  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-  }
+  const rejection = await requireAdmin()
+  if (rejection) return rejection
   try {
     const { id } = await params
     const promotion = await db.promotion.findUnique({ where: { id } })
@@ -40,10 +38,8 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession()
-  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-  }
+  const rejection = await requireAdmin()
+  if (rejection) return rejection
   try {
     const { id } = await params
     const existing = await db.promotion.findUnique({ where: { id } })
@@ -101,10 +97,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession()
-  if (!session || (session.user?.role !== 'ADMIN' && session.user?.role !== 'SUPER_ADMIN')) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-  }
+  const rejection = await requireAdmin()
+  if (rejection) return rejection
   try {
     const { id } = await params
     const promotion = await db.promotion.findUnique({ where: { id } })

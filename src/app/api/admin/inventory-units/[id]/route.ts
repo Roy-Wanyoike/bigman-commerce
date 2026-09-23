@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { getServerSession } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod/v4'
 
@@ -27,23 +27,13 @@ const updateInventoryUnitSchema = z.object({
   status: z.string().optional(),
 })
 
-async function requireAdmin() {
-  const session = await getServerSession()
-  if (!session?.user?.role || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
-    return null
-  }
-  return session
-}
-
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAdmin()
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
+    const rejection = await requireAdmin()
+    if (rejection) return rejection
 
     const { id } = await params
 
@@ -71,10 +61,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAdmin()
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
+    const rejection = await requireAdmin()
+    if (rejection) return rejection
 
     const { id } = await params
 
@@ -137,10 +125,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAdmin()
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
+    const rejection = await requireAdmin()
+    if (rejection) return rejection
 
     const { id } = await params
 
