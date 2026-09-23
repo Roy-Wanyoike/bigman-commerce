@@ -36,6 +36,7 @@ import {
   Eye,
 } from 'lucide-react'
 import { formatPrice } from '@/lib/prices'
+import { toast } from 'sonner'
 
 const conditionLabels: Record<string, string> = {
   NEW: 'New',
@@ -144,7 +145,7 @@ function AdminObservationsContent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.source || !form.observedPrice || !form.observedDate) {
-      alert('Source, price, and date are required.')
+      toast.error('Source, price, and date are required.')
       return
     }
     setSubmitting(true)
@@ -162,7 +163,7 @@ function AdminObservationsContent() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to create observation')
+        toast.error(err.error || 'Failed to create observation')
         return
       }
       setShowForm(false)

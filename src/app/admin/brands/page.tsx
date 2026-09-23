@@ -49,6 +49,7 @@ import {
   ExternalLink,
   ImageIcon,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Brand {
   id: string
@@ -156,7 +157,7 @@ export default function AdminBrandsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.name || !form.slug) {
-      alert('Name and slug are required.')
+      toast.error('Name and slug are required.')
       return
     }
     setSubmitting(true)
@@ -179,7 +180,7 @@ export default function AdminBrandsPage() {
 
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Operation failed')
+        toast.error(err.error || 'Operation failed')
         return
       }
 
@@ -201,7 +202,7 @@ export default function AdminBrandsPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to delete brand')
+        toast.error(err.error || 'Failed to delete brand')
         return
       }
       setDeleteTarget(null)
