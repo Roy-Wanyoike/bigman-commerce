@@ -7,7 +7,7 @@ export async function GET() {
       where: { isActive: true },
       orderBy: { sortOrder: 'asc' },
     })
-    return NextResponse.json(services)
+    return NextResponse.json({ success: true, data: services })
   } catch {
     return NextResponse.json({ error: 'Failed to load services' }, { status: 500 })
   }
