@@ -63,6 +63,7 @@ import {
   Pencil,
 } from 'lucide-react'
 import { formatPrice } from '@/lib/prices'
+import { toast } from 'sonner'
 
 const statusColor: Record<string, string> = {
   DRAFT: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -392,7 +393,7 @@ export default function AdminProductDetailPage() {
 
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to save product')
+        toast.error(err.error || 'Failed to save product')
         return
       }
 
@@ -415,7 +416,7 @@ export default function AdminProductDetailPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to update status')
+        toast.error(err.error || 'Failed to update status')
         return
       }
       const data = await res.json()
@@ -432,7 +433,7 @@ export default function AdminProductDetailPage() {
     if (!product) return
     const nextStatus = publishFlow[product.status]
     if (!nextStatus) {
-      alert('This product is already published or cannot be advanced further.')
+      toast.error('This product is already published or cannot be advanced further.')
       return
     }
     const actionMap: Record<string, string> = {
@@ -453,7 +454,7 @@ export default function AdminProductDetailPage() {
       const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to archive product')
+        toast.error(err.error || 'Failed to archive product')
         return
       }
       setArchiveDialogOpen(false)
@@ -480,7 +481,7 @@ export default function AdminProductDetailPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to add image')
+        toast.error(err.error || 'Failed to add image')
         return
       }
       // Reload product
@@ -503,7 +504,7 @@ export default function AdminProductDetailPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to update image')
+        toast.error(err.error || 'Failed to update image')
         return
       }
       const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
@@ -522,7 +523,7 @@ export default function AdminProductDetailPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to set primary image')
+        toast.error(err.error || 'Failed to set primary image')
         return
       }
       const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
@@ -540,7 +541,7 @@ export default function AdminProductDetailPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to delete image')
+        toast.error(err.error || 'Failed to delete image')
         return
       }
       const prodRes = await fetch(`/api/admin/products/${id}`).then((r) => r.json())
@@ -559,7 +560,7 @@ export default function AdminProductDetailPage() {
     const filesToUpload = Array.from(files).slice(0, remaining)
 
     if (files.length > remaining) {
-      alert(`Only ${remaining} more image(s) can be uploaded. ${files.length - remaining} file(s) skipped.`)
+      toast.warning(`Only ${remaining} more image(s) can be uploaded. ${files.length - remaining} file(s) skipped.`)
     }
 
     setUploading(true)
@@ -578,11 +579,11 @@ export default function AdminProductDetailPage() {
         })
         if (!res.ok) {
           const err = await res.json()
-          alert(`Upload failed for ${file.name}: ${err.error}`)
+          toast.error(`Upload failed for ${file.name}: ${err.error}`)
           break
         }
       } catch {
-        alert(`Upload failed for ${file.name}`)
+        toast.error(`Upload failed for ${file.name}`)
         break
       }
     }

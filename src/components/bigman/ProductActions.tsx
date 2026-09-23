@@ -4,6 +4,7 @@ import { ShoppingCart, Heart, GitCompareArrows } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 interface Props {
   productId: string
@@ -32,6 +33,7 @@ export default function ProductActions({
       condition, conditionGrade,
       image,
     })
+    toast.success('Added to cart')
   }
 
   const handleCompare = () => {

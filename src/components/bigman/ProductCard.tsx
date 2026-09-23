@@ -102,11 +102,11 @@ export default function ProductCard({ product }: Props) {
 
         {/* Quick actions — top-right */}
         <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-1 group-hover:translate-x-0">
-          <Button variant="secondary" size="icon" className="h-7 w-7 rounded-full shadow-md border border-border/50"
+          <Button variant="secondary" size="icon" className="h-9 w-9 rounded-full shadow-md border border-border/50"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist({ productId: product.id, name: product.name, price: effectivePrice, image: primaryImage?.url || undefined, slug: product.slug, brand: product.brand?.name || undefined }) }} aria-label="Add to wishlist">
             <Heart className={cn('h-3.5 w-3.5', isWished && 'fill-red-500 text-red-500')} />
           </Button>
-          <Button variant="secondary" size="icon" className="h-7 w-7 rounded-full shadow-md border border-border/50"
+          <Button variant="secondary" size="icon" className="h-9 w-9 rounded-full shadow-md border border-border/50"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCompare() }} aria-label="Compare">
             <GitCompareArrows className={cn('h-3.5 w-3.5', isComparing && 'text-accent')} />
           </Button>

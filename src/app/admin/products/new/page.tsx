@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ArrowLeft, Save, Loader2, Plus, Trash2, X } from 'lucide-react'
+import { toast } from 'sonner'
 
 const conditionLabels: Record<string, string> = {
   NEW: 'New',
@@ -109,7 +110,7 @@ export default function AdminNewProductPage() {
 
   async function handleSave() {
     if (!form.name || !form.basePrice) {
-      alert('Product name and base price are required.')
+      toast.error('Product name and base price are required.')
       return
     }
     setSaving(true)
@@ -140,7 +141,7 @@ export default function AdminNewProductPage() {
 
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to create product')
+        toast.error(err.error || 'Failed to create product')
         return
       }
 

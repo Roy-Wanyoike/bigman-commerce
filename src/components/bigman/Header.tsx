@@ -160,8 +160,8 @@ export default function Header({ categories: propCategories }: HeaderProps) {
           </div>
           <div className="flex items-center gap-4">
             <a href={TEL_LINK} className="hover:text-primary-foreground transition-colors">{PHONE_DISPLAY}</a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">Track Order</a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">Support</a>
+            <Link href="/account" className="hover:text-primary-foreground transition-colors">Track Order</Link>
+            <Link href="/contact" className="hover:text-primary-foreground transition-colors">Support</Link>
           </div>
         </div>
       </div>
@@ -312,7 +312,8 @@ export default function Header({ categories: propCategories }: HeaderProps) {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search products..." className="pl-9 h-10 rounded-lg" value={searchQ} onChange={e => setSearchQ(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && searchQ.trim()) { setSearchOpen(false); router.push(`/search?q=${encodeURIComponent(searchQ.trim())}`) } }}
-                autoFocus />
+                autoFocus
+                aria-label="Search products" />
             </div>
           </div>
         </div>

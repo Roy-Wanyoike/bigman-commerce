@@ -41,6 +41,7 @@ import {
   Pencil,
   Search,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface UserItem {
   id: string
@@ -142,7 +143,7 @@ export default function AdminUsersPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to update user')
+        toast.error(err.error || 'Failed to update user')
         return
       }
       loadUsers()
@@ -155,7 +156,7 @@ export default function AdminUsersPage() {
     e.preventDefault()
     if (!editingUser) return
     if (!editForm.name) {
-      alert('Name is required.')
+      toast.error('Name is required.')
       return
     }
     setSubmitting(true)
@@ -172,7 +173,7 @@ export default function AdminUsersPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to update user')
+        toast.error(err.error || 'Failed to update user')
         return
       }
       setEditingUser(null)

@@ -50,6 +50,7 @@ import {
   Settings,
   BadgeCheck,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface CategoryNode {
   id: string
@@ -131,7 +132,7 @@ export default function AdminCategoriesPage() {
   async function handleCreateCategory(e: React.FormEvent) {
     e.preventDefault()
     if (!newCat.name || !newCat.slug) {
-      alert('Name and slug are required.')
+      toast.error('Name and slug are required.')
       return
     }
     setCreating(true)
@@ -146,7 +147,7 @@ export default function AdminCategoriesPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to create category')
+        toast.error(err.error || 'Failed to create category')
         return
       }
       setCreateDialogOpen(false)
@@ -177,7 +178,7 @@ export default function AdminCategoriesPage() {
   async function handleAddAttribute(e: React.FormEvent) {
     e.preventDefault()
     if (!attrCat || !attrForm.name || !attrForm.key) {
-      alert('Name and key are required.')
+      toast.error('Name and key are required.')
       return
     }
     setAttrSubmitting(true)
@@ -189,7 +190,7 @@ export default function AdminCategoriesPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to create attribute')
+        toast.error(err.error || 'Failed to create attribute')
         return
       }
       setAttrForm({ name: '', key: '', type: 'TEXT', unit: '', isRequired: false })

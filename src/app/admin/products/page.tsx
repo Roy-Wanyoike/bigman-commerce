@@ -55,6 +55,7 @@ import {
   PackageCheck,
 } from 'lucide-react'
 import { formatPrice } from '@/lib/prices'
+import { toast } from 'sonner'
 
 const statusColor: Record<string, string> = {
   DRAFT: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -228,7 +229,7 @@ function AdminProductsContent() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to update status')
+        toast.error(err.error || 'Failed to update status')
         return
       }
       await refreshProducts()
@@ -248,7 +249,7 @@ function AdminProductsContent() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to archive product')
+        toast.error(err.error || 'Failed to archive product')
         return
       }
       setDeleteDialogOpen(false)
@@ -297,7 +298,7 @@ function AdminProductsContent() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to bulk update')
+        toast.error(err.error || 'Failed to bulk update')
         return
       }
       const data = await res.json()
@@ -306,7 +307,7 @@ function AdminProductsContent() {
 
       const failed = data.results?.filter((r: { success: boolean }) => !r.success).length || 0
       if (failed > 0) {
-        alert(`${data.updated} products updated. ${failed} failed due to invalid status transitions.`)
+        toast.success(`${data.updated} products updated. ${failed} failed due to invalid status transitions.`)
       }
     } catch (e) {
       console.error(e)

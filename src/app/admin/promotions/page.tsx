@@ -53,6 +53,7 @@ import {
   Pencil,
   Trash2,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Promotion {
   id: string
@@ -152,7 +153,7 @@ export default function AdminPromotionsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.name || !form.slug) {
-      alert('Name and coupon code are required.')
+      toast.error('Name and coupon code are required.')
       return
     }
 
@@ -183,7 +184,7 @@ export default function AdminPromotionsPage() {
 
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to save promotion')
+        toast.error(err.error || 'Failed to save promotion')
         return
       }
 
@@ -203,7 +204,7 @@ export default function AdminPromotionsPage() {
       const res = await fetch(`/api/admin/promotions/${deleteId}`, { method: 'DELETE' })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to delete promotion')
+        toast.error(err.error || 'Failed to delete promotion')
         return
       }
       setDeleteId(null)

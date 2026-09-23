@@ -45,6 +45,7 @@ import {
   Trash2,
   Search,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface SynonymItem {
   id: string
@@ -120,7 +121,7 @@ export default function AdminSynonymsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.term.trim() || !form.synonym.trim()) {
-      alert('Both term and synonym are required.')
+      toast.error('Both term and synonym are required.')
       return
     }
     setSubmitting(true)
@@ -141,7 +142,7 @@ export default function AdminSynonymsPage() {
 
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Operation failed')
+        toast.error(err.error || 'Operation failed')
         return
       }
 
@@ -163,7 +164,7 @@ export default function AdminSynonymsPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to delete synonym')
+        toast.error(err.error || 'Failed to delete synonym')
         return
       }
       setDeleteTarget(null)

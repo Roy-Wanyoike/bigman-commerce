@@ -1,9 +1,21 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Truck, Shield, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { useStore } from '@/lib/store'
 import { formatPrice } from '@/lib/prices'
 import Header from '@/components/bigman/Header'
@@ -12,6 +24,7 @@ import OrderSummary from '@/components/bigman/OrderSummary'
 
 export default function CartClient() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useStore()
+  const [clearDialogOpen, setClearDialogOpen] = useState(false)
 
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -62,7 +75,7 @@ export default function CartClient() {
                       <div className="flex items-end justify-between mt-3">
                         <div className="flex items-center border border-border rounded-lg">
                           <button className="h-8 w-8 flex items-center justify-center hover:bg-secondary transition-colors rounded-l-lg"
-                            onClick={() => updateQuantity(item.productId, Math.max(0, item.quantity - 1))} aria-label="Decrease quantity">
+                            onClick={() => updateQuantity(item.productId, Math.max(1, item.quantity - 1))} aria-label="Decrease quantity">
                             <Minus className="h-3 w-3" />
                           </button>
                           <span className="h-8 w-10 flex items-center justify-center text-sm font-medium border-x border-border">{item.quantity}</span>
@@ -80,7 +93,25 @@ export default function CartClient() {
                   </CardContent>
                 </Card>
               ))}
-              <button onClick={clearCart} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Clear cart</button>
+              <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <button className="text-xs text-muted-foreground hover:text-foreground transition-colors">Clear cart</button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear Cart</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to remove all items from your cart? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={clearCart} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Clear Cart
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
 
             {/* Order summary */}

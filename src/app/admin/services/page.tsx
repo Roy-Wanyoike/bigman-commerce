@@ -55,6 +55,7 @@ import {
   Search,
 } from 'lucide-react'
 import { formatPrice } from '@/lib/prices'
+import { toast } from 'sonner'
 
 interface ServiceItem {
   id: string
@@ -191,7 +192,7 @@ export default function AdminServicesPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.name || !form.basePrice) {
-      alert('Name and base price are required.')
+      toast.error('Name and base price are required.')
       return
     }
     setSubmitting(true)
@@ -218,7 +219,7 @@ export default function AdminServicesPage() {
 
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Operation failed')
+        toast.error(err.error || 'Operation failed')
         return
       }
 
@@ -240,7 +241,7 @@ export default function AdminServicesPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        alert(err.error || 'Failed to delete service')
+        toast.error(err.error || 'Failed to delete service')
         return
       }
       setDeleteTarget(null)
