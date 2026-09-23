@@ -66,7 +66,7 @@ export async function GET() {
     }
     sortChildren(topLevel)
 
-    return NextResponse.json(topLevel)
+    return NextResponse.json({ success: true, data: topLevel })
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: 'Failed to load categories' }, { status: 500 })
