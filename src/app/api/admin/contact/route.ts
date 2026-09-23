@@ -1,7 +1,8 @@
 import { requireAdmin } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import fs from 'fs'
+import fs from 'fs/promises'
 import path from 'path'
+import { safeJsonParse } from '@/lib/utils'
 
 export async function GET() {
   try {
@@ -10,19 +11,22 @@ export async function GET() {
 
     const filePath = path.join(process.cwd(), 'data', 'contact-submissions.json')
 
-    if (!fs.existsSync(filePath)) {
-      return NextResponse.json({ submissions: [], total: 0 })
+    let fileContent: string
+    try {
+      fileContent = await fs.readFile(filePath, 'utf-8')
+    } catch {
+      return NextResponse.json({ success: true, submissions: [], total: 0 })
     }
 
-    const fileContent = fs.readFileSync(filePath, 'utf-8')
-    const submissions = JSON.parse(fileContent)
+    const submissions = safeJsonParse(fileContent, [])
 
     return NextResponse.json({
+      success: true,
       submissions,
       total: submissions.length,
     })
   } catch (e) {
     console.error(e)
-    return NextResponse.json({ error: 'Failed to fetch contact submissions' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Failed to fetch contact submissions' }, { status: 500 })
   }
 }
